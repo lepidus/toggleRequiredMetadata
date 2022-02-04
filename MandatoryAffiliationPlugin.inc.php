@@ -42,23 +42,39 @@ class MandatoryAffiliationPlugin extends GenericPlugin {
 
 	public function authorAffiliationFormFilter($output, $templateMgr) {
         if (preg_match_all('/<input[^>]+id="affiliation[^>]*>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
-			$timesEditedOutput = 0;
-			foreach($matches[0] as $match) {
-				$matchedText = $match[0];
-				$posMatch = $match[1];
-				
-				$requiredParam = " required=\"true\" ";
-				$inputTagStart = "<input " ;
-				$additionalEditions = $timesEditedOutput*strlen($requiredParam);
-				
-				$output = substr_replace($output, $requiredParam, $posMatch + strlen($inputTagStart) + $additionalEditions, 0);
-				$timesEditedOutput++;
-			}
-
-			error_log($output);
+			$output = $this->setRequiredOnInputFields($output, $matches);
+			$output = $this->addRequiredFieldSpanToLabel($output);
 			$templateMgr->unregisterFilter('output', array($this, 'authorAffiliationFormFilter'));
         }
         return $output;
     }
+
+	private function setRequiredOnInputFields($output, $inputFieldMatches) {
+		$timesEditedOutput = 0;
+		foreach($inputFieldMatches[0] as $match) {
+			$matchedText = $match[0];
+			$posMatch = $match[1];
+			
+			$requiredParam = " required=\"true\" ";
+			$inputTagStart = "<input " ;
+			$editionsOffset = $timesEditedOutput*strlen($requiredParam);
+			
+			$output = substr_replace($output, $requiredParam, $posMatch + strlen($inputTagStart) + $editionsOffset, 0);
+			$timesEditedOutput++;
+		}
+
+		return $output;
+	}
+
+	private function addRequiredFieldSpanToLabel($output) {
+		preg_match('/<label *class="sub_label" *for="affiliation[^>]+>/', $output, $matches, PREG_OFFSET_CAPTURE);
+		$posStartContentLabel = $matches[0][1] + strlen($matches[0][0]);
+
+		preg_match('/<\/label>/', $output, $matches, PREG_OFFSET_CAPTURE, $posStartContentLabel);
+		$posEndContentLabel = $matches[0][1];
+
+		$requiredFieldSpan = "<span class=\"req\">*</span> ";
+		return substr_replace($output, $requiredFieldSpan, $posEndContentLabel, 0);
+	}
 
 }
