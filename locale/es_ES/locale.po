@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2022-02-04T23:03:20+00:00\n"
+"PO-Revision-Date: 2022-02-04T23:03:20+00:00\n"
+"Language: Español\n"
+
+msgid "plugins.generic.mandatoryAffiliation.displayName"
+msgstr "Afiliación obligatoria"
+
+msgid "plugins.generic.mandatoryAffiliation.description"
+msgstr "Este módulo hace que el campo de afiliación de los autores sea obligatorio"
