@@ -12,14 +12,14 @@
 
 import('lib.pkp.classes.plugins.GenericPlugin');
 
-class mandatoryAffiliation extends GenericPlugin {
+class MandatoryAffiliationPlugin extends GenericPlugin {
 
 	public function register($category, $path, $mainContextId = NULL) {
 		$success = parent::register($category, $path, $mainContextId);
 		
 		if (!Config::getVar('general', 'installed') || defined('RUNNING_UPGRADE')) return true;
 		if ($success && $this->getEnabled($mainContextId)) {
-
+			HookRegistry::register('authorform::display', array($this, 'editAuthorFormTemplate'));
 		}
 		return $success;
 	}
@@ -31,5 +31,34 @@ class mandatoryAffiliation extends GenericPlugin {
 	public function getDescription() {
 		return __('plugins.generic.mandatoryAffiliation.description');
 	}
+
+	public function editAuthorFormTemplate($hookName, $params) {
+        $request = PKPApplication::get()->getRequest();
+        $templateMgr = TemplateManager::getManager($request);
+		$templateMgr->registerFilter("output", array($this, 'authorAffiliationFormFilter'));
+		
+		return false;
+	}
+
+	public function authorAffiliationFormFilter($output, $templateMgr) {
+        if (preg_match_all('/<input[^>]+id="affiliation[^>]*>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
+			$timesEditedOutput = 0;
+			foreach($matches[0] as $match) {
+				$matchedText = $match[0];
+				$posMatch = $match[1];
+				
+				$requiredParam = " required=\"true\" ";
+				$inputTagStart = "<input " ;
+				$additionalEditions = $timesEditedOutput*strlen($requiredParam);
+				
+				$output = substr_replace($output, $requiredParam, $posMatch + strlen($inputTagStart) + $additionalEditions, 0);
+				$timesEditedOutput++;
+			}
+
+			error_log($output);
+			$templateMgr->unregisterFilter('output', array($this, 'authorAffiliationFormFilter'));
+        }
+        return $output;
+    }
 
 }
