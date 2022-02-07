@@ -1,5 +1,5 @@
 variables:
-    PLUGIN_NAME : 'mandatoryAffiliation'
+    PLUGIN_NAME : 'toggleMandatoryMetadata'
     RELEASE_PACKAGE_URL: '${CI_PROJECT_URL}'
 
 stages:

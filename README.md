@@ -1,6 +1,6 @@
-# Mandatory Affiliation Plugin 
+# Toggle Mandatory Metadata Plugin 
 
-This plugin makes the affiliation field at author form a mandatory one.
+This plugin allows to make some submissions metadata mandatory.
 
 ## Compatibility
 
@@ -12,13 +12,13 @@ The latest release of this plugin is compatible with the following PKP applicati
 
 ## Plugin Download
 
-To download the plugin, go to the [Releases page](https://github.com/lepidus/mandatoryAffiliation/releases) and download the tar.gz package of the latest release compatible with your website.
+To download the plugin, go to the [Releases page](https://github.com/lepidus/toggleMandatoryMetadata/releases) and download the tar.gz package of the latest release compatible with your website.
 
 ## Installation
 
 1. Enter the administration area of ​​your OJS/OPS/OMP website through the __Dashboard__.
 2. Navigate to `Settings`>` Website`> `Plugins`> `Upload a new plugin`.
-3. Under __Upload file__ select the file __mandatoryAffiliation.tar.gz__.
+3. Under __Upload file__ select the file __toggleMandatoryMetadata.tar.gz__.
 4. Click __Save__ and the plugin will be installed on your website.
 
 

@@ -11,8 +11,8 @@ msgstr ""
 "PO-Revision-Date: 2022-01-04T23:03:20+00:00\n"
 "Language: Português Brasileiro\n"
 
-msgid "plugins.generic.mandatoryAffiliation.displayName"
-msgstr "Afiliação obrigatória"
+msgid "plugins.generic.toggleMandatoryMetadata.displayName"
+msgstr "Alternar Metadados Obrigatórios"
 
-msgid "plugins.generic.mandatoryAffiliation.description"
-msgstr "Esse plugin torna o campo afiliação dos autores obrigatório"
+msgid "plugins.generic.toggleMandatoryMetadata.description"
+msgstr "Esse plugin permite tornar alguns metadados de submissão obrigatórios"

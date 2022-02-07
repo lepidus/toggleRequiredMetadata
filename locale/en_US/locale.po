@@ -11,8 +11,8 @@ msgstr ""
 "PO-Revision-Date: 2022-01-04T23:03:20+00:00\n"
 "Language: US English\n"
 
-msgid "plugins.generic.mandatoryAffiliation.displayName"
-msgstr "Mandatory Affiliation"
+msgid "plugins.generic.toggleMandatoryMetadata.displayName"
+msgstr "Toggle Mandatory Metadata"
 
-msgid "plugins.generic.mandatoryAffiliation.description"
-msgstr "This plugin makes the authors affiliation field mandatory"
+msgid "plugins.generic.toggleMandatoryMetadata.description"
+msgstr "This plugin allows to make some submissions metadata mandatory"

@@ -1,18 +1,18 @@
 <?php
 /**
- * @file plugins/generic/mandatoryAffiliation/MandatoryAffiliation.inc.php
+ * @file plugins/generic/toggleMandatoryMetadata/ToggleMandatoryMetadataPlugin.inc.php
  *
  * Copyright (c) 2022 Lepidus Tecnologia
  * Distributed under the GNU GPL v3. For full terms see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt
  *
- * @class MandatoryAffiliation
- * @ingroup plugins_generic_authorVersion
+ * @class ToggleMandatoryMetadataPlugin
+ * @ingroup plugins_generic_toggleMandatoryMetadata
  *
  */
 
 import('lib.pkp.classes.plugins.GenericPlugin');
 
-class MandatoryAffiliationPlugin extends GenericPlugin {
+class ToggleMandatoryMetadataPlugin extends GenericPlugin {
 
 	public function register($category, $path, $mainContextId = NULL) {
 		$success = parent::register($category, $path, $mainContextId);
@@ -25,11 +25,11 @@ class MandatoryAffiliationPlugin extends GenericPlugin {
 	}
 
 	public function getDisplayName() {
-		return __('plugins.generic.mandatoryAffiliation.displayName');
+		return __('plugins.generic.toggleMandatoryMetadata.displayName');
 	}
 
 	public function getDescription() {
-		return __('plugins.generic.mandatoryAffiliation.description');
+		return __('plugins.generic.toggleMandatoryMetadata.description');
 	}
 
 	public function editAuthorFormTemplate($hookName, $params) {
