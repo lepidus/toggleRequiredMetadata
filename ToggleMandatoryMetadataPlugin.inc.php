@@ -33,18 +33,19 @@ class ToggleMandatoryMetadataPlugin extends GenericPlugin {
 	}
 
 	public function editAuthorFormTemplate($hookName, $params) {
-        $request = PKPApplication::get()->getRequest();
-        $templateMgr = TemplateManager::getManager($request);
+		$request = PKPApplication::get()->getRequest();
+		$templateMgr = TemplateManager::getManager($request);
 		$templateMgr->registerFilter("output", array($this, 'authorAffiliationFormFilter'));
 		
 		return false;
 	}
 
 	public function authorAffiliationFormFilter($output, $templateMgr) {
-        if (preg_match_all('/<input[^>]+id="affiliation[^>]*>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
-			$output = $this->setRequiredOnInputFields($output, $matches);
-			$output = $this->addRequiredFieldSpanToLabel($output);
-			$templateMgr->unregisterFilter('output', array($this, 'authorAffiliationFormFilter'));
+        $selectAffiliationInput = '/<input[^>]+id="affiliation[^>]*>/';
+        if (preg_match_all($selectAffiliationInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
+            $output = $this->setRequiredOnInputFields($output, $matches);
+            $output = $this->addRequiredFieldSpanToLabel($output);
+            $templateMgr->unregisterFilter('output', array($this, 'authorAffiliationFormFilter'));
         }
         return $output;
     }
@@ -67,10 +68,12 @@ class ToggleMandatoryMetadataPlugin extends GenericPlugin {
 	}
 
 	private function addRequiredFieldSpanToLabel($output) {
-		preg_match('/<label *class="sub_label" *for="affiliation[^>]+>/', $output, $matches, PREG_OFFSET_CAPTURE);
+		$selectAffiliationLabelOpening = "/<label *class=\"sub_label\" *for=\"affiliation[^>]+>/";
+		preg_match($selectAffiliationLabelOpening, $output, $matches, PREG_OFFSET_CAPTURE);
 		$posStartContentLabel = $matches[0][1] + strlen($matches[0][0]);
 
-		preg_match('/<\/label>/', $output, $matches, PREG_OFFSET_CAPTURE, $posStartContentLabel);
+		$selectAffiliationLabelEnding = '/<\/label>/';
+		preg_match($selectAffiliationLabelEnding, $output, $matches, PREG_OFFSET_CAPTURE, $posStartContentLabel);
 		$posEndContentLabel = $matches[0][1];
 
 		$requiredFieldSpan = "<span class=\"req\">*</span> ";
