@@ -11,8 +11,8 @@ msgstr ""
 "PO-Revision-Date: 2022-02-04T23:03:20+00:00\n"
 "Language: Español\n"
 
-msgid "plugins.generic.toggleMandatoryMetadata.displayName"
+msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar Metadatos Requeridos"
 
-msgid "plugins.generic.toggleMandatoryMetadata.description"
+msgid "plugins.generic.toggleRequiredMetadata.description"
 msgstr "Este módulo le permite hacer que algunos metadatos de envío sean obligatorios"

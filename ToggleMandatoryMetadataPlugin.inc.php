@@ -1,18 +1,18 @@
 <?php
 /**
- * @file plugins/generic/toggleMandatoryMetadata/ToggleMandatoryMetadataPlugin.inc.php
+ * @file plugins/generic/toggleRequiredMetadata/ToggleRequiredMetadataPlugin.inc.php
  *
  * Copyright (c) 2022 Lepidus Tecnologia
  * Distributed under the GNU GPL v3. For full terms see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt
  *
- * @class ToggleMandatoryMetadataPlugin
- * @ingroup plugins_generic_toggleMandatoryMetadata
+ * @class ToggleRequiredMetadataPlugin
+ * @ingroup plugins_generic_toggleRequiredMetadata
  *
  */
 
 import('lib.pkp.classes.plugins.GenericPlugin');
 
-class ToggleMandatoryMetadataPlugin extends GenericPlugin {
+class ToggleRequiredMetadataPlugin extends GenericPlugin {
 
 	public function register($category, $path, $mainContextId = NULL) {
 		$success = parent::register($category, $path, $mainContextId);
@@ -25,11 +25,11 @@ class ToggleMandatoryMetadataPlugin extends GenericPlugin {
 	}
 
 	public function getDisplayName() {
-		return __('plugins.generic.toggleMandatoryMetadata.displayName');
+		return __('plugins.generic.toggleRequiredMetadata.displayName');
 	}
 
 	public function getDescription() {
-		return __('plugins.generic.toggleMandatoryMetadata.description');
+		return __('plugins.generic.toggleRequiredMetadata.description');
 	}
 
 	public function editAuthorFormTemplate($hookName, $params) {
