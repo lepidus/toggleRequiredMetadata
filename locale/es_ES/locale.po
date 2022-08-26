@@ -15,4 +15,4 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar Metadatos Requeridos"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Este módulo le permite hacer que algunos metadatos de envío sean obligatorios"
+msgstr "Este plugin permite hacer que el campo \"afiliación\" sea obligatorio."

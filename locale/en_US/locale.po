@@ -15,4 +15,4 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Toggle Required Metadata"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "This plugin allows to make some submissions metadata Required"
+msgstr "This plugin allows to make the \"affiliation\" field required."

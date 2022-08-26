@@ -2,7 +2,7 @@
 
 This plugin allows to make the **affiliation** field required.
 
-This **affiliation** belongs to the contributor of the submssion. 
+This **affiliation** belongs to the contributor of the submission. 
 
 ## Compatibility
 
