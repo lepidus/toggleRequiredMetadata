@@ -6,7 +6,7 @@ function loginAdminUser() {
     cy.get('button[class=submit]').click();
 }
 
-describe('Mandatory Metadata Plugin - Affiliation is mandatory', function() {
+describe('Required Metadata Plugin - Affiliation is Required', function() {
     it('Check if affiliation is required at edit author form', function() {
         cy.visit(Cypress.env('baseUrl') + 'index.php/anphlac/submissions');
         
