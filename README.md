@@ -1,6 +1,8 @@
 # Toggle Required Metadata Plugin 
 
-This plugin allows to make some submissions metadata required.
+This plugin allows to make the **affiliation** field required.
+
+This **affiliation** belongs to the contributor of the submssion. 
 
 ## Compatibility
 
