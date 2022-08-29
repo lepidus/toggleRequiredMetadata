@@ -12,7 +12,7 @@ msgstr ""
 "Language: Español\n"
 
 msgid "plugins.generic.toggleRequiredMetadata.displayName"
-msgstr "Alternar Metadatos Requeridos"
+msgstr "Alternar los metadatos requeridos"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
 msgstr "Este plugin permite hacer que el campo \"afiliación\" sea obligatorio."
