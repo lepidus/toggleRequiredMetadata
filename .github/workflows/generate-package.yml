@@ -14,25 +14,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check version.xml
-        run: |
-          sudo apt install xmlstarlet
-          application=$(xmlstarlet sel -t -v 'version/application' version.xml)
-          if [ $application != toggleRequiredMetadata ]; then exit 1; fi
-          release=$(xmlstarlet sel -t -v 'version/release' version.xml)
-          tag=${{ github.ref }}
-          tag=${tag/refs\/tags\/v}
-          if [[ $release != $tag* ]]; then exit 1; fi
-          date_version=$(xmlstarlet sel -t -v 'version/date' version.xml)
-          current_date=$(date +'%Y-%m-%d')
-          if [ $date_version != $current_date ]; then exit 1; fi
-        shell: bash
       - name: Create the tar.gz package
         run: |
-          mkdir toggleRequiredMetadata
+          mkdir $PLUGIN_NAME
+          ls -la
           shopt -s extglob
-           - cp -r !(${PLUGIN_NAME}|.git*|.|..|tests|cypress) ${PLUGIN_NAME}
-          tar -zcvf toggleRequiredMetadata.tar.gz toggleRequiredMetadata
+          cp -r !($PLUGIN_NAME|.git*|.|..|tests) $PLUGIN_NAME
+          ls -la
+          tar -zcvf $PLUGIN_NAME.tar.gz $PLUGIN_NAME
+          ls -la
         shell: bash
       - name: Create the release
         id: create_release
