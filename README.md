@@ -14,7 +14,7 @@ The latest release of this plugin is compatible with the following PKP applicati
 
 ## Plugin Download
 
-To download the plugin, go to the [Releases page](https://gitlab.lepidus.com.br/softwares-pkp/plugins_ojs/toggleRequiredMetadata/-/releases) and download the tar.gz package of the latest release compatible with your website.
+To download the plugin, go to the [Releases page](https://github.com/lepidus/toggleRequiredMetadata/releases) and download the tar.gz package of the latest release compatible with your website.
 
 ## Installation
 
