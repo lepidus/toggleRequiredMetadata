@@ -8,9 +8,11 @@ function loginAdminUser() {
 
 describe('Required Metadata Plugin - Affiliation is Required', function() {
     it('Check if affiliation is required at edit author form', function() {
-        cy.visit(Cypress.env('baseUrl') + 'index.php/anphlac/submissions');
         
+        cy.visit(Cypress.env('baseUrl') + 'index.php/anphlac/submissions');
         loginAdminUser();
+        
+        cy.get(':nth-child(1) > :nth-child(1) > .app__navItem').click();
         cy.get("#active-button").click();
         cy.get(".listPanel__item:visible > .listPanel__item--submission > .listPanel__itemSummary > .listPanel__itemActions > a").first().click();
         cy.wait(2000);
