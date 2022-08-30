@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file plugins/generic/toggleRequiredMetadata/ToggleRequiredMetadataPlugin.inc.php
  *
@@ -42,6 +43,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $request = PKPApplication::get()->getRequest();
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->registerFilter("output", array($this, 'authorAffiliationFormFilter'));
+        $templateMgr->registerFilter("output", array($this, 'authorORCIDFormFilter'));
 
         return false;
     }
@@ -57,6 +59,17 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return $output;
     }
 
+    public function authorORCIDFormFilter($output, $templateMgr)
+    {
+        $selectAffiliationInput = '/<input[^>]+id="orcid[^>]*>/';
+        if (preg_match_all($selectAffiliationInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
+            $output = $this->setRequiredOnInputFields($output, $matches);
+            $output = $this->addRequiredFieldSpanToLabel($output);
+            $templateMgr->unregisterFilter('output', array($this, 'authorORCIDFormFilter'));
+        }
+        return $output;
+    }
+
     private function setRequiredOnInputFields($output, $inputFieldMatches)
     {
         $timesEditedOutput = 0;
@@ -65,7 +78,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $posMatch = $match[1];
 
             $requiredParam = " required=\"true\" ";
-            $inputTagStart = "<input " ;
+            $inputTagStart = "<input ";
             $editionsOffset = $timesEditedOutput * strlen($requiredParam);
 
             $output = substr_replace($output, $requiredParam, $posMatch + strlen($inputTagStart) + $editionsOffset, 0);
