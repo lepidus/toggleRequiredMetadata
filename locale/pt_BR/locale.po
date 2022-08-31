@@ -15,4 +15,4 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar Metadados Obrigatórios"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Esse plugin torna o campo \"afiliação\" requerido."
+msgstr "Esse plugin torna os campos \"afiliação e ORCID \" requeridos."
