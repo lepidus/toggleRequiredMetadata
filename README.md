@@ -1,8 +1,8 @@
 # Toggle Required Metadata Plugin 
 
-This plugin allows to make the **affiliation** field required.
+This plugin allows to make the **affiliation** and **ORCID** fields required.
 
-This **affiliation** belongs to the contributor of the submission. 
+The fields **affiliation** and **ORCID** belongs to the contributor of the submission. 
 
 ## Compatibility
 
