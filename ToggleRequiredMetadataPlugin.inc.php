@@ -42,32 +42,31 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         $request = PKPApplication::get()->getRequest();
         $templateMgr = TemplateManager::getManager($request);
-        $templateMgr->registerFilter("output", array($this, 'authorAffiliationFormFilter'));
-        $templateMgr->registerFilter("output", array($this, 'authorORCIDFormFilter'));
+        $templateMgr->registerFilter("output", array($this, 'affiliationFilter'));
+        $templateMgr->registerFilter("output", array($this, 'orcidFilter'));
 
         return false;
     }
 
-    public function authorAffiliationFormFilter($output, $templateMgr)
+    public function toggleRequiredField($output, $templateMgr, $fieldName)
     {
-        $selectAffiliationInput = '/<input[^>]+id="affiliation[^>]*>/';
+        $selectAffiliationInput = '/<input[^>]+id="' . $fieldName . '[^>]*>/';
         if (preg_match_all($selectAffiliationInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
             $output = $this->setRequiredOnInputFields($output, $matches);
             $output = $this->addRequiredFieldSpanToLabel($output);
-            $templateMgr->unregisterFilter('output', array($this, 'authorAffiliationFormFilter'));
+            $templateMgr->unregisterFilter('output', array($this, $fieldName . "Filter"));
         }
         return $output;
     }
 
-    public function authorORCIDFormFilter($output, $templateMgr)
+    public function affiliationFilter($output, $templateMgr)
     {
-        $selectAffiliationInput = '/<input[^>]+id="orcid[^>]*>/';
-        if (preg_match_all($selectAffiliationInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
-            $output = $this->setRequiredOnInputFields($output, $matches);
-            $output = $this->addRequiredFieldSpanToLabel($output);
-            $templateMgr->unregisterFilter('output', array($this, 'authorORCIDFormFilter'));
-        }
-        return $output;
+        return $this->toggleRequiredField($output, $templateMgr, "affiliation");
+    }
+
+    public function orcidFilter($output, $templateMgr)
+    {
+        return $this->toggleRequiredField($output, $templateMgr, "orcid");
     }
 
     private function setRequiredOnInputFields($output, $inputFieldMatches)
