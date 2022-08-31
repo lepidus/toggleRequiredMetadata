@@ -6,8 +6,8 @@ function loginAdminUser() {
     cy.get('button[class=submit]').click();
 }
 
-describe('Required Metadata Plugin - Affiliation is Required', function() {
-    it('Check if affiliation is required at edit author form', function() {
+describe('Required Metadata Plugin - Affiliation and ORCID is Required', function() {
+    it('Check if affiliation and orcid is required at edit author form', function() {
         
         cy.visit(Cypress.env('baseUrl') + 'index.php/anphlac/submissions');
         loginAdminUser();
@@ -20,6 +20,7 @@ describe('Required Metadata Plugin - Affiliation is Required', function() {
         cy.get("#contributors-button").click();
         cy.get("#contributors-grid > .pkp_controllers_grid > .header > .actions > li:last-of-type > a").click();
         cy.get("input[id^=affiliation-]").should('have.attr', 'required');
+        cy.get("input[id^=orcid-]").should('have.attr', 'required');
     });
 
 });
