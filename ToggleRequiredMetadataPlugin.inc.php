@@ -50,8 +50,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function toggleRequiredField($output, $templateMgr, $fieldName)
     {
-        $selectAffiliationInput = '/<input[^>]+id="' . $fieldName . '[^>]*>/';
-        if (preg_match_all($selectAffiliationInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
+        $selectFieldInput = '/<input[^>]+id="' . $fieldName . '[^>]*>/';
+        if (preg_match_all($selectFieldInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
             $output = $this->setRequiredOnInputFields($output, $matches);
             $output = $this->addRequiredFieldSpanToLabel($output);
             $templateMgr->unregisterFilter('output', array($this, $fieldName . "Filter"));
@@ -89,15 +89,57 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     private function addRequiredFieldSpanToLabel($output)
     {
-        $selectAffiliationLabelOpening = "/<label *class=\"sub_label\" *for=\"affiliation[^>]+>/";
-        preg_match($selectAffiliationLabelOpening, $output, $matches, PREG_OFFSET_CAPTURE);
+        $selectFieldLabelOpening = "/<label *class=\"sub_label\" *for=\"[^>]+>/";
+        preg_match($selectFieldLabelOpening, $output, $matches, PREG_OFFSET_CAPTURE);
         $posStartContentLabel = $matches[0][1] + strlen($matches[0][0]);
 
-        $selectAffiliationLabelEnding = '/<\/label>/';
-        preg_match($selectAffiliationLabelEnding, $output, $matches, PREG_OFFSET_CAPTURE, $posStartContentLabel);
+        $selectFieldLabelEnding = '/<\/label>/';
+        preg_match($selectFieldLabelEnding, $output, $matches, PREG_OFFSET_CAPTURE, $posStartContentLabel);
         $posEndContentLabel = $matches[0][1];
 
         $requiredFieldSpan = "<span class=\"req\">*</span> ";
         return substr_replace($output, $requiredFieldSpan, $posEndContentLabel, 0);
+    }
+
+    public function getActions($request, $actionArgs)
+    {
+        $router = $request->getRouter();
+        import('lib.pkp.classes.linkAction.request.AjaxModal');
+        return array_merge(
+            $this->getEnabled() ? array(
+                new LinkAction(
+                    'settings',
+                    new AjaxModal(
+                        $router->url($request, null, null, 'manage', null, array('verb' => 'settings', 'plugin' => $this->getName(), 'category' => 'generic')),
+                        $this->getDisplayName()
+                    ),
+                    __('manager.plugins.settings'),
+                    null
+                ),
+            ) : array(),
+            parent::getActions($request, $actionArgs)
+        );
+    }
+
+    public function manage($args, $request)
+    {
+        switch ($request->getUserVar('verb')) {
+            case 'settings':
+                $context = $request->getContext();
+                $this->import('form.ToggleRequiredMetadataSettingsForm');
+                $form = new ToggleRequiredMetadataSettingsForm($this, $context->getId());
+
+                if ($request->getUserVar('save')) {
+                    $form->readInputData();
+                    if ($form->validate()) {
+                        $form->execute();
+                        return new JSONMessage(true);
+                    }
+                }
+
+                return new JSONMessage(true, $form->fetch($request));
+            default:
+                return parent::manage($verb, $args, $message, $messageParams);
+        }
     }
 }
