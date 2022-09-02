@@ -21,20 +21,42 @@ class ToggleRequiredMetadataSettingsForm extends Form
     {
         $this->contextId = $contextId;
         $this->plugin = $plugin;
-        parent::__construct($plugin->getTemplateResource('settings.tpl'));
+        parent::__construct($plugin->getTemplateResource("settingsForm.tpl"));
     }
 
     public function fetch($request, $template = null, $display = false)
     {
+        $requireOrcid = $this->plugin->getSetting($this->contextId, "requireOrcid");
+        $requireAffiliation = $this->plugin->getSetting($this->contextId, "requireAffiliation");
+
+        $templateMgr = TemplateManager::getManager($request);
+        $templateMgr->assign(array(
+            "pluginName" => $this->plugin->getName(),
+            "requireOrcid" => $requireOrcid,
+            "requireAffiliation" => $requireAffiliation
+        ));
+
         return parent::fetch($request, $template, $display);
     }
 
     public function readInputData()
     {
+        $this->readUserVars(["requireOrcid", "requireAffiliation"]);
     }
 
     public function execute(...$functionArgs)
     {
+        $this->updatePluginSettings("requireOrcid");
+        $this->updatePluginSettings("requireAffiliation");
         parent::execute(...$functionArgs);
+    }
+
+    private function updatePluginSettings($setting)
+    {
+        $this->plugin->updateSetting(
+            $this->contextId,
+            $setting,
+            $this->getData($setting)
+        );
     }
 }

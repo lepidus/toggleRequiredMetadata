@@ -61,12 +61,20 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function affiliationFilter($output, $templateMgr)
     {
-        return $this->toggleRequiredField($output, $templateMgr, "affiliation");
+        $request = Application::get()->getRequest();
+        if ($this->getSetting($request->getContext()->getId(), "requireAffiliation")) {
+            return $this->toggleRequiredField($output, $templateMgr, "affiliation");
+        }
+        return $output;
     }
 
     public function orcidFilter($output, $templateMgr)
     {
-        return $this->toggleRequiredField($output, $templateMgr, "orcid");
+        $request = Application::get()->getRequest();
+        if ($this->getSetting($request->getContext()->getId(), "requireOrcid")) {
+            return $this->toggleRequiredField($output, $templateMgr, "orcid");
+        }
+        return $output;
     }
 
     private function setRequiredOnInputFields($output, $inputFieldMatches)
@@ -110,7 +118,14 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
                 new LinkAction(
                     'settings',
                     new AjaxModal(
-                        $router->url($request, null, null, 'manage', null, array('verb' => 'settings', 'plugin' => $this->getName(), 'category' => 'generic')),
+                        $router->url(
+                            $request,
+                            null,
+                            null,
+                            'manage',
+                            null,
+                            array('verb' => 'settings', 'plugin' => $this->getName(), 'category' => 'generic')
+                        ),
                         $this->getDisplayName()
                     ),
                     __('manager.plugins.settings'),
