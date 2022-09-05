@@ -15,4 +15,16 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar los metadatos requeridos"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Este plugin permite hacer que los campos \"afiliación y ORCID\" sea obligatorios."
+msgstr "Este módulo permite hacer que los campos \"afiliación\" y \"ORCID\" sea obligatorios."
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.description"
+msgstr "Configure qué campos deben ser obligatorios en el formulario de contribuyentes del envío."
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.requiredMetadata"
+msgstr "Seleccione los campos para que sean obligatorios:"
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.requireOrcid"
+msgstr "ORCID"
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"
+msgstr "Afiliación"
