@@ -15,7 +15,7 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Toggle Required Metadata"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "This plugin allows to make the \"affiliation\" and \"ORCID\" fields requireds."
+msgstr "This plugin allows to make the \"affiliation\" and \"ORCID\" fields required."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.description"
 msgstr "Select which fields will be required in the submissions contributor form."
