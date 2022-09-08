@@ -61,8 +61,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function affiliationFilter($output, $templateMgr)
     {
-        $request = Application::get()->getRequest();
-        if ($this->getSetting($request->getContext()->getId(), "requireAffiliation")) {
+        if ($this->shouldRequireField("requireAffiliation")) {
             return $this->toggleRequiredField($output, $templateMgr, "affiliation");
         }
         return $output;
@@ -70,8 +69,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function orcidFilter($output, $templateMgr)
     {
-        $request = Application::get()->getRequest();
-        if ($this->getSetting($request->getContext()->getId(), "requireOrcid")) {
+        if ($this->shouldRequireField("requireOrcid")) {
             return $this->toggleRequiredField($output, $templateMgr, "orcid");
         }
         return $output;
@@ -156,5 +154,20 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             default:
                 return parent::manage($verb, $args, $message, $messageParams);
         }
+    }
+
+    public function shouldRequireField($settingName)
+    {
+        $contextId = Application::get()->getRequest()->getContext()->getId();
+        if (!$this->settingExists($contextId, $settingName)) {
+            $this->updateSetting($contextId, $settingName, 'on');
+        };
+        return $this->getSetting($contextId, $settingName);
+    }
+
+    public function settingExists($contextId, $name): bool
+    {
+        $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
+        return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
     }
 }
