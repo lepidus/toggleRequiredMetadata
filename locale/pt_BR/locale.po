@@ -12,16 +12,13 @@ msgstr ""
 "Language: Português Brasileiro\n"
 
 msgid "plugins.generic.toggleRequiredMetadata.displayName"
-msgstr "Alternar Metadados Obrigatórios"
+msgstr "Alternar metadados obrigatórios"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Esse plugin permite tornar os campos \"afiliação\" e \"ORCID\" obrigatórios."
+msgstr "Esse plugin permite tornar os campos \"afiliação\" e \"ORCID\" de preenchimento obrigatório para autores de uma submissão."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.description"
-msgstr "Configure quais campos devem se tornar obrigatórios no formulário de contribuidores da submissão."
-
-msgid "plugins.generic.toggleRequiredMetadata.settings.requiredMetadata"
-msgstr "Selecione os campos a serem obrigatórios:"
+msgstr "Selecione os campos para se tornarem de preenchimento obrigatório pelos autores de uma submissão:"
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.requireOrcid"
 msgstr "ORCID"
