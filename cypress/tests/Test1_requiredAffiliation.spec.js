@@ -26,17 +26,14 @@ function goToContributorsForm() {
     cy.get("#contributors-button").click();
     cy.get("#contributors-grid > .pkp_controllers_grid > .header > .actions > li:last-of-type > a").click();
 }
-
-describe('"affiliation" and "ORCID" required', function() {
-    it('Set "affiliation" and "ORCID" fields to be required in plugin configuration.', function() {
+describe('Default behavior', function() {
+    it('Both fields already checked for required in plugin settings', function() {
         goToPluginSettings();
-        cy.get('#requireOrcid').check();
-        cy.get('#requireAffiliation').check();
         cy.get('#requireOrcid').should('be.checked');
         cy.get('#requireAffiliation').should('be.checked');
-        cy.get('form[id="toggleRequiredMetadataSettingsForm"] button[name="submitFormButton"]').click();
+        cy.get('form[id="toggleRequiredMetadataSettingsForm"] button[name="submitFormButton"]').click();    
     });
-    it('Check if "affiliation" and "ORCID" fields are required in contributor form.', function() {
+    it('Both fields required in submission contributor form', function() {
         goToContributorsForm();
         cy.get("input[id^=affiliation-]").should('have.attr', 'required');
         cy.get("input[id^=orcid-]").should('have.attr', 'required');
@@ -57,4 +54,20 @@ describe('No fields required', function() {
         cy.get("input[id^=affiliation-]").should('not.have.attr', 'required');
         cy.get("input[id^=orcid-]").should('not.have.attr', 'required');
     })
+});
+
+describe('"affiliation" and "ORCID" required', function() {
+    it('Set "affiliation" and "ORCID" fields to be required in plugin configuration.', function() {
+        goToPluginSettings();
+        cy.get('#requireOrcid').check();
+        cy.get('#requireAffiliation').check();
+        cy.get('#requireOrcid').should('be.checked');
+        cy.get('#requireAffiliation').should('be.checked');
+        cy.get('form[id="toggleRequiredMetadataSettingsForm"] button[name="submitFormButton"]').click();
+    });
+    it('Check if "affiliation" and "ORCID" fields are required in contributor form.', function() {
+        goToContributorsForm();
+        cy.get("input[id^=affiliation-]").should('have.attr', 'required');
+        cy.get("input[id^=orcid-]").should('have.attr', 'required');
+    });
 })
