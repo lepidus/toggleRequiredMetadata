@@ -13,7 +13,7 @@
 
         {fbvFormArea id="toggleRequiredMetadataSettingsFormArea"}
 
-        {fbvFormSection list="true" title="plugins.generic.toggleRequiredMetadata.settings.requiredMetadata"}
+        {fbvFormSection list="true"}
 
         {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid"}
         {fbvElement type="checkbox" name="requireAffiliation" id="requireAffiliation" checked=$requireAffiliation label="plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"}
