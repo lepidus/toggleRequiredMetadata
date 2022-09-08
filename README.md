@@ -16,7 +16,9 @@ The latest release of this plugin is compatible with the following PKP applicati
 
 Install the **Toggle Required Metadata** plugin via the **Plugin Gallery** in **Dashboard > Website > Plugins**
 
-## Setting the fields to be required
+## Settings
+
+By default, both fields are made required. But it is possible to set it different:
 
 1. After the plugin is installed, go to the plugin settings:
 ![plugin-settings-section](/assets/plugin-settings-section.png)
