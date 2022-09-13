@@ -69,7 +69,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function orcidFilter($output, $templateMgr)
     {
-        if ($this->shouldRequireField("requireOrcid")) {
+        if ($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
             return $this->toggleRequiredField($output, $templateMgr, "orcid");
         }
         return $output;
@@ -169,5 +169,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
         return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
+    }
+
+    public function isOrcidProfilePluginEnabled()
+    {
+        PluginRegistry::loadCategory('generic');
+        $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
+        return $orcidProfilePlugin->getEnabled();
     }
 }

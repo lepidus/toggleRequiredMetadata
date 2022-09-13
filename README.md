@@ -1,8 +1,10 @@
 # Toggle Required Metadata Plugin 
 
-This plugin makes the **Affiliation** and **ORCID** fields required.
+This plugin makes it possible to make the **Affiliation** and **ORCID** fields required for the submissions authors to fill in.
 
 These fields belong to the Contributor of the Submission.
+
+When the [ORCID Profile Plugin](https://github.com/pkp/orcidProfile) is enabled, the ORCID field can't be made required.
 
 ## Compatibility
 

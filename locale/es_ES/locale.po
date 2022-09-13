@@ -25,3 +25,6 @@ msgstr "ORCID"
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"
 msgstr "Afiliación"
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"
+msgstr "Funcionalidad no disponible porque que el módulo de perfil ORCID está activo."
