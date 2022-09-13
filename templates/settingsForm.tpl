@@ -15,7 +15,11 @@
 
         {fbvFormSection list="true"}
 
-        {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid"}
+        {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid" disabled=$orcidProfilePluginEnabled}
+        {if $orcidProfilePluginEnabled}
+            <div class="sub_label">{translate key="plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"}</div>
+        {/if}
+        <br>
         {fbvElement type="checkbox" name="requireAffiliation" id="requireAffiliation" checked=$requireAffiliation label="plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"}
         {/fbvFormSection}
 
