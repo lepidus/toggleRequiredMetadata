@@ -21,6 +21,9 @@
         {/if}
         <br>
         {fbvElement type="checkbox" name="requireAffiliation" id="requireAffiliation" checked=$requireAffiliation label="plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"}
+
+        <br>
+        {fbvElement type="checkbox" name="requireBiography" id="requireBiography" checked=$requireBiography label="plugins.generic.toggleRequiredMetadata.settings.requireBiography"}
         {/fbvFormSection}
 
         {fbvFormButtons id="toggleRequiredMetadataSettingsFormSubmit" submitText="common.save"}
