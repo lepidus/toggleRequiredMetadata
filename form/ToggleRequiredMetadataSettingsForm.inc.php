@@ -31,13 +31,15 @@ class ToggleRequiredMetadataSettingsForm extends Form
             ? $this->plugin->shouldRequireField("requireOrcid")
             : null;
         $requireAffiliation = $this->plugin->shouldRequireField("requireAffiliation");
+        $requireBiography = $this->plugin->shouldRequireField("requireBiography");
 
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->assign(array(
             "orcidProfilePluginEnabled" => $orcidProfilePluginEnabled,
             "pluginName" => $this->plugin->getName(),
             "requireOrcid" => $requireOrcid,
-            "requireAffiliation" => $requireAffiliation
+            "requireAffiliation" => $requireAffiliation,
+            "requireBiography" => $requireBiography
         ));
 
         return parent::fetch($request, $template, $display);
@@ -45,13 +47,14 @@ class ToggleRequiredMetadataSettingsForm extends Form
 
     public function readInputData()
     {
-        $this->readUserVars(["requireOrcid", "requireAffiliation"]);
+        $this->readUserVars(["requireOrcid", "requireAffiliation", "requireBiography"]);
     }
 
     public function execute(...$functionArgs)
     {
         $this->updatePluginSettings("requireOrcid");
         $this->updatePluginSettings("requireAffiliation");
+        $this->updatePluginSettings("requireBiography");
         parent::execute(...$functionArgs);
     }
 

@@ -42,17 +42,18 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         $request = PKPApplication::get()->getRequest();
         $templateMgr = TemplateManager::getManager($request);
+        $templateMgr->registerFilter("output", array($this, 'biographyFilter'));
         $templateMgr->registerFilter("output", array($this, 'affiliationFilter'));
         $templateMgr->registerFilter("output", array($this, 'orcidFilter'));
 
         return false;
     }
 
-    public function toggleRequiredField($output, $templateMgr, $fieldName)
+    public function toggleRequiredField($output, $templateMgr, $fieldName, $tag)
     {
-        $selectFieldInput = '/<input[^>]+id="' . $fieldName . '[^>]*>/';
+        $selectFieldInput = '/<' . $tag . '[^>]+id="' . $fieldName . '[^>]*>/';
         if (preg_match_all($selectFieldInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
-            $output = $this->setRequiredOnInputFields($output, $matches);
+            $output = $this->setRequiredOnInputFields($output, $matches, $tag);
             $output = $this->addRequiredFieldSpanToLabel($output);
             $templateMgr->unregisterFilter('output', array($this, $fieldName . "Filter"));
         }
@@ -62,7 +63,15 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     public function affiliationFilter($output, $templateMgr)
     {
         if ($this->shouldRequireField("requireAffiliation")) {
-            return $this->toggleRequiredField($output, $templateMgr, "affiliation");
+            return $this->toggleRequiredField($output, $templateMgr, "affiliation", "input");
+        }
+        return $output;
+    }
+
+    public function biographyFilter($output, $templateMgr)
+    {
+        if ($this->shouldRequireField("requireBiography")) {
+            return $this->toggleRequiredField($output, $templateMgr, "biography", "textarea");
         }
         return $output;
     }
@@ -70,12 +79,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     public function orcidFilter($output, $templateMgr)
     {
         if ($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
-            return $this->toggleRequiredField($output, $templateMgr, "orcid");
+            return $this->toggleRequiredField($output, $templateMgr, "orcid", "input");
         }
         return $output;
     }
 
-    private function setRequiredOnInputFields($output, $inputFieldMatches)
+    private function setRequiredOnInputFields($output, $inputFieldMatches, $tag)
     {
         $timesEditedOutput = 0;
         foreach ($inputFieldMatches[0] as $match) {
@@ -83,7 +92,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $posMatch = $match[1];
 
             $requiredParam = " required=\"true\" ";
-            $inputTagStart = "<input ";
+            $inputTagStart = "<" . $tag . " ";
             $editionsOffset = $timesEditedOutput * strlen($requiredParam);
 
             $output = substr_replace($output, $requiredParam, $posMatch + strlen($inputTagStart) + $editionsOffset, 0);

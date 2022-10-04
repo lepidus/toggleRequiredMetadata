@@ -26,5 +26,8 @@ msgstr "ORCID"
 msgid "plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"
 msgstr "Affiliation"
 
+msgid "plugins.generic.toggleRequiredMetadata.settings.requireBiography"
+msgstr "Biography Statement"
+
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"
 msgstr "Feature unavailable because the ORCID Profile plugin is enabled."
