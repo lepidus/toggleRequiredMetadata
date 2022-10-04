@@ -1,6 +1,6 @@
 # Toggle Required Metadata Plugin 
 
-This plugin makes it possible to make the **Affiliation** and **ORCID** fields required for the submissions authors to fill in.
+This plugin makes it possible to make the **Affiliation**, **ORCID**  and  **Biography Statement** fields required for the submissions authors to fill in.
 
 These fields belong to the Contributor of the Submission.
 
