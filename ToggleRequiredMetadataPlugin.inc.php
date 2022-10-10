@@ -24,6 +24,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
         if ($success && $this->getEnabled($mainContextId)) {
             HookRegistry::register('authorform::display', array($this, 'editAuthorFormTemplate'));
+            HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
         }
         return $success;
     }
@@ -37,6 +38,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
+
+    public function validateBiography ($hookName, $params)
+    {
+        $authorForm =& $params[0];
+        $authorForm->addCheck(new FormValidatorLocale($authorForm, 'biography', 'required', 'plugins.generic.toggleRequiredMetadata.error'));
+    }   
 
     public function editAuthorFormTemplate($hookName, $params)
     {

@@ -31,3 +31,6 @@ msgstr "Resumen Biográfico"
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"
 msgstr "Funcionalidad no disponible porque que el módulo de perfil ORCID está activo."
+
+msgid "plugins.generic.toggleRequiredMetadata.error"
+msgstr "Por favor ingrese la Biografía de su autor."

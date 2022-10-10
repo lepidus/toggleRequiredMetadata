@@ -31,3 +31,6 @@ msgstr "Biography Statement"
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"
 msgstr "Feature unavailable because the ORCID Profile plugin is enabled."
+
+msgid "plugins.generic.toggleRequiredMetadata.error"
+msgstr "Please enter your author's Biography."
