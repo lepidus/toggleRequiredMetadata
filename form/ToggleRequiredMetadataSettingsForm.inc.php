@@ -22,6 +22,7 @@ class ToggleRequiredMetadataSettingsForm extends Form
         $this->contextId = $contextId;
         $this->plugin = $plugin;
         parent::__construct($plugin->getTemplateResource("settingsForm.tpl"));
+        $this->addCheck(new FormValidatorCSRF($this));
     }
 
     public function fetch($request, $template = null, $display = false)
