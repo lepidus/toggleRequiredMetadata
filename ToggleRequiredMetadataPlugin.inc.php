@@ -24,7 +24,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
         if ($success && $this->getEnabled($mainContextId)) {
             HookRegistry::register('authorform::display', array($this, 'editAuthorFormTemplate'));
-            HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
+            if ($this->shouldRequireField("requireBiography")) {
+                HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
+            }
         }
         return $success;
     }
