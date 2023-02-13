@@ -193,6 +193,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
+        
+        if(is_null($orcidProfilePlugin)) {
+            return false;
+        }
+        
         return $orcidProfilePlugin->getEnabled();
     }
 }
