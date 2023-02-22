@@ -9,8 +9,12 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 	return false;
 });
 
-Cypress.Commands.add('startToggleRequiredMetadataPlugin', () => {
+Cypress.Commands.add('loginAdmin', () => {
 	cy.login(adminUser, adminPassword, context);
+});
+
+Cypress.Commands.add('startToggleRequiredMetadataPlugin', () => {
+	cy.loginAdmin();
 	cy.get('.app__nav a')
 		.contains('Website')
 		.click();
@@ -35,7 +39,7 @@ Cypress.Commands.add('startToggleRequiredMetadataPlugin', () => {
 });
 
 Cypress.Commands.add('goToPluginSettings', () => {
-	cy.login(adminUser, adminPassword, context);
+	cy.loginAdmin();
 	cy.get('.app__nav a')
 		.contains('Website')
 		.click();
@@ -50,7 +54,7 @@ Cypress.Commands.add('goToPluginSettings', () => {
 });
 
 Cypress.Commands.add('goToContributorsForm', () => {
-	cy.login(adminUser, adminPassword, context);
+	cy.loginAdmin();
 	cy.get('.app__nav a')
 		.contains('Submissions')
 		.click();
