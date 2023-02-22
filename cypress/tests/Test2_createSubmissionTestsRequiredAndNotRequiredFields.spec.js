@@ -5,6 +5,7 @@ const submissionData = {
   title: 'Traditions and Trends in the Study of the Commons',
   abstract:
     'The study of the commons has expe- rienced substantial growth and development over the past decades.1 Distinguished scholars in many disciplines had long studied how specific resources were managed or mismanaged at particular times and places (Coward 1980; De los Reyes 1980; MacKenzie 1979; Wittfogel 1957), but researchers who studied specific commons before the mid-1980s were, however, less likely than their contemporary colleagues to be well informed about the work of scholars in other disciplines, about other sec- tors in their own region of interest, or in other regions of the world.',
+  section: 'Articles',
   keywords: [
     'Common pool resource',
     'common property',
@@ -29,7 +30,7 @@ describe('Create submission without fields required', function() {
   });
 
   it('Create submission when orcid, affiliation and biography not required', function() {
-    cy.loginAdminUser();
+    cy.loginAdmin();
     cy.createSubmission(submissionData);
   });
 });
