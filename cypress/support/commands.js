@@ -50,7 +50,6 @@ Cypress.Commands.add('goToPluginSettings', () => {
 	cy.get(
 		'tr[id="component-grid-settings-plugins-settingsplugingrid-category-generic-row-togglerequiredmetadataplugin-control-row"] > td > :nth-child(1)'
 	).click();
-	cy.wait(2000);
 });
 
 Cypress.Commands.add('goToContributorsForm', () => {
