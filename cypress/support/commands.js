@@ -1,27 +1,16 @@
 import '../../../../../lib/pkp/cypress/support/commands';
 
-const serverName = Cypress.env('ServerName');
+const context = Cypress.env('context') || 'publicknowledge';
+const adminUser = Cypress.env('ojsAdminUsername') || 'admin';
+const adminPassword = Cypress.env('ojsAdminPassword') || 'admin';
 
 Cypress.on('uncaught:exception', (err, runnable) => {
 	// returning false here prevents Cypress from failing the test
 	return false;
 });
 
-Cypress.Commands.add('loginAdminUser', () => {
-	cy.visit(Cypress.env('baseUrl') + 'index.php/' + serverName + '/submissions');
-	cy.get('input[id=username]').click();
-	cy.get('input[id=username]').type(Cypress.env('OJSAdminUsername'), {
-		delay: 0
-	});
-	cy.get('input[id=password]').click();
-	cy.get('input[id=password]').type(Cypress.env('OJSAdminPassword'), {
-		delay: 0
-	});
-	cy.get('button[class=submit]').click();
-});
-
 Cypress.Commands.add('startToggleRequiredMetadataPlugin', () => {
-	cy.loginAdminUser();
+	cy.login(adminUser, adminPassword, context);
 	cy.get('.app__nav a')
 		.contains('Website')
 		.click();
@@ -46,7 +35,7 @@ Cypress.Commands.add('startToggleRequiredMetadataPlugin', () => {
 });
 
 Cypress.Commands.add('goToPluginSettings', () => {
-	cy.loginAdminUser();
+	cy.login(adminUser, adminPassword, context);
 	cy.get('.app__nav a')
 		.contains('Website')
 		.click();
@@ -61,7 +50,7 @@ Cypress.Commands.add('goToPluginSettings', () => {
 });
 
 Cypress.Commands.add('goToContributorsForm', () => {
-	cy.loginAdminUser();
+	cy.login(adminUser, adminPassword, context);
 	cy.get('.app__nav a')
 		.contains('Submissions')
 		.click();
