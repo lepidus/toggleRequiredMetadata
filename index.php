@@ -12,5 +12,4 @@
  * @brief Wrapper for the Toggle Required Metadata Plugin.
  *
  */
-require_once('ToggleRequiredMetadataPlugin.inc.php');
-return new ToggleRequiredMetadataPlugin();
+return new \APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin();
