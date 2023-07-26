@@ -24,18 +24,23 @@ use PKP\plugins\Hook;
 use PKP\db\DAORegistry;
 use PKP\config\Config;
 use PKP\form\validation\FormValidatorLocale;
+use PKP\components\forms\FormComponent;
+
 use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettingsForm;
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
     public function register($category, $path, $mainContextId = null)
     {
-        $success = parent::register($category, $path, $mainContextId);
+        $success = parent::register($category, $path);
+
         if (!Config::getVar('general', 'installed') || defined('RUNNING_UPGRADE')) {
             return true;
         }
-        if ($success && $this->getEnabled($mainContextId)) {
+
+        if ($success && $this->getEnabled()) {
             Hook::add('authorform::display', array($this, 'editAuthorFormTemplate'));
+            Hook::register('Form::config::before', array($this, 'editAuthorFormDataFields'));
             if ($this->shouldRequireField("requireBiography")) {
                 Hook::add('authorform::Constructor', array($this, 'validateBiography'));
             }
@@ -67,6 +72,39 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->registerFilter("output", array($this, 'biographyFilter'));
         $templateMgr->registerFilter("output", array($this, 'affiliationFilter'));
         $templateMgr->registerFilter("output", array($this, 'orcidFilter'));
+
+        return false;
+    }
+
+    public function editAuthorFormDataFields(string $hookName, FormComponent $form)
+    {
+        if (!defined('FORM_CONTRIBUTOR') || $form->id !== FORM_CONTRIBUTOR) {
+            return;
+        }
+
+        if($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
+            $orcidField = $form->getField('orcid');
+            $orcidField->isRequired = true;
+
+            $form->removeField('orcid');
+            $form->addField($orcidField, [FIELD_POSITION_AFTER, 'url']);
+        }
+
+        if($this->shouldRequireField("requireBiography")) {
+            $biographyField = $form->getField('biography');
+            $biographyField->isRequired = true;
+
+            $form->removeField('biography');
+            $form->addField($biographyField, [FIELD_POSITION_AFTER, 'orcid']);
+        }
+
+        if($this->shouldRequireField("requireAffiliation")) {
+            $affiliationField = $form->getField('affiliation');
+            $affiliationField->isRequired = true;
+
+            $form->removeField('affiliation');
+            $form->addField($affiliationField, [FIELD_POSITION_AFTER, 'biography']);
+        }
 
         return false;
     }
