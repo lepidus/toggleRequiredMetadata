@@ -1,4 +1,4 @@
-# Toggle Required Metadata Plugin 
+# Toggle Required Metadata Plugin
 
 This plugin makes it possible to make the **Affiliation**, **ORCID**  and  **Biography Statement** fields required for the submissions authors to fill in.
 
@@ -10,9 +10,9 @@ When the [ORCID Profile Plugin](https://github.com/pkp/orcidProfile) is enabled,
 
 The latest release of this plugin is compatible with the following PKP applications:
 
-* OJS 3.3.0
-* OPS 3.3.0
-* OMP 3.3.0
+* OJS 3.4.0
+* OPS 3.4.0
+* OMP 3.4.0
 
 ## Installation
 
