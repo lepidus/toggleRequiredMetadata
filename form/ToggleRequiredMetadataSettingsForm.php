@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file plugins/generic/toggleRequiredMetadata/ToggleRequiredMetadataSettingsForm.inc.php
+ * @file plugins/generic/toggleRequiredMetadata/ToggleRequiredMetadataSettingsForm.php
  *
  * Copyright (c) 2022 Lepidus Tecnologia
  * Distributed under the GNU GPL v3. For full terms see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt
@@ -10,18 +10,23 @@
  * @ingroup plugins_generic_toggleRequiredMetadata
  */
 
-import('lib.pkp.classes.form.Form');
+namespace APP\plugins\generic\toggleRequiredMetadata\form;
+
+use APP\template\TemplateManager;
+use PKP\form\Form;
+use PKP\form\validation\FormValidatorCSRF;
+use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
 class ToggleRequiredMetadataSettingsForm extends Form
 {
+    public ToggleRequiredMetadataPlugin $plugin;
     public $contextId;
-    public $plugin;
 
-    public function __construct($plugin, $contextId)
+    public function __construct(ToggleRequiredMetadataPlugin $plugin, $contextId)
     {
+        parent::__construct($plugin->getTemplateResource("settingsForm.tpl"));
         $this->contextId = $contextId;
         $this->plugin = $plugin;
-        parent::__construct($plugin->getTemplateResource("settingsForm.tpl"));
         $this->addCheck(new FormValidatorCSRF($this));
     }
 

@@ -1,9 +1,8 @@
 variables:
-    PLUGIN_NAME : 'toggleRequiredMetadata'
-    
+  PLUGIN_NAME: 'toggleRequiredMetadata'
+
 include:
   - project: 'documentacao-e-tarefas/modelosparaintegracaocontinua'
     ref: main
     file:
       - 'templates/groups/pkp_plugin.yml'
-      - 'templates/groups/ojs_plugins_cypress_tests_model.yml'

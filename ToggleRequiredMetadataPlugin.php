@@ -11,23 +11,41 @@
  *
  */
 
-import('lib.pkp.classes.plugins.GenericPlugin');
+namespace APP\plugins\generic\toggleRequiredMetadata;
+
+use APP\core\Application;
+use PKP\plugins\GenericPlugin;
+use PKP\core\JSONMessage;
+use APP\template\TemplateManager;
+use PKP\linkAction\LinkAction;
+use PKP\linkAction\request\AjaxModal;
+use PKP\plugins\PluginRegistry;
+use PKP\plugins\Hook;
+use PKP\db\DAORegistry;
+use PKP\config\Config;
+use PKP\form\validation\FormValidatorLocale;
+use PKP\components\forms\FormComponent;
+
+use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettingsForm;
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
     public function register($category, $path, $mainContextId = null)
     {
-        $success = parent::register($category, $path, $mainContextId);
+        $success = parent::register($category, $path);
 
         if (!Config::getVar('general', 'installed') || defined('RUNNING_UPGRADE')) {
             return true;
         }
-        if ($success && $this->getEnabled($mainContextId)) {
-            HookRegistry::register('authorform::display', array($this, 'editAuthorFormTemplate'));
+
+        if ($success && $this->getEnabled()) {
+            Hook::add('authorform::display', array($this, 'editAuthorFormTemplate'));
+            Hook::register('Form::config::before', array($this, 'editAuthorFormDataFields'));
             if ($this->shouldRequireField("requireBiography")) {
-                HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
+                Hook::add('authorform::Constructor', array($this, 'validateBiography'));
             }
         }
+
         return $success;
     }
 
@@ -41,19 +59,52 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
 
-    public function validateBiography ($hookName, $params)
+    public function validateBiography($hookName, $params)
     {
         $authorForm =& $params[0];
         $authorForm->addCheck(new FormValidatorLocale($authorForm, 'biography', 'required', 'plugins.generic.toggleRequiredMetadata.error'));
-    }   
+    }
 
     public function editAuthorFormTemplate($hookName, $params)
     {
-        $request = PKPApplication::get()->getRequest();
+        $request = Application::get()->getRequest();
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->registerFilter("output", array($this, 'biographyFilter'));
         $templateMgr->registerFilter("output", array($this, 'affiliationFilter'));
         $templateMgr->registerFilter("output", array($this, 'orcidFilter'));
+
+        return false;
+    }
+
+    public function editAuthorFormDataFields(string $hookName, FormComponent $form)
+    {
+        if (!defined('FORM_CONTRIBUTOR') || $form->id !== FORM_CONTRIBUTOR) {
+            return;
+        }
+
+        if($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
+            $orcidField = $form->getField('orcid');
+            $orcidField->isRequired = true;
+
+            $form->removeField('orcid');
+            $form->addField($orcidField, [FIELD_POSITION_AFTER, 'url']);
+        }
+
+        if($this->shouldRequireField("requireBiography")) {
+            $biographyField = $form->getField('biography');
+            $biographyField->isRequired = true;
+
+            $form->removeField('biography');
+            $form->addField($biographyField, [FIELD_POSITION_AFTER, 'orcid']);
+        }
+
+        if($this->shouldRequireField("requireAffiliation")) {
+            $affiliationField = $form->getField('affiliation');
+            $affiliationField->isRequired = true;
+
+            $form->removeField('affiliation');
+            $form->addField($affiliationField, [FIELD_POSITION_AFTER, 'biography']);
+        }
 
         return false;
     }
@@ -100,7 +151,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $matchedText = $match[0];
             $posMatch = $match[1];
 
-            $requiredParam = " required=\"true\" ";
+            $requiredParam = " required=\"required\" ";
             $inputTagStart = "<" . $tag . " ";
             $editionsOffset = $timesEditedOutput * strlen($requiredParam);
 
@@ -157,7 +208,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         switch ($request->getUserVar('verb')) {
             case 'settings':
                 $context = $request->getContext();
-                $this->import('form.ToggleRequiredMetadataSettingsForm');
                 $form = new ToggleRequiredMetadataSettingsForm($this, $context->getId());
 
                 if ($request->getUserVar('save')) {
@@ -166,12 +216,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
                         $form->execute();
                         return new JSONMessage(true);
                     }
+                } else {
+                    $form->initData();
                 }
-
                 return new JSONMessage(true, $form->fetch($request));
-            default:
-                return parent::manage($verb, $args, $message, $messageParams);
         }
+        return parent::manage($args, $request);
     }
 
     public function shouldRequireField($settingName)
@@ -193,11 +243,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
-        
+
         if(is_null($orcidProfilePlugin)) {
             return false;
         }
-        
+
         return $orcidProfilePlugin->getEnabled();
     }
 }
