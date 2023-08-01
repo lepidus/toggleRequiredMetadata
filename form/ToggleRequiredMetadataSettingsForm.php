@@ -22,7 +22,7 @@ class ToggleRequiredMetadataSettingsForm extends Form
     public ToggleRequiredMetadataPlugin $plugin;
     public $contextId;
 
-    public function __construct(ToggleRequiredMetadataPlugin $plugin, $contextId)
+    public function __construct(ToggleRequiredMetadataPlugin $plugin, int $contextId)
     {
         parent::__construct($plugin->getTemplateResource("settingsForm.tpl"));
         $this->contextId = $contextId;
