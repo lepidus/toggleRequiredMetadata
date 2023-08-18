@@ -61,7 +61,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function validateBiography($hookName, $params)
     {
-        $authorForm =& $params[0];
+        $authorForm = & $params[0];
         $authorForm->addCheck(new FormValidatorLocale($authorForm, 'biography', 'required', 'plugins.generic.toggleRequiredMetadata.error'));
     }
 
