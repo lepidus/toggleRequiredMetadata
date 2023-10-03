@@ -41,11 +41,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
 
-    public function validateBiography ($hookName, $params)
+    public function validateBiography($hookName, $params)
     {
-        $authorForm =& $params[0];
+        $authorForm = & $params[0];
         $authorForm->addCheck(new FormValidatorLocale($authorForm, 'biography', 'required', 'plugins.generic.toggleRequiredMetadata.error'));
-    }   
+    }
 
     public function editAuthorFormTemplate($hookName, $params)
     {
@@ -176,7 +176,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function shouldRequireField($settingName)
     {
-        $contextId = Application::get()->getRequest()->getContext()->getId();
+        $context = Application::get()->getRequest()->getContext();
+        $contextId = $context ? $context->getId() : CONTEXT_SITE;
+
         if (!$this->settingExists($contextId, $settingName)) {
             $this->updateSetting($contextId, $settingName, 'on');
         };
@@ -193,11 +195,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
-        
+
         if(is_null($orcidProfilePlugin)) {
             return false;
         }
-        
+
         return $orcidProfilePlugin->getEnabled();
     }
 }
