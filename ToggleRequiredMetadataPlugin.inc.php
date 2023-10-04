@@ -31,6 +31,16 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return $success;
     }
 
+    public function getCanEnable()
+    {
+        return ((bool) Application::get()->getRequest()->getContext());
+    }
+
+    public function getCanDisable()
+    {
+        return ((bool) Application::get()->getRequest()->getContext());
+    }
+
     public function getDisplayName()
     {
         return __('plugins.generic.toggleRequiredMetadata.displayName');
@@ -177,12 +187,13 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     public function shouldRequireField($settingName)
     {
         $context = Application::get()->getRequest()->getContext();
-        $contextId = $context ? $context->getId() : CONTEXT_SITE;
-
-        if (!$this->settingExists($contextId, $settingName)) {
-            $this->updateSetting($contextId, $settingName, 'on');
-        };
-        return $this->getSetting($contextId, $settingName);
+        if (!is_null($context)) {
+            $contextId = $context->getId();
+            if (!$this->settingExists($contextId, $settingName)) {
+                $this->updateSetting($contextId, $settingName, 'on');
+            }
+            return $this->getSetting($contextId, $settingName);
+        }
     }
 
     public function settingExists($contextId, $name): bool
