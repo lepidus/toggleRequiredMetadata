@@ -224,13 +224,27 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return parent::manage($args, $request);
     }
 
+    public function getCanEnable()
+    {
+        return ((bool) Application::get()->getRequest()->getContext());
+    }
+
+    public function getCanDisable()
+    {
+        return ((bool) Application::get()->getRequest()->getContext());
+    }
+
+
     public function shouldRequireField($settingName)
     {
-        $contextId = Application::get()->getRequest()->getContext()->getId();
-        if (!$this->settingExists($contextId, $settingName)) {
-            $this->updateSetting($contextId, $settingName, 'on');
-        };
-        return $this->getSetting($contextId, $settingName);
+        $context = Application::get()->getRequest()->getContext();
+        if (!is_null($context)) {
+            $contextId = $context->getId();
+            if (!$this->settingExists($contextId, $settingName)) {
+                $this->updateSetting($contextId, $settingName, 'on');
+            }
+            return $this->getSetting($contextId, $settingName);
+        }
     }
 
     public function settingExists($contextId, $name): bool
