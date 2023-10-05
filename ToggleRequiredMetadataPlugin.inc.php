@@ -31,6 +31,16 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return $success;
     }
 
+    public function getCanEnable()
+    {
+        return ((bool) Application::get()->getRequest()->getContext());
+    }
+
+    public function getCanDisable()
+    {
+        return ((bool) Application::get()->getRequest()->getContext());
+    }
+
     public function getDisplayName()
     {
         return __('plugins.generic.toggleRequiredMetadata.displayName');
@@ -41,11 +51,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
 
-    public function validateBiography ($hookName, $params)
+    public function validateBiography($hookName, $params)
     {
-        $authorForm =& $params[0];
+        $authorForm = & $params[0];
         $authorForm->addCheck(new FormValidatorLocale($authorForm, 'biography', 'required', 'plugins.generic.toggleRequiredMetadata.error'));
-    }   
+    }
 
     public function editAuthorFormTemplate($hookName, $params)
     {
@@ -176,11 +186,14 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function shouldRequireField($settingName)
     {
-        $contextId = Application::get()->getRequest()->getContext()->getId();
-        if (!$this->settingExists($contextId, $settingName)) {
-            $this->updateSetting($contextId, $settingName, 'on');
-        };
-        return $this->getSetting($contextId, $settingName);
+        $context = Application::get()->getRequest()->getContext();
+        if (!is_null($context)) {
+            $contextId = $context->getId();
+            if (!$this->settingExists($contextId, $settingName)) {
+                $this->updateSetting($contextId, $settingName, 'on');
+            }
+            return $this->getSetting($contextId, $settingName);
+        }
     }
 
     public function settingExists($contextId, $name): bool
@@ -193,11 +206,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
-        
+
         if(is_null($orcidProfilePlugin)) {
             return false;
         }
-        
+
         return $orcidProfilePlugin->getEnabled();
     }
 }
