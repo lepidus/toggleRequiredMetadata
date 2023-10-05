@@ -11,6 +11,6 @@
 <version>
 	<application>toggleRequiredMetadata</application>
 	<type>plugins.generic</type>
-	<release>2.0.0.0</release>
-	<date>2023-07-28</date>
+	<release>2.0.1.0</release>
+	<date>2023-10-05</date>
 </version>
