@@ -4,13 +4,13 @@ This plugin makes it possible to make the **Affiliation**, **ORCID**  and  **Bio
 
 These fields belong to the Contributor of the Submission.
 
-When the [ORCID Profile Plugin](https://github.com/pkp/orcidProfile) is enabled, the ORCID field can't be made required.
+When the [ORCID Profile Plugin](https://github.com/pkp/orcidProfile) is enabled (recommended), the ORCID field can't be made required.
 
 ## Compatibility
 
-The latest release of this plugin is compatible with the following PKP applications:
+This plugin is compatible with the following PKP applications:
 
-* OJS 3.4.0
+* OJS 3.3.0 and 3.4.0
 * OPS 3.4.0
 * OMP 3.4.0
 
@@ -34,4 +34,4 @@ By default, both fields are made required. But it is possible to set it differen
 # License
 __This plugin is licensed under the GNU General Public License v3.0__
 
-__Copyright (c) 2022 Lepidus Tecnologia__
+__Copyright (c) 2022-2024 Lepidus Tecnologia__
