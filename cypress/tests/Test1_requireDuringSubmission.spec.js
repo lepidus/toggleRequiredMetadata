@@ -119,7 +119,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
         cy.get('#submitStep3Form button.submitFormButton').click();
         cy.contains('The ORCID field is required for all contributors');
         cy.contains('The affiliation field is required for all contributors');
-        cy.contains('The biography field is required for all contributors');
+        cy.contains('The biography statement field is required for all contributors');
 
         fillContributorRequiredFields(submissionData.contributors[0]);
         cy.get('#submitStep3Form button.submitFormButton').click();
