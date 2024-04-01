@@ -34,3 +34,13 @@ msgstr "Funcionalidade indisponível pois o plugin Perfil ORCID está ativo."
 
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Por favor, insira o Resumo da Biografia do seu autor."
+
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
+msgstr "O campo \"ORCID\" é requerido para todos os coautores. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
+msgstr "O campo \"Afiliação\" é requerido para todos os coautores. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
+msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores. "
