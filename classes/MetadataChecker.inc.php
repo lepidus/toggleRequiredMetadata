@@ -8,10 +8,15 @@ class MetadataChecker
             if (!$author->getData($metadata)) {
                 return false;
             } elseif (is_array($author->getData($metadata))) {
+                $entryFilled = false;
                 foreach ($author->getData($metadata) as $entry) {
-                    if (empty($entry)) {
-                        return false;
+                    if ($entry) {
+                        $entryFilled = true;
+                        break;
                     }
+                }
+                if (!$entryFilled) {
+                    return false;
                 }
             }
         }

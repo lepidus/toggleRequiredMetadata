@@ -46,6 +46,15 @@ function addContributorWithoutRequirements(contributorData) {
     cy.waitJQuery();
 }
 
+function deleteContributor(fullName) {
+    cy.contains('span', fullName).parent().parent().within(() => {
+        cy.get('.show_extras').click();
+    });
+    cy.get('.pkp_linkaction_deleteAuthor:visible').click();
+    cy.get('button.pkpModalConfirmButton').click();
+    cy.wait(1000);
+}
+
 function fillContributorRequiredFields(contributorData) {
     let fullName = contributorData.given + ' ' + contributorData.family;
     cy.contains('span', fullName).parent().parent().within(() => {
@@ -116,6 +125,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
         cy.contains('a', '3. Enter Metadata').click();
         cy.wait(1000);
 
+        deleteContributor('Craig Montgomerie');
         cy.get('#submitStep3Form button.submitFormButton').click();
         cy.contains('The ORCID field is required for all contributors');
         cy.contains('The affiliation field is required for all contributors');
@@ -123,9 +133,10 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
 
         fillContributorRequiredFields(submissionData.contributors[0]);
         cy.get('#submitStep3Form button.submitFormButton').click();
+        cy.wait(1000);
 
         cy.contains('Your submission has been uploaded and is ready to be sent.');
-        cy.contains('button', 'Finish Submission');
+        cy.contains('button', 'Finish Submission').click();
         cy.wait(1000);
 		cy.get('button.pkpModalConfirmButton').click();
 
