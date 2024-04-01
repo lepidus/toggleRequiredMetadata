@@ -30,6 +30,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             }
             HookRegistry::register('submissionsubmitstep3form::validate', array($this, 'addValidationToStep3'));
         }
+
         return $success;
     }
 
@@ -144,17 +145,17 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
         $metadataChecker = new MetadataChecker();
 
-        if (!$metadataChecker->checkOrcids($authors)) {
+        if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
             $form->addErrorField('requiredOrcidMetadata');
             $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid'));
         }
 
-        if (!$metadataChecker->checkAffiliations($authors)) {
+        if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
             $form->addErrorField('requiredAffiliationMetadata');
             $form->addError('requiredAffiliationMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation'));
         }
 
-        if (!$metadataChecker->checkBiographies($authors)) {
+        if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
             $form->addErrorField('requiredBiographyMetadata');
             $form->addError('requiredBiographyMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography'));
         }

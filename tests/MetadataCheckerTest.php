@@ -54,6 +54,9 @@ class MetadataCheckerTest extends TestCase
 
         $this->authors[1]->unsetData('affiliation');
         $this->assertFalse($this->checker->checkAffiliations($this->authors));
+
+        $this->authors[1]->setData('affiliation', ['en_US' => '', 'pt_BR' => '']);
+        $this->assertFalse($this->checker->checkAffiliations($this->authors));
     }
 
     public function testChecksForBiography(): void

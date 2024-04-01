@@ -7,6 +7,12 @@ class MetadataChecker
         foreach ($authors as $author) {
             if (!$author->getData($metadata)) {
                 return false;
+            } elseif (is_array($author->getData($metadata))) {
+                foreach ($author->getData($metadata) as $entry) {
+                    if (empty($entry)) {
+                        return false;
+                    }
+                }
             }
         }
 
