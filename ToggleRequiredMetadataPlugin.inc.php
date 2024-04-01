@@ -12,6 +12,7 @@
  */
 
 import('lib.pkp.classes.plugins.GenericPlugin');
+import('plugins.generic.toggleRequiredMetadata.classes.MetadataChecker');
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
@@ -27,6 +28,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             if ($this->shouldRequireField("requireBiography")) {
                 HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
             }
+            HookRegistry::register('submissionsubmitstep3form::validate', array($this, 'addValidationToStep3'));
         }
         return $success;
     }
@@ -134,6 +136,30 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $requiredFieldSpan = "<span class=\"req\">*</span> ";
         return substr_replace($output, $requiredFieldSpan, $posEndContentLabel, 0);
     }
+
+    public function addValidationToStep3($hookName, $params)
+    {
+        $form = &$params[0];
+        $publication = $form->submission->getCurrentPublication();
+        $authors = $publication->getData('authors');
+        $metadataChecker = new MetadataChecker();
+
+        if (!$metadataChecker->checkOrcids($authors)) {
+            $form->addErrorField('requiredOrcidMetadata');
+            $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid'));
+        }
+
+        if (!$metadataChecker->checkAffiliations($authors)) {
+            $form->addErrorField('requiredAffiliationMetadata');
+            $form->addError('requiredAffiliationMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation'));
+        }
+
+        if (!$metadataChecker->checkBiographies($authors)) {
+            $form->addErrorField('requiredBiographyMetadata');
+            $form->addError('requiredBiographyMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography'));
+        }
+    }
+
 
     public function getActions($request, $actionArgs)
     {

@@ -33,4 +33,14 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled
 msgstr "Funcionalidad no disponible porque que el módulo de perfil ORCID está activo."
 
 msgid "plugins.generic.toggleRequiredMetadata.error"
-msgstr "Por favor ingrese la Biografía de su autor."
+msgstr "Por favor ingrese lo Resumen biográfico de su autor."
+
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
+msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
+msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
+msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores. "
