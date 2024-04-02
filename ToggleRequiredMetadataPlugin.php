@@ -26,6 +26,7 @@ use PKP\config\Config;
 use PKP\form\validation\FormValidatorLocale;
 use PKP\components\forms\FormComponent;
 
+use APP\plugins\generic\toggleRequiredMetadata\classes\MetadataChecker;
 use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettingsForm;
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
@@ -39,10 +40,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($success && $this->getEnabled()) {
-            Hook::add('authorform::display', array($this, 'editAuthorFormTemplate'));
-            Hook::register('Form::config::before', array($this, 'editAuthorFormDataFields'));
+            Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
+            Hook::add('authorform::display', [$this, 'editAuthorFormTemplate']);
+            Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             if ($this->shouldRequireField("requireBiography")) {
-                Hook::add('authorform::Constructor', array($this, 'validateBiography'));
+                Hook::add('authorform::Constructor', [$this, 'validateBiography']);
             }
         }
 
@@ -74,6 +76,33 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->registerFilter("output", array($this, 'orcidFilter'));
 
         return false;
+    }
+
+    public function validateSubmissionFields($hookName, $params)
+    {
+        $errors = &$params[0];
+        $submission = $params[1];
+        $publication = $submission->getCurrentPublication();
+        $authors = $publication->getData('authors')->toArray();
+
+        $contributorsErrors = $errors['contributors'] ?? [];
+        $metadataChecker = new MetadataChecker();
+
+        if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
+            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
+        }
+
+        if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
+            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation');
+        }
+
+        if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
+            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography');
+        }
+
+        if (!empty($contributorsErrors)) {
+            $errors['contributors'] = $contributorsErrors;
+        }
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
