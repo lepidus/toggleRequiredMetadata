@@ -26,6 +26,7 @@ use PKP\config\Config;
 use PKP\form\validation\FormValidatorLocale;
 use PKP\components\forms\FormComponent;
 
+use APP\plugins\generic\toggleRequiredMetadata\classes\MetadataChecker;
 use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettingsForm;
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
@@ -39,11 +40,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($success && $this->getEnabled()) {
-            Hook::add('authorform::display', array($this, 'editAuthorFormTemplate'));
-            Hook::register('Form::config::before', array($this, 'editAuthorFormDataFields'));
-            if ($this->shouldRequireField("requireBiography")) {
-                Hook::add('authorform::Constructor', array($this, 'validateBiography'));
-            }
+            Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
+            Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
         }
 
         return $success;
@@ -59,21 +57,31 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
 
-    public function validateBiography($hookName, $params)
+    public function validateSubmissionFields($hookName, $params)
     {
-        $authorForm = & $params[0];
-        $authorForm->addCheck(new FormValidatorLocale($authorForm, 'biography', 'required', 'plugins.generic.toggleRequiredMetadata.error'));
-    }
+        $errors = &$params[0];
+        $submission = $params[1];
+        $publication = $submission->getCurrentPublication();
+        $authors = $publication->getData('authors')->toArray();
 
-    public function editAuthorFormTemplate($hookName, $params)
-    {
-        $request = Application::get()->getRequest();
-        $templateMgr = TemplateManager::getManager($request);
-        $templateMgr->registerFilter("output", array($this, 'biographyFilter'));
-        $templateMgr->registerFilter("output", array($this, 'affiliationFilter'));
-        $templateMgr->registerFilter("output", array($this, 'orcidFilter'));
+        $contributorsErrors = $errors['contributors'] ?? [];
+        $metadataChecker = new MetadataChecker();
 
-        return false;
+        if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
+            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
+        }
+
+        if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
+            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation');
+        }
+
+        if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
+            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography');
+        }
+
+        if (!empty($contributorsErrors)) {
+            $errors['contributors'] = $contributorsErrors;
+        }
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
@@ -107,73 +115,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         return false;
-    }
-
-    public function toggleRequiredField($output, $templateMgr, $fieldName, $tag)
-    {
-        $selectFieldInput = '/<' . $tag . '[^>]+id="' . $fieldName . '[^>]*>/';
-        if (preg_match_all($selectFieldInput, $output, $matches, PREG_OFFSET_CAPTURE)) {
-            $output = $this->setRequiredOnInputFields($output, $matches, $tag);
-            $output = $this->addRequiredFieldSpanToLabel($output);
-            $templateMgr->unregisterFilter('output', array($this, $fieldName . "Filter"));
-        }
-        return $output;
-    }
-
-    public function affiliationFilter($output, $templateMgr)
-    {
-        if ($this->shouldRequireField("requireAffiliation")) {
-            return $this->toggleRequiredField($output, $templateMgr, "affiliation", "input");
-        }
-        return $output;
-    }
-
-    public function biographyFilter($output, $templateMgr)
-    {
-        if ($this->shouldRequireField("requireBiography")) {
-            return $this->toggleRequiredField($output, $templateMgr, "biography", "textarea");
-        }
-        return $output;
-    }
-
-    public function orcidFilter($output, $templateMgr)
-    {
-        if ($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
-            return $this->toggleRequiredField($output, $templateMgr, "orcid", "input");
-        }
-        return $output;
-    }
-
-    private function setRequiredOnInputFields($output, $inputFieldMatches, $tag)
-    {
-        $timesEditedOutput = 0;
-        foreach ($inputFieldMatches[0] as $match) {
-            $matchedText = $match[0];
-            $posMatch = $match[1];
-
-            $requiredParam = " required=\"required\" ";
-            $inputTagStart = "<" . $tag . " ";
-            $editionsOffset = $timesEditedOutput * strlen($requiredParam);
-
-            $output = substr_replace($output, $requiredParam, $posMatch + strlen($inputTagStart) + $editionsOffset, 0);
-            $timesEditedOutput++;
-        }
-
-        return $output;
-    }
-
-    private function addRequiredFieldSpanToLabel($output)
-    {
-        $selectFieldLabelOpening = "/<label *class=\"sub_label\" *for=\"[^>]+>/";
-        preg_match($selectFieldLabelOpening, $output, $matches, PREG_OFFSET_CAPTURE);
-        $posStartContentLabel = $matches[0][1] + strlen($matches[0][0]);
-
-        $selectFieldLabelEnding = '/<\/label>/';
-        preg_match($selectFieldLabelEnding, $output, $matches, PREG_OFFSET_CAPTURE, $posStartContentLabel);
-        $posEndContentLabel = $matches[0][1];
-
-        $requiredFieldSpan = "<span class=\"req\">*</span> ";
-        return substr_replace($output, $requiredFieldSpan, $posEndContentLabel, 0);
     }
 
     public function getActions($request, $actionArgs)
