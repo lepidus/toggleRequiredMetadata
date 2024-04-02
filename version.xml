@@ -3,7 +3,7 @@
 <!--
   * plugins/generic/toggleRequiredMetadata/version.xml
   *
-  * Copyright (c) 2022 Lepidus Tecnologia
+  * Copyright (c) 2022 - 2024 Lepidus Tecnologia
   * Distributed under the GNU GPL v3. For full terms see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt
   *
   * Plugin version information.
@@ -11,6 +11,6 @@
 <version>
 	<application>toggleRequiredMetadata</application>
 	<type>plugins.generic</type>
-	<release>2.0.1.0</release>
-	<date>2023-10-05</date>
+	<release>2.1.0.0</release>
+	<date>2024-04-02</date>
 </version>
