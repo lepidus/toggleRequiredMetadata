@@ -42,6 +42,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if ($success && $this->getEnabled()) {
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
+            Hook::add('Author::validate', [$this, 'validateAuthorFields']);
         }
 
         return $success;
@@ -82,6 +83,37 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if (!empty($contributorsErrors)) {
             $errors['contributors'] = $contributorsErrors;
         }
+    }
+
+    public function validateAuthorFields($hookName, $params)
+    {
+        $errors = &$params[0];
+        $props = $params[2];
+
+        $email = $props['email'];
+
+        $request = Application::get()->getRequest();
+        $user = $request->getUser();
+
+        if (
+            $email === $user->getEmail()
+            and $this->shouldRequireField("requireOrcid")
+            and $this->isOrcidProfilePluginEnabled()
+            and empty($props['orcid'])
+        ) {
+            $errors['orcid'] = [__('plugins.generic.toggleRequiredMetadata.validation.error.orcid')];
+        }
+
+        if (
+            $email !== $user->getEmail()
+            and $this->shouldRequireField("requireOrcid")
+            and $this->isOrcidProfilePluginEnabled()
+            and $props['requestOrcidAuthorization'] != 'true'
+        ) {
+            $errors['requestOrcidAuthorization'] = [__('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization')];
+        }
+
+        return Hook::CONTINUE;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
