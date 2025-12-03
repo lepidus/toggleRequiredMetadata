@@ -44,3 +44,9 @@ msgstr "O campo \"Afiliação\" é requerido para todos os coautores"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores"
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.orcid"
+msgstr "O usuário submissor deve preencher o campo ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
+msgstr "Os coautores devem autorizar o uso do ORCID."

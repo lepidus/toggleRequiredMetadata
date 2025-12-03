@@ -44,3 +44,9 @@ msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores"
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.orcid"
+msgstr "El usuario que envía debe completar el campo ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
+msgstr "Los coautores deben autorizar el uso de su ORCID."
