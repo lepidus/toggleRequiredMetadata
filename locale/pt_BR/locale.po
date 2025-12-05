@@ -35,7 +35,6 @@ msgstr "Funcionalidade indisponível pois o plugin Perfil ORCID está ativo."
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Por favor, insira o Resumo da Biografia do seu autor."
 
-
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores"
 
@@ -44,3 +43,21 @@ msgstr "O campo \"Afiliação\" é requerido para todos os coautores"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submisionAuthorOrcid"
+msgstr "O campo \"ORCID\" é requerido para o autor que envia o artigo."
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsOrcidAuthorization"
+msgstr "É obrigatório enviar o email de autorização de ORCID para os co-autores."
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.orcid"
+msgstr "O usuário submissor deve preencher o campo ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
+msgstr "Os coautores devem autorizar o uso do ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
+msgstr "Há ORCIDs não validados pelos autores."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
+msgstr "ORCID pendente, os coautores precisam validar para que o artigo prossiga no fluxo editorial."

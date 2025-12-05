@@ -40,4 +40,31 @@ class MetadataChecker
     {
         return $this->checkRequiredMetadata($authors, 'biography');
     }
+
+    public function checkSubmissionAuthorOrcid(array $authors): bool
+    {
+        $request = \APP\core\Application::get()->getRequest();
+        $user = $request->getUser();
+
+        $authors = array_filter($authors, function ($author) use ($user) {
+            return $author->getEmail() === $user->getEmail();
+        });
+
+        return $this->checkRequiredMetadata($authors, 'orcid');
+    }
+
+    public function checkContributorsOrcidAuthorization(array $authors): bool
+    {
+        $request = \APP\core\Application::get()->getRequest();
+        $user = $request->getUser();
+
+        $authors = array_filter($authors, function ($author) use ($user) {
+            return $author->getEmail() !== $user->getEmail();
+        });
+
+        $hasOrcidEmailToken = $this->checkRequiredMetadata($authors, 'orcidEmailToken');
+        $hasOrcid = $this->checkRequiredMetadata($authors, 'orcid');
+
+        return $hasOrcidEmailToken && !$hasOrcid;
+    }
 }

@@ -35,7 +35,6 @@ msgstr "Feature unavailable because the ORCID Profile plugin is enabled."
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Please enter your author's Biography Statement."
 
-
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors"
 
@@ -44,3 +43,21 @@ msgstr "The affiliation field is required for all contributors"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submisionAuthorOrcid"
+msgstr "The ORCID field is required for the submitting author"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsOrcidAuthorization"
+msgstr "It is mandatory to send the ORCID authorization email to co-authors."
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.orcid"
+msgstr "The submitting user must fill in the ORCID field."
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
+msgstr "Co-authors must authorize the use of their ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
+msgstr "There are ORCIDs that have not been validated by the authors."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
+msgstr "ORCID pending, co-authors need to validate it for the article to proceed through the editorial workflow."

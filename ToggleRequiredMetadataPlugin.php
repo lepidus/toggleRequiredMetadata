@@ -42,6 +42,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if ($success && $this->getEnabled()) {
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
+            Hook::add('Author::validate', [$this, 'validateAuthorFields']);
+            Hook::add('TemplateManager::display', [$this, 'addOrcidWarning']);
         }
 
         return $success;
@@ -68,7 +70,19 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $metadataChecker = new MetadataChecker();
 
         if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
-            $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
+            if (!$this->isOrcidProfilePluginEnabled()) {
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
+            }
+        }
+
+        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
+            if (!$metadataChecker->checkSubmissionAuthorOrcid($authors)) {
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submisionAuthorOrcid');
+            }
+
+            if (!$metadataChecker->checkContributorsOrcidAuthorization($authors)) {
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsOrcidAuthorization');
+            }
         }
 
         if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
@@ -82,6 +96,37 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if (!empty($contributorsErrors)) {
             $errors['contributors'] = $contributorsErrors;
         }
+    }
+
+    public function validateAuthorFields($hookName, $params)
+    {
+        $errors = &$params[0];
+        $props = $params[2];
+
+        $email = $props['email'];
+
+        $request = Application::get()->getRequest();
+        $user = $request->getUser();
+
+        if (
+            $email === $user->getEmail()
+            and $this->shouldRequireField("requireOrcid")
+            and $this->isOrcidProfilePluginEnabled()
+            and empty($props['orcid'])
+        ) {
+            $errors['orcid'] = [__('plugins.generic.toggleRequiredMetadata.validation.error.orcid')];
+        }
+
+        if (
+            $email !== $user->getEmail()
+            and $this->shouldRequireField("requireOrcid")
+            and $this->isOrcidProfilePluginEnabled()
+            and $props['requestOrcidAuthorization'] != 'true'
+        ) {
+            $errors['requestOrcidAuthorization'] = [__('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization')];
+        }
+
+        return Hook::CONTINUE;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
@@ -115,6 +160,49 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         return false;
+    }
+
+    public function addOrcidWarning($hookName, $params)
+    {
+        $templateMgr = $params[0];
+        $template = $params[1];
+
+        if (
+            $template != 'workflow/workflow.tpl'
+            && $template != 'authorDashboard/authorDashboard.tpl'
+        ) {
+            return false;
+        }
+
+        $submission = $templateMgr->getTemplateVars('submission');
+        $publication = $submission->getCurrentPublication();
+        $authors = $publication->getData('authors')->toArray();
+
+        $metadataChecker = new MetadataChecker();
+        if (!$metadataChecker->checkContributorsOrcidAuthorization($authors)) {
+            return false;
+        }
+
+        $orcidWarningMessage = $template === 'workflow/workflow.tpl' 
+            ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
+            : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
+
+        $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
+        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    public function orcidWarningFilter($output, $templateMgr)
+    {
+        if (preg_match('/<tabs[^>]+>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
+            $match = $matches[0][0];
+            $offset = $matches[0][1];
+            $newOutput = substr($output, 0, $offset);
+            $newOutput .= $templateMgr->fetch($this->getTemplateResource('orcidWarning.tpl'));
+            $newOutput .= substr($output, $offset);
+            $output = $newOutput;
+            $templateMgr->unregisterFilter('output', [$this, 'orcidWarningFilter']);
+        }
+        return $output;
     }
 
     public function getActions($request, $actionArgs)
