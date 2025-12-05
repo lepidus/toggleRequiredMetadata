@@ -62,6 +62,9 @@ class MetadataChecker
             return $author->getEmail() !== $user->getEmail();
         });
 
-         return $this->checkRequiredMetadata($authors, 'orcidEmailToken');
+        $hasOrcidEmailToken = $this->checkRequiredMetadata($authors, 'orcidEmailToken');
+        $hasOrcid = $this->checkRequiredMetadata($authors, 'orcid');
+
+        return $hasOrcidEmailToken && !$hasOrcid;
     }
 }
