@@ -55,3 +55,9 @@ msgstr "El usuario que envía debe completar el campo ORCID."
 
 msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
 msgstr "Los coautores deben autorizar el uso de su ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
+msgstr "Hay ORCID que no han sido validados por los autores."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
+msgstr "ORCID pendiente, los coautores deben validarlo para que el artículo pueda pasar por el flujo de trabajo editorial."
