@@ -51,7 +51,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsO
 msgstr "It is mandatory to send the ORCID authorization email to co-authors."
 
 msgid "plugins.generic.toggleRequiredMetadata.validation.error.orcid"
-msgstr "The submitting user must fill in the ORCID field."
+msgstr "The submitting author must fill in the ORCID field."
 
 msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
 msgstr "Co-authors must authorize the use of their ORCID."
