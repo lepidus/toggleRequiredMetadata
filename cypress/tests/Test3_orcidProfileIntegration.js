@@ -76,6 +76,8 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.get('input[name="givenName-en"]').type('Alice', {delay: 0});
         cy.get('input[name="familyName-en"]').type('Johnson', {delay: 0});
         cy.get('input[name="email"]').type('alice.johnson@mitexample.edu', {delay: 0});
+        cy.setTinyMceContent('contributor-biography-control-en', 'Alice Johnson is a theoretical physicist at MIT specializing in quantum mechanics.');
+        cy.get('input[name="affiliation-en"]').type('Massachusetts Institute of Technology', {delay: 0});
         cy.get('select[name="country"]').select('US');
         cy.get('input[name="userGroupId"][value="14"]').click();
 
@@ -123,6 +125,8 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.get('input[name="familyName-en"]').type('Tanaka', {delay: 0});
         cy.get('input[name="email"]').type('nora.tanaka@marinescience.jp', {delay: 0});
         cy.get('select[name="country"]').select('JP');
+        cy.setTinyMceContent('contributor-biography-control-en', 'Nora Tanaka is a marine biologist from Japan focusing on climate change effects on ocean ecosystems.');
+        cy.get('input[name="affiliation-en"]').type('Oceanic Research Institute', {delay: 0});
         cy.get('input[name="userGroupId"][value="14"]').click();
         cy.get('.modal__panel:contains("Add Contributor")').find('button').contains('Save').click();
         cy.waitJQuery();
