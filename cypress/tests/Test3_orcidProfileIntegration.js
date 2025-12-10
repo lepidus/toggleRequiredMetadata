@@ -63,12 +63,12 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
             .parent().parent().within(() => {
                 cy.contains('button', 'Edit').click();
             });
+        cy.setTinyMceContent('contributor-biography-control-en', 'Craig Montgomerie is a physicist at the University of Edinburgh focusing on quantum gravity research.');
         cy.get('.modal__panel:contains("Edit")').find('button').contains('Save').click();
         cy.contains('The submitting author must fill in the ORCID field.');
 
         cy.contains('button', 'Override').click();
         cy.get('input[name="orcid"]').type('https://orcid.org/0000-0002-1825-0097', {delay: 0});
-        cy.setTinyMceContent('contributor-biography-control-en', 'Craig Montgomerie is a physicist at the University of Edinburgh focusing on quantum gravity research.');
         cy.get('.modal__panel:contains("Edit")').find('button').contains('Save').click();
         cy.waitJQuery();
 
