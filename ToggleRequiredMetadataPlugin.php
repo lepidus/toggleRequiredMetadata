@@ -76,11 +76,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
-            if (!$metadataChecker->checkSubmissionAuthorOrcid($authors)) {
+            if (!$metadataChecker->checkSubmissionAuthorOrcid($submission, $authors)) {
                 $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submisionAuthorOrcid');
             }
 
-            if (!$metadataChecker->checkContributorsOrcidAuthorization($authors)) {
+            if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
                 $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsOrcidAuthorization');
             }
         }
@@ -179,7 +179,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors')->toArray();
 
         $metadataChecker = new MetadataChecker();
-        if (!$metadataChecker->checkContributorsOrcidAuthorization($authors)) {
+        if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
             return false;
         }
 
@@ -193,7 +193,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function orcidWarningFilter($output, $templateMgr)
     {
-        if (preg_match('/<tabs[^>]+>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match('/<tabs[^>]*>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
             $match = $matches[0][0];
             $offset = $matches[0][1];
             $newOutput = substr($output, 0, $offset);
