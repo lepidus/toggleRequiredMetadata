@@ -18,4 +18,16 @@ describe('Toogle Required Metadata - Plugin enabling and setup', function() {
 
 		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
 	});
+
+	it('Disable ORCID profile plugin', function () {
+		cy.login('dbarnes', null, 'publicknowledge');
+		cy.contains('a', 'Website').click();
+
+		cy.waitJQuery();
+		cy.get('#plugins-button').click();
+
+		cy.get('input[id^=select-cell-orcidprofileplugin]').uncheck();
+		cy.get('.pkp_modal_confirmation button.pkpModalConfirmButton').click();
+		cy.get('input[id^=select-cell-orcidprofileplugin]').should('not.be.checked');
+    });
 });

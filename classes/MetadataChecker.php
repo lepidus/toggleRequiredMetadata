@@ -51,9 +51,11 @@ class MetadataChecker
     {
         $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
 
-        $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-            return $author->getEmail() === $submittingAuthor->getEmail();
-        });
+        if ($submittingAuthor) {
+            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
+                return $author->getEmail() === $submittingAuthor->getEmail();
+            });
+        }
 
         return $this->checkRequiredMetadata($authors, 'orcid');
     }
@@ -62,9 +64,11 @@ class MetadataChecker
     {
         $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
 
-        $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-            return $author->getEmail() !== $submittingAuthor->getEmail();
-        });
+        if ($submittingAuthor) {
+            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
+                return $author->getEmail() !== $submittingAuthor->getEmail();
+            });
+        }
 
         $hasOrcidEmailToken = $this->checkRequiredMetadata($authors, 'orcidEmailToken');
         $hasOrcid = $this->checkRequiredMetadata($authors, 'orcid');
@@ -87,6 +91,7 @@ class MetadataChecker
 
         return null;
     }
+
     private function getSubmittingUser(Submission $submission)
     {
         if ($submission->getData('submissionProgress')) {
