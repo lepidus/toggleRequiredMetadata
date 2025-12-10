@@ -13,6 +13,8 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
 
 		cy.goToPluginSettings();
 		cy.get('#requireOrcid').check();
+        cy.get('#requireAffiliation').uncheck();
+		cy.get('#requireBiography').uncheck();
 
 		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
 	});
