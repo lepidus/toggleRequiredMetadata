@@ -47,19 +47,6 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
-    public function checkSubmissionAuthorOrcid(Submission $submission, array $authors): bool
-    {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() === $submittingAuthor->getEmail();
-            });
-        }
-
-        return $this->checkRequiredMetadata($authors, 'orcid');
-    }
-
     public function checkContributorsOrcidAuthorization(Submission $submission, array $authors): bool
     {
         $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
