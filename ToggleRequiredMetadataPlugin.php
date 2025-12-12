@@ -78,7 +78,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
             if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
-                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsOrcidAuthorization');
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization');
+            }
+
+            if (!$metadataChecker->checkSubmittingAuthorOrcidAuthorization($submission, $authors)) {
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization');
             }
         }
 

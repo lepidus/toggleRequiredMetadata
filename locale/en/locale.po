@@ -44,6 +44,9 @@ msgstr "The affiliation field is required for all contributors"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors"
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
+msgstr "The submitting author needs to authorize the ORCID."
+
 msgid "plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization"
 msgstr "It is mandatory to send the ORCID authorization email to contributors."
 
