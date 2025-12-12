@@ -14,6 +14,7 @@
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
 use APP\core\Application;
+use APP\facades\Repo;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
 use APP\template\TemplateManager;
@@ -76,12 +77,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
-            if (!$metadataChecker->checkSubmissionAuthorOrcid($submission, $authors)) {
-                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submisionAuthorOrcid');
+            if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization');
             }
 
-            if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
-                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsOrcidAuthorization');
+            if (!$metadataChecker->checkSubmittingAuthorOrcidAuthorization($submission, $authors)) {
+                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization');
             }
         }
 
@@ -101,29 +102,25 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     public function validateAuthorFields($hookName, $params)
     {
         $errors = &$params[0];
+        $author = $params[1];
         $props = $params[2];
 
-        $email = $props['email'];
-
-        $request = Application::get()->getRequest();
-        $user = $request->getUser();
-
-        if (
-            $email === $user->getEmail()
-            and $this->shouldRequireField("requireOrcid")
-            and $this->isOrcidProfilePluginEnabled()
-            and empty($props['orcid'])
-        ) {
-            $errors['orcid'] = [__('plugins.generic.toggleRequiredMetadata.validation.error.orcid')];
+        if (!$this->isOrcidProfilePluginEnabled()) {
+            return Hook::CONTINUE;
         }
 
-        if (
-            $email !== $user->getEmail()
-            and $this->shouldRequireField("requireOrcid")
-            and $this->isOrcidProfilePluginEnabled()
-            and $props['requestOrcidAuthorization'] != 'true'
-        ) {
-            $errors['requestOrcidAuthorization'] = [__('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization')];
+        if (!$this->shouldRequireField("requireOrcid")) {
+            return Hook::CONTINUE;
+        }
+
+        if ($author && $author->getData('orcidEmailToken')) {
+            return Hook::CONTINUE;
+        }
+
+        if ($props['requestOrcidAuthorization'] != 'true') {
+            $errors['requestOrcidAuthorization'] = [
+                __('plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization')
+            ];
         }
 
         return Hook::CONTINUE;

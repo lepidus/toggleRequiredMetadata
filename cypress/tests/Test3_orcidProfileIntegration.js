@@ -31,13 +31,14 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.get('a[id^=component-grid-settings-plugins-settingsplugingrid-category-generic-row-orcidprofileplugin-settings-button]').click();
 
         cy.get('#orcidProfileAPIPath').select('https://pub.sandbox.orcid.org/')
+        cy.get('input[id^=orcidClientId]').clear();
         cy.get('input[id^=orcidClientId]').type(Cypress.env('orcidClientId'), {delay: 0});
         cy.get('input[id^=orcidClientSecret]').type(Cypress.env('orcidClientSecret'), {delay: 0});
 
         cy.get('#orcidProfileSettingsForm .submitFormButton').click();
     });
 
-    it('Submitting author need to fill ORCID and co-authors must authorize ORCID', function () {
+    it('Contributors must receive the ORCID authorization email', function () {
         cy.login('cmontgomerie', null, 'publicknowledge');
         cy.get('div#myQueue a:contains("New Submission")').click();
         cy.get('input[name="locale"][value="en"]').click();
@@ -65,10 +66,10 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
             });
         cy.setTinyMceContent('contributor-biography-control-en', 'Craig Montgomerie is a physicist at the University of Edinburgh focusing on quantum gravity research.');
         cy.get('.modal__panel:contains("Edit")').find('button').contains('Save').click();
-        cy.contains('The submitting author must fill in the ORCID field.');
+        cy.contains('It is mandatory to send the ORCID authorization email to contributors.');
 
-        cy.contains('button', 'Override').click();
-        cy.get('input[name="orcid"]').type('https://orcid.org/0000-0002-1825-0097', {delay: 0});
+        cy.get('input[name="requestOrcidAuthorization"]').check();
+		cy.get('input[name="requestOrcidAuthorization"]').should('be.checked');
         cy.get('.modal__panel:contains("Edit")').find('button').contains('Save').click();
         cy.waitJQuery();
 
@@ -83,7 +84,7 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.get('input[name="userGroupId"][value="14"]').click();
 
         cy.get('.modal__panel:contains("Add Contributor")').find('button').contains('Save').click();
-        cy.contains('Co-authors must authorize the use of their ORCID.');
+        cy.contains('It is mandatory to send the ORCID authorization email to contributors.');
 
         cy.get('input[name="requestOrcidAuthorization"]').check();
 		cy.get('input[name="requestOrcidAuthorization"]').should('be.checked');
@@ -91,7 +92,7 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.waitJQuery();
     });
 
-    it('Author can not finish submission without filling ORCID and send authorization email for co-authors', function () {
+    it('Author can not finish submission without authorize ORCID and send authorization email for co-authors', function () {
         cy.login('dbarnes', null, 'publicknowledge');
 		cy.contains('a', 'Website').click();
 		cy.waitJQuery();
@@ -149,19 +150,8 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.contains('button', 'Continue').click();
         cy.contains('button', 'Continue').click();
         cy.wait(1000);
-        cy.contains('The ORCID field is required for the submitting author');
-        cy.contains('It is mandatory to send the ORCID authorization email to co-authors.');
-
-        cy.get('.pkpSteps__step button:contains("Contributors")').click();
-        cy.get('.listPanel__itemTitle:visible:contains("Craig Montgomerie")')
-            .parent().parent().within(() => {
-                cy.contains('button', 'Edit').click();
-            });
-        cy.contains('button', 'Override').click();
-        cy.get('input[name="orcid"]').type('https://orcid.org/0000-0002-1825-0097', {delay: 0});
-        cy.setTinyMceContent('contributor-biography-control-en', 'Craig Montgomerie is a physicist at the University of Edinburgh focusing on quantum gravity research.');
-        cy.get('.modal__panel:contains("Edit")').find('button').contains('Save').click();
-        cy.waitJQuery();
+        cy.contains('The submitting author needs to authorize the ORCID.');
+        cy.contains('It is mandatory to send the ORCID authorization email to contributors.');
 
         cy.get('.pkpSteps__step button:contains("Contributors")').click();
         cy.get('.listPanel__itemTitle:visible:contains("Nora Tanaka")')
@@ -176,6 +166,31 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         cy.contains('button', 'Continue').click();
         cy.contains('button', 'Continue').click();
         cy.wait(1000);
+        cy.contains('The submitting author needs to authorize the ORCID.');
+
+        cy.logout();
+    });
+
+    it('Show pending ORCID notification on the workflow page', function () {
+        cy.login('dbarnes', null, 'publicknowledge');
+		cy.contains('a', 'Website').click();
+		cy.waitJQuery();
+		cy.get('#plugins-button').click();
+		cy.goToPluginSettings();
+		cy.get('#requireOrcid').uncheck();
+        cy.get('#requireAffiliation').uncheck();
+		cy.get('#requireBiography').uncheck();
+		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
+        cy.logout();
+
+        cy.login('cmontgomerie', null, 'publicknowledge');
+        cy.findSubmission('myQueue', 'Ocean Currents and Climate Change');
+        cy.contains('button', 'Continue').click();
+        cy.contains('button', 'Continue').click();
+        cy.contains('button', 'Continue').click();
+        cy.contains('button', 'Continue').click();
+        cy.wait(1000);
+        
         cy.contains('button', 'Submit').should('not.be.disabled');
         cy.contains('button', 'Submit').click();
         cy.get('.modal__panel:visible').within(() => {
@@ -183,9 +198,17 @@ describe('Toggle Required Metadata - Integration with ORCID Profile', function (
         });
         cy.waitJQuery();
         cy.contains('h1', 'Submission complete');
-    });
+        cy.logout();
 
-    it('Show pending ORCID notification on the workflow page', function () {
+        cy.login('dbarnes', null, 'publicknowledge');
+		cy.contains('a', 'Website').click();
+		cy.waitJQuery();
+		cy.get('#plugins-button').click();
+		cy.goToPluginSettings();
+		cy.get('#requireOrcid').check();
+		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
+        cy.logout();
+        
         cy.login('cmontgomerie', null, 'publicknowledge');
         cy.findSubmission('myQueue', 'Ocean Currents and Climate Change');
         cy.contains('ORCID pending, co-authors need to validate it for the article to proceed through the editorial workflow.').should('be.visible');

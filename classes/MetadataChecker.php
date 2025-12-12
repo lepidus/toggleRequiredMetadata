@@ -47,19 +47,6 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
-    public function checkSubmissionAuthorOrcid(Submission $submission, array $authors): bool
-    {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() === $submittingAuthor->getEmail();
-            });
-        }
-
-        return $this->checkRequiredMetadata($authors, 'orcid');
-    }
-
     public function checkContributorsOrcidAuthorization(Submission $submission, array $authors): bool
     {
         $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
@@ -70,10 +57,31 @@ class MetadataChecker
             });
         }
 
+        if (empty($authors)) {
+            return true;
+        }
+
         $hasOrcidEmailToken = $this->checkRequiredMetadata($authors, 'orcidEmailToken');
         $hasOrcid = $this->checkRequiredMetadata($authors, 'orcid');
 
         return $hasOrcidEmailToken && !$hasOrcid;
+    }
+
+    public function checkSubmittingAuthorOrcidAuthorization(Submission $submission, array $authors): bool
+    {
+        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
+
+        if ($submittingAuthor) {
+            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
+                return $author->getEmail() === $submittingAuthor->getEmail();
+            });
+        }
+
+        if (empty($authors)) {
+            return true;
+        }
+
+        return $this->checkRequiredMetadata($authors, 'orcid');
     }
 
     private function getSubmittingAuthor(Submission $submission, array $authors): ?Author
