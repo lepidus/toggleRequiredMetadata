@@ -35,7 +35,6 @@ msgstr "Feature unavailable because the ORCID Profile plugin is enabled."
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Please enter your author's Biography Statement."
 
-
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors. "
 
@@ -44,3 +43,6 @@ msgstr "The affiliation field is required for all contributors. "
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors. "
+
+msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
+msgstr "It is mandatory to send the ORCID authorization email to contributors."

@@ -29,6 +29,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
                 HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
             }
             HookRegistry::register('submissionsubmitstep3form::validate', array($this, 'addValidationToStep3'));
+            HookRegistry::register('authorform::validate', array($this, 'validateOrcidEmailToken'));
         }
 
         return $success;
@@ -158,6 +159,24 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
             $form->addErrorField('requiredBiographyMetadata');
             $form->addError('requiredBiographyMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography'));
+        }
+    }
+
+    public function validateOrcidEmailToken($hookName, $params)
+    {
+        $form = & $params[0];
+        $author = $form->getAuthor();
+        
+        $form->readUserVars(array('requestOrcidAuthorization'));
+
+        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
+            if (
+                (!$author || empty($author->getData('orcidEmailToken')))
+                && $form->getData('requestOrcidAuthorization') !== 'on'
+            ) {
+                $form->addErrorField('requestOrcidAuthorization');
+                $form->addError('requestOrcidAuthorization', __('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization'));
+            }
         }
     }
 
