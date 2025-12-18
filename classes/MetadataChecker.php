@@ -13,19 +13,28 @@ class MetadataChecker
     private function checkRequiredMetadata(array $authors, string $metadata): bool
     {
         foreach ($authors as $author) {
-            if (!$author->getData($metadata)) {
+            if (!$this->checkHasMetadata($author, $metadata)) {
                 return false;
-            } elseif (is_array($author->getData($metadata))) {
-                $entryFilled = false;
-                foreach ($author->getData($metadata) as $entry) {
-                    if ($entry) {
-                        $entryFilled = true;
-                        break;
-                    }
+            };
+        }
+
+        return true;
+    }
+
+    private function checkHasMetadata(Author $author, string $metadata): bool
+    {
+        if (!$author->getData($metadata)) {
+            return false;
+        } elseif (is_array($author->getData($metadata))) {
+            $entryFilled = false;
+            foreach ($author->getData($metadata) as $entry) {
+                if ($entry) {
+                    $entryFilled = true;
+                    break;
                 }
-                if (!$entryFilled) {
-                    return false;
-                }
+            }
+            if (!$entryFilled) {
+                return false;
             }
         }
 
@@ -58,13 +67,46 @@ class MetadataChecker
         }
 
         if (empty($authors)) {
+            return false;
+        }
+        
+        $count = 0;
+        foreach ($authors as $author) {
+            $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');
+            $hasOrcid = $this->checkHasMetadata($author, 'orcid');
+
+            if ($hasOrcidEmailToken || $hasOrcid) {
+                $count++;
+            }
+        }
+
+        return $count === count($authors);
+    }
+
+    public function checkContributorsOrcidAuthentication(Submission $submission, array $authors): bool
+    {
+        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
+
+        if ($submittingAuthor) {
+            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
+                return $author->getEmail() !== $submittingAuthor->getEmail();
+            });
+        }
+
+        if (empty($authors)) {
             return true;
         }
 
-        $hasOrcidEmailToken = $this->checkRequiredMetadata($authors, 'orcidEmailToken');
-        $hasOrcid = $this->checkRequiredMetadata($authors, 'orcid');
+        foreach ($authors as $author) {
+            $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');
+            $hasOrcid = $this->checkHasMetadata($author, 'orcid');
 
-        return $hasOrcidEmailToken && !$hasOrcid;
+            if ($hasOrcidEmailToken && !$hasOrcid) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function checkSubmittingAuthorOrcidAuthorization(Submission $submission, array $authors): bool
