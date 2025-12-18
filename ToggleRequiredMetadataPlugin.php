@@ -176,7 +176,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors')->toArray();
 
         $metadataChecker = new MetadataChecker();
-        if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
+        if ($metadataChecker->checkContributorsOrcidAuthentication($submission, $authors)) {
             return false;
         }
 
