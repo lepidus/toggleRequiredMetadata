@@ -50,3 +50,8 @@ msgstr "It is mandatory to send the ORCID authorization email to contributors."
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
 msgstr "The submitting author must add their ORCID iD using the link provided in the authorization email."
 
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
+msgstr "There are ORCIDs that have not been validated by the authors."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
+msgstr "ORCID pending, contributors need to validate it for the article to proceed through the editorial workflow."

@@ -81,6 +81,11 @@ class MetadataChecker
         return $this->checkMetadata($author, 'orcidAccessToken');
     }
 
+    public function checkOrcidAuthorization(array $authors): bool
+    {
+        return $this->checkRequiredMetadata($authors, 'orcidAccessToken');
+    }
+
     private function getSubmittingAuthor(array $authors): ?Author
     {
         $request = Application::get()->getRequest();

@@ -30,6 +30,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             }
             HookRegistry::register('submissionsubmitstep3form::validate', array($this, 'addValidationToStep3'));
             HookRegistry::register('authorform::validate', array($this, 'validateOrcidEmailToken'));
+            HookRegistry::register('TemplateManager::display', array($this, 'addOrcidWarning'));
         }
 
         return $success;
@@ -194,6 +195,48 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
     }
 
+    public function addOrcidWarning($hookName, $params)
+    {
+        $templateMgr = $params[0];
+        $template = $params[1];
+
+        if (
+            $template != 'workflow/workflow.tpl'
+            && $template != 'authorDashboard/authorDashboard.tpl'
+        ) {
+            return false;
+        }
+
+        $submission = $templateMgr->getTemplateVars('submission');
+        $publication = $submission->getCurrentPublication();
+        $authors = $publication->getData('authors');
+
+        $metadataChecker = new MetadataChecker();
+        if ($metadataChecker->checkOrcidAuthorization($authors)) {
+            return false;
+        }
+
+        $orcidWarningMessage = $template === 'workflow/workflow.tpl' 
+            ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
+            : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
+
+        $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
+        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    public function orcidWarningFilter($output, $templateMgr)
+    {
+        if (preg_match('/<tabs[^>]*>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
+            $match = $matches[0][0];
+            $offset = $matches[0][1];
+            $newOutput = substr($output, 0, $offset);
+            $newOutput .= $templateMgr->fetch($this->getTemplateResource('orcidWarning.tpl'));
+            $newOutput .= substr($output, $offset);
+            $output = $newOutput;
+            $templateMgr->unregisterFilter('output', [$this, 'orcidWarningFilter']);
+        }
+        return $output;
+    }
 
     public function getActions($request, $actionArgs)
     {
