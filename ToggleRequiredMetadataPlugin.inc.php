@@ -146,9 +146,18 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
         $metadataChecker = new MetadataChecker();
 
-        if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
-            $form->addErrorField('requiredOrcidMetadata');
-            $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid'));
+        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
+            if (!$metadataChecker->checkRequestOrcidAuthorization($authors)) {
+                $form->addErrorField('requestOrcidAuthorization');
+                $form->addError('requestOrcidAuthorization', __('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization'));
+            }
+        }
+
+        if (!$this->isOrcidProfilePluginEnabled()) {
+            if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
+                $form->addErrorField('requiredOrcidMetadata');
+                $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid'));
+            }
         }
 
         if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
