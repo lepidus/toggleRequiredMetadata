@@ -61,4 +61,37 @@ class MetadataChecker
 
         return true;
     }
+
+    public function checkSubmittingAuthorOrcidAuthorization(array $authors): bool
+    {
+        $submittingAuthor = $this->getSubmittingAuthor($authors);
+
+        if ($submittingAuthor !== null) {
+           $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
+                return $author->getId() === $submittingAuthor->getId();
+            });
+        }
+
+        if (empty($authors)) {
+            return true;
+        }
+
+        $author = array_shift($authors);
+
+        return $this->checkMetadata($author, 'orcidAccessToken');
+    }
+
+    private function getSubmittingAuthor(array $authors): ?Author
+    {
+        $request = Application::get()->getRequest();
+        $user = $request->getUser();
+
+        foreach ($authors as $author) {
+            if ($author->getEmail() === $user->getEmail()) {
+                return $author;
+            }
+        }
+
+        return null;
+    }
 }

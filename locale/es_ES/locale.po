@@ -46,3 +46,6 @@ msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaborad
 
 msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
 msgstr "Es obligatorio enviar el correo electrónico de autorización de ORCID a los coautores."
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
+msgstr "El autor responsable del envío debe añadir su ORCID iD utilizando el enlace enviado en el correo electrónico de autorización."
