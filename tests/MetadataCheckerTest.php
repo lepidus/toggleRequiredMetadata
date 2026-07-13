@@ -69,4 +69,40 @@ class MetadataCheckerTest extends TestCase
         $this->authors[2]->unsetData('biography');
         $this->assertFalse($this->checker->checkBiographies($this->authors));
     }
+
+    public function testAcceptsExistingOrcidAuthorizationWhenEditingAuthor(): void
+    {
+        $author = $this->authors[0];
+        $author->setData('orcidAccessToken', 'access-token');
+
+        $this->assertTrue($this->checker->checkAuthorOrcidAuthorization($author, null));
+    }
+
+    public function testAcceptsPendingOrRequestedOrcidAuthorization(): void
+    {
+        $author = $this->authors[0];
+        $author->setData('orcidEmailToken', 'email-token');
+
+        $this->assertTrue($this->checker->checkAuthorOrcidAuthorization($author, null));
+
+        $author->unsetData('orcidEmailToken');
+
+        $this->assertTrue($this->checker->checkAuthorOrcidAuthorization($author, 'on'));
+        $this->assertTrue($this->checker->checkAuthorOrcidAuthorization(null, 'on'));
+        $this->assertFalse($this->checker->checkAuthorOrcidAuthorization($author, null));
+        $this->assertFalse($this->checker->checkAuthorOrcidAuthorization(null, null));
+    }
+
+    public function testOnlyShowsPendingOrcidWarningWhenRequirementAndIntegrationAreEnabled(): void
+    {
+        $this->assertFalse($this->checker->shouldShowOrcidWarning($this->authors, false, true));
+        $this->assertFalse($this->checker->shouldShowOrcidWarning($this->authors, true, false));
+        $this->assertTrue($this->checker->shouldShowOrcidWarning($this->authors, true, true));
+
+        foreach ($this->authors as $author) {
+            $author->setData('orcidAccessToken', 'access-token');
+        }
+
+        $this->assertFalse($this->checker->shouldShowOrcidWarning($this->authors, true, true));
+    }
 }

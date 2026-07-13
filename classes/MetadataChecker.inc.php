@@ -62,12 +62,19 @@ class MetadataChecker
         return true;
     }
 
+    public function checkAuthorOrcidAuthorization(?Author $author, $requestAuthorization): bool
+    {
+        return $requestAuthorization === 'on'
+            || ($author && $this->checkMetadata($author, 'orcidEmailToken'))
+            || ($author && $this->checkMetadata($author, 'orcidAccessToken'));
+    }
+
     public function checkSubmittingAuthorOrcidAuthorization(array $authors): bool
     {
         $submittingAuthor = $this->getSubmittingAuthor($authors);
 
         if ($submittingAuthor !== null) {
-           $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
+            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
                 return $author->getId() === $submittingAuthor->getId();
             });
         }
@@ -84,6 +91,16 @@ class MetadataChecker
     public function checkOrcidAuthorization(array $authors): bool
     {
         return $this->checkRequiredMetadata($authors, 'orcidAccessToken');
+    }
+
+    public function shouldShowOrcidWarning(
+        array $authors,
+        bool $requireOrcid,
+        bool $orcidProfilePluginEnabled
+    ): bool {
+        return $requireOrcid
+            && $orcidProfilePluginEnabled
+            && !$this->checkOrcidAuthorization($authors);
     }
 
     private function getSubmittingAuthor(array $authors): ?Author

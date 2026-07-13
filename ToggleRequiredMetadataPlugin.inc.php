@@ -181,14 +181,15 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         $form = & $params[0];
         $author = $form->getAuthor();
-        
+
         $form->readUserVars(array('requestOrcidAuthorization'));
 
         if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
-            if (
-                (!$author || empty($author->getData('orcidEmailToken')))
-                && $form->getData('requestOrcidAuthorization') !== 'on'
-            ) {
+            $metadataChecker = new MetadataChecker();
+            if (!$metadataChecker->checkAuthorOrcidAuthorization(
+                $author,
+                $form->getData('requestOrcidAuthorization')
+            )) {
                 $form->addErrorField('requestOrcidAuthorization');
                 $form->addError('requestOrcidAuthorization', __('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization'));
             }
@@ -212,11 +213,15 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
 
         $metadataChecker = new MetadataChecker();
-        if ($metadataChecker->checkOrcidAuthorization($authors)) {
+        if (!$metadataChecker->shouldShowOrcidWarning(
+            $authors,
+            (bool) $this->shouldRequireField("requireOrcid"),
+            $this->isOrcidProfilePluginEnabled()
+        )) {
             return false;
         }
 
-        $orcidWarningMessage = $template === 'workflow/workflow.tpl' 
+        $orcidWarningMessage = $template === 'workflow/workflow.tpl'
             ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
             : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
 
@@ -310,7 +315,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
 
-        if(is_null($orcidProfilePlugin)) {
+        if (is_null($orcidProfilePlugin)) {
             return false;
         }
 
