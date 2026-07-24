@@ -29,7 +29,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
                 HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
             }
             HookRegistry::register('submissionsubmitstep3form::validate', array($this, 'addValidationToStep3'));
-            HookRegistry::register('authorform::validate', array($this, 'validateOrcidEmailToken'));
             HookRegistry::register('TemplateManager::display', array($this, 'addOrcidWarning'));
         }
 
@@ -147,20 +146,13 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
         $metadataChecker = new MetadataChecker();
 
-        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
-            if (!$metadataChecker->checkRequestOrcidAuthorization($authors)) {
-                $form->addErrorField('orcidAuthorizationMetadata');
-                $form->addError('orcidAuthorizationMetadata', __('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization'));
-            }
-
-            if (!$metadataChecker->checkSubmittingAuthorOrcidAuthorization($authors)) {
-                $form->addErrorField('orcidAuthorizationMetadata');
-                $form->addError('orcidAuthorizationMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization'));
-            }
-        }
-
-        if (!$this->isOrcidProfilePluginEnabled()) {
-            if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
+        if ($this->shouldRequireField("requireOrcid")) {
+            if ($this->isOrcidProfilePluginEnabled()) {
+                if (!$metadataChecker->checkOrcidOrAuthorizationRequested($authors)) {
+                    $form->addErrorField('requiredOrcidMetadata');
+                    $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization'));
+                }
+            } elseif (!$metadataChecker->checkOrcids($authors)) {
                 $form->addErrorField('requiredOrcidMetadata');
                 $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid'));
             }
@@ -174,24 +166,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
             $form->addErrorField('requiredBiographyMetadata');
             $form->addError('requiredBiographyMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography'));
-        }
-    }
-
-    public function validateOrcidEmailToken($hookName, $params)
-    {
-        $form = & $params[0];
-        $author = $form->getAuthor();
-        
-        $form->readUserVars(array('requestOrcidAuthorization'));
-
-        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
-            if (
-                (!$author || empty($author->getData('orcidEmailToken')))
-                && $form->getData('requestOrcidAuthorization') !== 'on'
-            ) {
-                $form->addErrorField('requestOrcidAuthorization');
-                $form->addError('requestOrcidAuthorization', __('plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization'));
-            }
         }
     }
 
@@ -212,11 +186,15 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
 
         $metadataChecker = new MetadataChecker();
-        if ($metadataChecker->checkOrcidAuthorization($authors)) {
+        if (!$metadataChecker->shouldShowOrcidWarning(
+            $authors,
+            (bool) $this->shouldRequireField("requireOrcid"),
+            $this->isOrcidProfilePluginEnabled()
+        )) {
             return false;
         }
 
-        $orcidWarningMessage = $template === 'workflow/workflow.tpl' 
+        $orcidWarningMessage = $template === 'workflow/workflow.tpl'
             ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
             : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
 
@@ -310,7 +288,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
 
-        if(is_null($orcidProfilePlugin)) {
+        if (is_null($orcidProfilePlugin)) {
             return false;
         }
 

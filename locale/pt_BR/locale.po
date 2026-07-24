@@ -44,8 +44,11 @@ msgstr "O campo \"Afiliação\" é requerido para todos os coautores. "
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores. "
 
-msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
-msgstr "É obrigatório enviar o email de autorização de ORCID para os coautores."
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
+msgstr "Todo contribuidor deve ter um ORCID iD ou receber a solicitação de autorização de ORCID. "
 
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
-msgstr "O autor responsável pela submissão deve adicionar seu ORCID iD utilizando o link enviado no e‑mail de autorização."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
+msgstr "Há ORCIDs não validados pelos autores."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
+msgstr "ORCID pendente, os coautores precisam validar para que o artigo prossiga no fluxo editorial."

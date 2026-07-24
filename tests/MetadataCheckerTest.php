@@ -69,4 +69,39 @@ class MetadataCheckerTest extends TestCase
         $this->authors[2]->unsetData('biography');
         $this->assertFalse($this->checker->checkBiographies($this->authors));
     }
+
+    public function testAcceptsContributorWithOrcidOrRequestedAuthorization(): void
+    {
+        // Every contributor has an ORCID iD (client scenario)
+        $this->assertTrue($this->checker->checkOrcidOrAuthorizationRequested($this->authors));
+
+        // A contributor without an ORCID iD but with a requested authorization is accepted
+        $this->authors[0]->unsetData('orcid');
+        $this->assertFalse($this->checker->checkOrcidOrAuthorizationRequested($this->authors));
+
+        $this->authors[0]->setData('orcidEmailToken', 'email-token');
+        $this->assertTrue($this->checker->checkOrcidOrAuthorizationRequested($this->authors));
+
+        // An already authenticated contributor is accepted too
+        $this->authors[0]->unsetData('orcidEmailToken');
+        $this->authors[0]->setData('orcidAccessToken', 'access-token');
+        $this->assertTrue($this->checker->checkOrcidOrAuthorizationRequested($this->authors));
+
+        // A contributor with neither ORCID iD nor requested authorization blocks
+        $this->authors[0]->unsetData('orcidAccessToken');
+        $this->assertFalse($this->checker->checkOrcidOrAuthorizationRequested($this->authors));
+    }
+
+    public function testOnlyShowsPendingOrcidWarningWhenRequirementAndIntegrationAreEnabled(): void
+    {
+        $this->assertFalse($this->checker->shouldShowOrcidWarning($this->authors, false, true));
+        $this->assertFalse($this->checker->shouldShowOrcidWarning($this->authors, true, false));
+        $this->assertTrue($this->checker->shouldShowOrcidWarning($this->authors, true, true));
+
+        foreach ($this->authors as $author) {
+            $author->setData('orcidAccessToken', 'access-token');
+        }
+
+        $this->assertFalse($this->checker->shouldShowOrcidWarning($this->authors, true, true));
+    }
 }
