@@ -216,7 +216,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        $orcidWarningMessage = $template === 'workflow/workflow.tpl' 
+        $orcidWarningMessage = $template === 'workflow/workflow.tpl'
             ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
             : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
 
@@ -310,7 +310,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
 
-        if(is_null($orcidProfilePlugin)) {
+        if (is_null($orcidProfilePlugin)) {
             return false;
         }
 
