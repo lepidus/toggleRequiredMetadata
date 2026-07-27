@@ -4,7 +4,7 @@ function step1(submissionData) {
     cy.get('select[id="locale"]').select('en_US');
     cy.get('select[id="sectionId"]').select(submissionData.section);
     cy.get('input[id^="checklist-"]').click({ multiple: true });
-    cy.get('input[id=privacyConsent]').click();
+    cy.get('input[name=privacyConsent]').parent('label').click();
     cy.get('#submitStep1Form button.submitFormButton').click();
 }
 
@@ -75,7 +75,7 @@ function fillContributorRequiredFields(contributorData) {
 
 describe('Toggle Required Metadata - Requirement during submission', function () {
     let submissionData;
-    
+
     before(function() {
         submissionData = {
             title: 'The Imitation Game',
@@ -97,7 +97,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
             ]
 		}
     });
-    
+
     it('Author creates new submission without requirements', function () {
         cy.login('cmontgomerie', null, 'publicknowledge');
         cy.get('div#myQueue a:contains("New Submission")').click();
@@ -112,7 +112,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
     it('Sets all metadata as required', function () {
         cy.login('dbarnes', null, 'publicknowledge');
         cy.goToPluginSettings();
-        
+
         cy.get('#requireOrcid').check();
 		cy.get('#requireAffiliation').check();
 		cy.get('#requireBiography').check();
