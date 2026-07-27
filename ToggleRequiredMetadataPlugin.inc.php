@@ -181,6 +181,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
+        if (!$this->isOrcidProfilePluginEnabled()) {
+            return false;
+        }
+
         $submission = $templateMgr->getTemplateVars('submission');
         $publication = $submission->getCurrentPublication();
         $authors = $publication->getData('authors');
