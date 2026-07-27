@@ -38,17 +38,14 @@ msgstr "Please enter your author's Biography Statement."
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors. "
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
+msgstr "For every contributor, either the ORCID iD must be filled in or the ORCID authorization must have been requested."
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "The affiliation field is required for all contributors. "
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors. "
-
-msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
-msgstr "It is mandatory to send the ORCID authorization email to contributors."
-
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
-msgstr "The submitting author must add their ORCID iD using the link provided in the authorization email."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
 msgstr "There are ORCIDs that have not been validated by the authors."

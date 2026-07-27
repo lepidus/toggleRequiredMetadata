@@ -48,13 +48,14 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
-    public function checkRequestOrcidAuthorization(array $authors): bool
+    public function checkOrcidsOrAuthorizationRequested(array $authors): bool
     {
         foreach ($authors as $author) {
+            $hasOrcid = $this->checkMetadata($author, 'orcid');
             $hasOrcidEmailToken = $this->checkMetadata($author, 'orcidEmailToken');
             $hasOrcidAccessToken = $this->checkMetadata($author, 'orcidAccessToken');
 
-            if (!$hasOrcidEmailToken && !$hasOrcidAccessToken) {
+            if (!$hasOrcid && !$hasOrcidEmailToken && !$hasOrcidAccessToken) {
                 return false;
             }
         }
@@ -62,41 +63,8 @@ class MetadataChecker
         return true;
     }
 
-    public function checkSubmittingAuthorOrcidAuthorization(array $authors): bool
-    {
-        $submittingAuthor = $this->getSubmittingAuthor($authors);
-
-        if ($submittingAuthor !== null) {
-           $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getId() === $submittingAuthor->getId();
-            });
-        }
-
-        if (empty($authors)) {
-            return true;
-        }
-
-        $author = array_shift($authors);
-
-        return $this->checkMetadata($author, 'orcidAccessToken');
-    }
-
     public function checkOrcidAuthorization(array $authors): bool
     {
         return $this->checkRequiredMetadata($authors, 'orcidAccessToken');
-    }
-
-    private function getSubmittingAuthor(array $authors): ?Author
-    {
-        $request = Application::get()->getRequest();
-        $user = $request->getUser();
-
-        foreach ($authors as $author) {
-            if ($author->getEmail() === $user->getEmail()) {
-                return $author;
-            }
-        }
-
-        return null;
     }
 }

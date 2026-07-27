@@ -69,4 +69,32 @@ class MetadataCheckerTest extends TestCase
         $this->authors[2]->unsetData('biography');
         $this->assertFalse($this->checker->checkBiographies($this->authors));
     }
+
+    public function testAcceptsContributorsThatAlreadyHaveOrcid(): void
+    {
+        $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testRejectsContributorWithoutOrcidNorRequestedAuthorization(): void
+    {
+        $this->authors[1]->unsetData('orcid');
+
+        $this->assertFalse($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testAcceptsContributorWithoutOrcidWhenAuthorizationWasRequested(): void
+    {
+        $this->authors[1]->unsetData('orcid');
+        $this->authors[1]->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+
+        $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testAcceptsContributorWithoutOrcidWhenAuthorizationWasCompleted(): void
+    {
+        $this->authors[1]->unsetData('orcid');
+        $this->authors[1]->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+
+        $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
 }
