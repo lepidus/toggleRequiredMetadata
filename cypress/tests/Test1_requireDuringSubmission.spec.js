@@ -132,6 +132,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
         cy.contains('The biography statement field is required for all contributors');
 
         fillContributorRequiredFields(submissionData.contributors[0]);
+        cy.get('#editAuthor').should('not.exist');
         cy.get('#submitStep3Form button.submitFormButton').click();
         cy.wait(1000);
 
