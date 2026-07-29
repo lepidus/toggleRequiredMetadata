@@ -190,16 +190,27 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
 
         $metadataChecker = new MetadataChecker();
-        if ($metadataChecker->checkOrcidAuthorization($authors)) {
+        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutOrcidAuthorization($authors);
+        if (empty($authorsWithoutAuthorization)) {
             return false;
         }
 
-        $orcidWarningMessage = $template === 'workflow/workflow.tpl'
-            ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
-            : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
+        $messageKey = $template === 'workflow/workflow.tpl'
+            ? 'plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning'
+            : 'plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning';
+        $orcidWarningMessage = __($messageKey, ['pendingAuthors' => $this->getAuthorNames($authorsWithoutAuthorization)]);
 
         $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
         $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    private function getAuthorNames(array $authors): string
+    {
+        $names = array_map(function ($author) {
+            return $author->getFullName();
+        }, $authors);
+
+        return implode(', ', $names);
     }
 
     public function orcidWarningFilter($output, $templateMgr)

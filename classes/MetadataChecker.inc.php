@@ -65,6 +65,19 @@ class MetadataChecker
 
     public function checkOrcidAuthorization(array $authors): bool
     {
-        return $this->checkRequiredMetadata($authors, 'orcidAccessToken');
+        return empty($this->getAuthorsWithoutOrcidAuthorization($authors));
+    }
+
+    public function getAuthorsWithoutOrcidAuthorization(array $authors): array
+    {
+        $authorsWithoutAuthorization = [];
+
+        foreach ($authors as $author) {
+            if (!$this->checkMetadata($author, 'orcidAccessToken')) {
+                $authorsWithoutAuthorization[] = $author;
+            }
+        }
+
+        return $authorsWithoutAuthorization;
     }
 }

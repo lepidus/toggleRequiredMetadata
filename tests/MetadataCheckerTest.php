@@ -97,4 +97,23 @@ class MetadataCheckerTest extends TestCase
 
         $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
     }
+
+    public function testListsContributorsWithoutCompletedOrcidAuthorization(): void
+    {
+        $this->authors[1]->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+
+        $authorsWithoutAuthorization = $this->checker->getAuthorsWithoutOrcidAuthorization($this->authors);
+
+        $this->assertEquals([$this->authors[0], $this->authors[2]], $authorsWithoutAuthorization);
+    }
+
+    public function testListsNoContributorWhenEveryOrcidAuthorizationWasCompleted(): void
+    {
+        foreach ($this->authors as $author) {
+            $author->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+        }
+
+        $this->assertEquals([], $this->checker->getAuthorsWithoutOrcidAuthorization($this->authors));
+        $this->assertTrue($this->checker->checkOrcidAuthorization($this->authors));
+    }
 }
