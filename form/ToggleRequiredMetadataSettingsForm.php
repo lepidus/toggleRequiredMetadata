@@ -41,7 +41,8 @@ class ToggleRequiredMetadataSettingsForm extends Form
             "pluginName" => $this->plugin->getName(),
             "requireOrcid" => $requireOrcid,
             "requireAffiliation" => $requireAffiliation,
-            "requireBiography" => $requireBiography
+            "requireBiography" => $requireBiography,
+            "orcidProfilePluginEnabled" => $this->plugin->isOrcidProfilePluginEnabled()
         ));
 
         return parent::fetch($request, $template, $display);

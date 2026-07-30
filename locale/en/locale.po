@@ -29,8 +29,17 @@ msgstr "Affiliation"
 msgid "plugins.generic.toggleRequiredMetadata.settings.requireBiography"
 msgstr "Biography Statement"
 
-msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"
-msgstr "Feature unavailable because the ORCID Profile plugin is enabled."
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.status"
+msgstr "ORCID Profile plugin enabled"
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field"
+msgstr "The ORCID field stays under the ORCID Profile plugin's control."
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"
+msgstr "Each contributor needs an authenticated ORCID iD, or the authorization request sent, to finish a submission."
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
+msgstr "The workflow names the contributors who have not authenticated yet."
 
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Please enter your author's Biography Statement."

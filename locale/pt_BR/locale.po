@@ -29,8 +29,17 @@ msgstr "Afiliação"
 msgid "plugins.generic.toggleRequiredMetadata.settings.requireBiography"
 msgstr "Resumo da Biografia"
 
-msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfilePluginEnabled"
-msgstr "Funcionalidade indisponível pois o plugin Perfil ORCID está ativo."
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.status"
+msgstr "Plugin Perfil ORCID ativo"
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field"
+msgstr "O campo ORCID fica sob controle do plugin Perfil ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"
+msgstr "Cada contribuidor precisa do ORCID iD autenticado, ou da solicitação de autorização enviada, para concluir a submissão."
+
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
+msgstr "O fluxo editorial nomeia quem ainda não autenticou."
 
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Por favor, insira o Resumo da Biografia do seu autor."
