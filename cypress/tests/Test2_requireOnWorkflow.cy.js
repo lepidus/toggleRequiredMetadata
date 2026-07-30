@@ -4,7 +4,7 @@ describe('Toggle Required Metadata - Requirement during workflow', function () {
     let submissionTitle = 'The Imitation Game';
 
     it('Author can not finish submission without filling required fields', function () {
-        cy.login('dbarnes', null, 'publicknowledge');
+        cy.loginAs('dbarnes');
         cy.findSubmission('active', submissionTitle);
 
         cy.get('#publication-button').click();
