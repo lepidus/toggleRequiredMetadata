@@ -11,7 +11,7 @@
 <version>
 	<application>toggleRequiredMetadata</application>
 	<type>plugins.generic</type>
-	<release>1.4.1.0</release>
+	<release>1.4.1.1</release>
 	<date>2026-07-30</date>
 	<lazy-load>1</lazy-load>
 	<class>ToggleRequiredMetadataPlugin</class>
