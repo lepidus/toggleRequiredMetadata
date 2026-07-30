@@ -133,7 +133,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        if (!$this->isOrcidProfilePluginEnabled()) {
+        if (!$this->shouldRequireField("requireOrcid") || !$this->isOrcidProfilePluginEnabled()) {
             return false;
         }
 
