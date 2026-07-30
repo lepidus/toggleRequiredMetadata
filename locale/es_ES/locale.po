@@ -39,7 +39,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores. "
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "Para cada colaborador, es necesario que el ORCID iD esté rellenado o que se haya solicitado la autorización de ORCID."
+msgstr "La autorización ORCID no se ha iniciado para todos los colaboradores. Edite cada colaborador pendiente y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\", para que reciba el enlace de autorización. Los colaboradores que ya han autenticado su ORCID iD no lo necesitan."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores. "

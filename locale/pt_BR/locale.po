@@ -39,7 +39,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores. "
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "Para cada coautor, é necessário que o ORCID iD esteja preenchido ou que a autorização de ORCID tenha sido solicitada."
+msgstr "A autorização ORCID não foi iniciada para todos os coautores. Edite cada coautor pendente e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\", para que ele receba o link de autorização. Coautores que já autenticaram o ORCID iD não precisam disso."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "O campo \"Afiliação\" é requerido para todos os coautores. "

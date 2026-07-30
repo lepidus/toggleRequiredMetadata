@@ -148,7 +148,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         if ($this->shouldRequireField("requireOrcid")) {
             if ($this->isOrcidProfilePluginEnabled()) {
-                if (!$metadataChecker->checkOrcidsOrAuthorizationRequested($authors)) {
+                $submittingUser = Application::get()->getRequest()->getUser();
+                if (!$metadataChecker->checkOrcidsOrAuthorizationRequested($authors, $submittingUser)) {
                     $form->addErrorField('requiredOrcidMetadata');
                     $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization'));
                 }

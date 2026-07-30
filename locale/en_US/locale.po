@@ -39,7 +39,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors. "
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "For every contributor, either the ORCID iD must be filled in or the ORCID authorization must have been requested."
+msgstr "The ORCID authorization has not been started for every contributor. Edit each pending contributor and tick \"Send e-mail to request ORCID authorization from contributor\", so that they receive the authorization link. Contributors who have already authenticated their ORCID iD do not need it."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "The affiliation field is required for all contributors. "

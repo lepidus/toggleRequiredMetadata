@@ -48,19 +48,33 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
-    public function checkOrcidsOrAuthorizationRequested(array $authors): bool
+    public function checkOrcidsOrAuthorizationRequested(array $authors, $submittingUser = null): bool
     {
         foreach ($authors as $author) {
-            $hasOrcid = $this->checkMetadata($author, 'orcid');
-            $hasOrcidEmailToken = $this->checkMetadata($author, 'orcidEmailToken');
-            $hasOrcidAccessToken = $this->checkMetadata($author, 'orcidAccessToken');
-
-            if (!$hasOrcid && !$hasOrcidEmailToken && !$hasOrcidAccessToken) {
+            if (!$this->hasStartedOrcidAuthorization($author, $submittingUser)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private function hasStartedOrcidAuthorization(Author $author, $submittingUser): bool
+    {
+        return $this->checkMetadata($author, 'orcidEmailToken')
+            || $this->hasValidOrcidAccessToken($author)
+            || $this->matchesAuthenticatedUser($author, $submittingUser);
+    }
+
+    private function matchesAuthenticatedUser(Author $author, $submittingUser): bool
+    {
+        if (is_null($submittingUser) || !$this->hasValidOrcidAccessToken($submittingUser)) {
+            return false;
+        }
+
+        $authorOrcid = $author->getData('orcid');
+
+        return !empty($authorOrcid) && $authorOrcid === $submittingUser->getOrcid();
     }
 
     public function hasValidOrcidAccessToken($userOrAuthor): bool
