@@ -63,6 +63,20 @@ class MetadataChecker
         return true;
     }
 
+    public function hasValidOrcidAccessToken($userOrAuthor): bool
+    {
+        if (!$userOrAuthor->getData('orcidAccessToken')) {
+            return false;
+        }
+
+        $expirationDate = $userOrAuthor->getData('orcidAccessExpiresOn');
+        if (empty($expirationDate)) {
+            return true;
+        }
+
+        return strtotime($expirationDate) > time();
+    }
+
     public function checkOrcidAuthorization(array $authors): bool
     {
         return empty($this->getAuthorsWithoutOrcidAuthorization($authors));
@@ -73,7 +87,7 @@ class MetadataChecker
         $authorsWithoutAuthorization = [];
 
         foreach ($authors as $author) {
-            if (!$this->checkMetadata($author, 'orcidAccessToken')) {
+            if (!$this->hasValidOrcidAccessToken($author)) {
                 $authorsWithoutAuthorization[] = $author;
             }
         }

@@ -40,6 +40,19 @@ class MetadataCheckerTest extends TestCase
         return $authors;
     }
 
+    private function completeAuthorizationForEveryAuthor(): void
+    {
+        foreach ($this->authors as $author) {
+            $author->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+            $author->setData('orcidAccessExpiresOn', $this->dateIn('+20 years'));
+        }
+    }
+
+    private function dateIn(string $interval): string
+    {
+        return date('Y-m-d H:i:s', strtotime($interval));
+    }
+
     public function testChecksForOrcid(): void
     {
         $this->assertTrue($this->checker->checkOrcids($this->authors));
@@ -105,6 +118,16 @@ class MetadataCheckerTest extends TestCase
         $authorsWithoutAuthorization = $this->checker->getAuthorsWithoutOrcidAuthorization($this->authors);
 
         $this->assertEquals([$this->authors[0], $this->authors[2]], $authorsWithoutAuthorization);
+    }
+
+    public function testListsContributorWhoseAccessTokenHasExpired(): void
+    {
+        $this->completeAuthorizationForEveryAuthor();
+        $this->authors[2]->setData('orcidAccessExpiresOn', $this->dateIn('-1 day'));
+
+        $authorsWithoutAuthorization = $this->checker->getAuthorsWithoutOrcidAuthorization($this->authors);
+
+        $this->assertEquals([$this->authors[2]], $authorsWithoutAuthorization);
     }
 
     public function testListsNoContributorWhenEveryOrcidAuthorizationWasCompleted(): void
