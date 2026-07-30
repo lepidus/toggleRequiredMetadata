@@ -69,7 +69,7 @@ class MetadataChecker
         if (empty($authors)) {
             return false;
         }
-        
+
         $count = 0;
         foreach ($authors as $author) {
             $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');

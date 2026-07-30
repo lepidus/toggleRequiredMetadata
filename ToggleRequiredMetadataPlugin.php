@@ -14,19 +14,15 @@
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
 use APP\core\Application;
-use APP\facades\Repo;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
-use APP\template\TemplateManager;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
 use PKP\db\DAORegistry;
 use PKP\config\Config;
-use PKP\form\validation\FormValidatorLocale;
 use PKP\components\forms\FormComponent;
-
 use APP\plugins\generic\toggleRequiredMetadata\classes\MetadataChecker;
 use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettingsForm;
 
@@ -132,7 +128,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return;
         }
 
-        if($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
+        if ($this->shouldRequireField("requireOrcid") and !$this->isOrcidProfilePluginEnabled()) {
             $orcidField = $form->getField('orcid');
             $orcidField->isRequired = true;
 
@@ -140,7 +136,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $form->addField($orcidField, [FIELD_POSITION_AFTER, 'url']);
         }
 
-        if($this->shouldRequireField("requireBiography")) {
+        if ($this->shouldRequireField("requireBiography")) {
             $biographyField = $form->getField('biography');
             $biographyField->isRequired = true;
 
@@ -148,7 +144,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $form->addField($biographyField, [FIELD_POSITION_AFTER, 'orcid']);
         }
 
-        if($this->shouldRequireField("requireAffiliation")) {
+        if ($this->shouldRequireField("requireAffiliation")) {
             $affiliationField = $form->getField('affiliation');
             $affiliationField->isRequired = true;
 
@@ -180,7 +176,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        $orcidWarningMessage = $template === 'workflow/workflow.tpl' 
+        $orcidWarningMessage = $template === 'workflow/workflow.tpl'
             ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
             : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
 
@@ -205,7 +201,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     public function getActions($request, $actionArgs)
     {
         $router = $request->getRouter();
-        import('lib.pkp.classes.linkAction.request.AjaxModal');
         return array_merge(
             $this->getEnabled() ? array(
                 new LinkAction(
@@ -284,7 +279,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
 
-        if(is_null($orcidProfilePlugin)) {
+        if (is_null($orcidProfilePlugin)) {
             return false;
         }
 
