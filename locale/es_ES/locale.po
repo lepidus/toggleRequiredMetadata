@@ -48,7 +48,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores. "
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
-msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. La autenticación solo se completa cuando el colaborador abre el enlace de autorización en el correo electrónico de solicitud de ORCID. Para enviar ese correo nuevamente, vaya a la pestaña Publicación, edite el colaborador y use la opción de enviar correo electrónico para solicitar la autorización ORCID."
+msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. La autenticación solo se completa cuando el colaborador abre el enlace de autorización enviado por correo electrónico y, hasta entonces, el ORCID iD registrado no está confirmado. Para enviar esa solicitud, vaya a la pestaña Publicación, edite el colaborador y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\"."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
-msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. Cada uno de ellos recibió un correo electrónico con un enlace para autorizar el acceso a su registro ORCID, y el ORCID iD solo se confirma después de abrir ese enlace. Pídales que busquen ese correo electrónico, incluso en la carpeta de spam."
+msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. El ORCID iD solo se confirma después de que el colaborador abre el enlace de autorización enviado por correo electrónico. Pídales que busquen ese correo electrónico, incluso en la carpeta de spam, o solicite a la revista el envío de la solicitud."

@@ -48,7 +48,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors. "
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
-msgstr "ORCID iD not authenticated yet by: {$pendingAuthors}. The authentication is only completed when the contributor opens the authorization link in the ORCID request e-mail. To send this e-mail again, go to the Publication tab, edit the contributor and use the option to send an e-mail requesting ORCID authorization."
+msgstr "ORCID iD not authenticated yet by: {$pendingAuthors}. The authentication is only completed once the contributor opens the authorization link sent by e-mail, and until then the ORCID iD on record is not confirmed. To send this request, go to the Publication tab, edit the contributor and tick \"Send e-mail to request ORCID authorization from contributor\"."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
-msgstr "ORCID iD not authenticated yet by: {$pendingAuthors}. Each of them received an e-mail with a link to authorize access to their ORCID record, and the ORCID iD is only confirmed after this link is opened. Ask them to look for this e-mail, including in the spam folder."
+msgstr "ORCID iD not authenticated yet by: {$pendingAuthors}. The ORCID iD is only confirmed after the contributor opens the authorization link sent by e-mail. Ask them to look for this e-mail, including in the spam folder, or ask the journal to send the request again."
