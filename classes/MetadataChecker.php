@@ -56,31 +56,35 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
-    public function checkContributorsOrcidAuthorization(Submission $submission, array $authors): bool
+    public function checkOrcidsOrAuthorizationRequested(array $authors): bool
     {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() !== $submittingAuthor->getEmail();
-            });
-        }
-
-        if (empty($authors)) {
-            return false;
-        }
-
-        $count = 0;
         foreach ($authors as $author) {
-            $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');
-            $hasOrcid = $this->checkHasMetadata($author, 'orcid');
-
-            if ($hasOrcidEmailToken || $hasOrcid) {
-                $count++;
+            if (!$this->hasStartedOrcidAuthorization($author)) {
+                return false;
             }
         }
 
-        return $count === count($authors);
+        return true;
+    }
+
+    private function hasStartedOrcidAuthorization(Author $author): bool
+    {
+        return $this->checkHasMetadata($author, 'orcidEmailToken')
+            || $this->hasValidOrcidAccessToken($author);
+    }
+
+    private function hasValidOrcidAccessToken(Author $author): bool
+    {
+        if (!$author->getData('orcidAccessToken')) {
+            return false;
+        }
+
+        $expirationDate = $author->getData('orcidAccessExpiresOn');
+        if (empty($expirationDate)) {
+            return true;
+        }
+
+        return strtotime($expirationDate) > time();
     }
 
     public function checkContributorsOrcidAuthentication(Submission $submission, array $authors): bool
@@ -107,23 +111,6 @@ class MetadataChecker
         }
 
         return true;
-    }
-
-    public function checkSubmittingAuthorOrcidAuthorization(Submission $submission, array $authors): bool
-    {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() === $submittingAuthor->getEmail();
-            });
-        }
-
-        if (empty($authors)) {
-            return true;
-        }
-
-        return $this->checkRequiredMetadata($authors, 'orcid');
     }
 
     private function getSubmittingAuthor(Submission $submission, array $authors): ?Author

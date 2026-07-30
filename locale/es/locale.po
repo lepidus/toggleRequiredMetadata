@@ -38,20 +38,14 @@ msgstr "Por favor ingrese lo Resumen biográfico de su autor."
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores"
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
+msgstr "La autorización ORCID no se ha iniciado para todos los colaboradores. Edite cada colaborador pendiente y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\", para que reciba el enlace de autorización. Los colaboradores que ya han autenticado su ORCID iD no lo necesitan."
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores"
-
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submisionAuthorOrcid"
-msgstr "El campo \"ORCID\" es obligatorio para el autor que envía el artículo."
-
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
-msgstr "El autor que envía debe autorizar el ORCID."
-
-msgid "plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization"
-msgstr "Es obligatorio enviar el correo electrónico de autorización de ORCID a los coautores."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
 msgstr "Hay ORCID que no han sido validados por los autores."

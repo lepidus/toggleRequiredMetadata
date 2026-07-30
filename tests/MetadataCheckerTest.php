@@ -39,6 +39,26 @@ class MetadataCheckerTest extends TestCase
         return $authors;
     }
 
+    private function requestAuthorizationForEveryAuthor(): void
+    {
+        foreach ($this->authors as $author) {
+            $author->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+        }
+    }
+
+    private function completeAuthorizationForEveryAuthor(): void
+    {
+        foreach ($this->authors as $author) {
+            $author->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+            $author->setData('orcidAccessExpiresOn', $this->dateIn('+20 years'));
+        }
+    }
+
+    private function dateIn(string $interval): string
+    {
+        return date('Y-m-d H:i:s', strtotime($interval));
+    }
+
     public function testChecksForOrcid(): void
     {
         $this->assertTrue($this->checker->checkOrcids($this->authors));
@@ -67,5 +87,56 @@ class MetadataCheckerTest extends TestCase
 
         $this->authors[2]->unsetData('biography');
         $this->assertFalse($this->checker->checkBiographies($this->authors));
+    }
+
+    public function testRejectsContributorThatOnlyHasAnUnauthenticatedOrcid(): void
+    {
+        $this->assertFalse($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testAcceptsContributorsWhoseAuthorizationWasRequested(): void
+    {
+        $this->requestAuthorizationForEveryAuthor();
+
+        $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testRejectsContributorWhoseAuthorizationWasNotRequested(): void
+    {
+        $this->requestAuthorizationForEveryAuthor();
+        $this->authors[1]->unsetData('orcidEmailToken');
+
+        $this->assertFalse($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testAcceptsContributorsWhoseAuthorizationWasCompleted(): void
+    {
+        $this->completeAuthorizationForEveryAuthor();
+
+        $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testAcceptsContributorWhoseAccessTokenHasNoExpirationDate(): void
+    {
+        $this->completeAuthorizationForEveryAuthor();
+        $this->authors[1]->unsetData('orcidAccessExpiresOn');
+
+        $this->assertTrue($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testRejectsContributorWhoseAccessTokenHasExpired(): void
+    {
+        $this->completeAuthorizationForEveryAuthor();
+        $this->authors[1]->setData('orcidAccessExpiresOn', $this->dateIn('-1 day'));
+
+        $this->assertFalse($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
+    }
+
+    public function testRejectsSubmittingAuthorLikeEveryOtherContributor(): void
+    {
+        $this->requestAuthorizationForEveryAuthor();
+        $this->authors[0]->unsetData('orcidEmailToken');
+
+        $this->assertFalse($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));
     }
 }

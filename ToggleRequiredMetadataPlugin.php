@@ -39,7 +39,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if ($success && $this->getEnabled()) {
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
-            Hook::add('Author::validate', [$this, 'validateAuthorFields']);
             Hook::add('TemplateManager::display', [$this, 'addOrcidWarning']);
         }
 
@@ -66,19 +65,13 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $contributorsErrors = $errors['contributors'] ?? [];
         $metadataChecker = new MetadataChecker();
 
-        if ($this->shouldRequireField("requireOrcid") and !$metadataChecker->checkOrcids($authors)) {
-            if (!$this->isOrcidProfilePluginEnabled()) {
+        if ($this->shouldRequireField("requireOrcid")) {
+            if ($this->isOrcidProfilePluginEnabled()) {
+                if (!$metadataChecker->checkOrcidsOrAuthorizationRequested($authors)) {
+                    $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization');
+                }
+            } elseif (!$metadataChecker->checkOrcids($authors)) {
                 $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
-            }
-        }
-
-        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidProfilePluginEnabled()) {
-            if (!$metadataChecker->checkContributorsOrcidAuthorization($submission, $authors)) {
-                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization');
-            }
-
-            if (!$metadataChecker->checkSubmittingAuthorOrcidAuthorization($submission, $authors)) {
-                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization');
             }
         }
 
@@ -93,33 +86,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if (!empty($contributorsErrors)) {
             $errors['contributors'] = $contributorsErrors;
         }
-    }
-
-    public function validateAuthorFields($hookName, $params)
-    {
-        $errors = &$params[0];
-        $author = $params[1];
-        $props = $params[2];
-
-        if (!$this->isOrcidProfilePluginEnabled()) {
-            return Hook::CONTINUE;
-        }
-
-        if (!$this->shouldRequireField("requireOrcid")) {
-            return Hook::CONTINUE;
-        }
-
-        if ($author && $author->getData('orcidEmailToken')) {
-            return Hook::CONTINUE;
-        }
-
-        if ($props['requestOrcidAuthorization'] != 'true') {
-            $errors['requestOrcidAuthorization'] = [
-                __('plugins.generic.toggleRequiredMetadata.validation.error.contributorsOrcidAuthorization')
-            ];
-        }
-
-        return Hook::CONTINUE;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
