@@ -62,33 +62,26 @@ class MetadataChecker
     private function hasStartedOrcidAuthorization(Author $author, $submittingUser): bool
     {
         return $this->checkMetadata($author, 'orcidEmailToken')
-            || $this->hasValidOrcidAccessToken($author)
+            || $this->hasAuthenticatedOrcid($author)
             || $this->matchesAuthenticatedUser($author, $submittingUser);
     }
 
     private function matchesAuthenticatedUser(Author $author, $submittingUser): bool
     {
-        if (is_null($submittingUser) || !$this->hasValidOrcidAccessToken($submittingUser)) {
-            return false;
-        }
-
-        $authorOrcid = $author->getData('orcid');
-
-        return !empty($authorOrcid) && $authorOrcid === $submittingUser->getOrcid();
+        return !is_null($submittingUser)
+            && $this->hasAuthenticatedOrcid($submittingUser)
+            && $author->getData('orcid') === $submittingUser->getOrcid();
     }
 
-    public function hasValidOrcidAccessToken($userOrAuthor): bool
+    public function hasAuthenticatedOrcid($userOrAuthor): bool
     {
-        if (!$userOrAuthor->getData('orcidAccessToken')) {
+        if (!$userOrAuthor->getData('orcid') || !$userOrAuthor->getData('orcidAccessToken')) {
             return false;
         }
 
         $expirationDate = $userOrAuthor->getData('orcidAccessExpiresOn');
-        if (empty($expirationDate)) {
-            return true;
-        }
 
-        return strtotime($expirationDate) > time();
+        return empty($expirationDate) || strtotime($expirationDate) > time();
     }
 
     public function checkOrcidAuthorization(array $authors): bool
@@ -101,7 +94,7 @@ class MetadataChecker
         $authorsWithoutAuthorization = [];
 
         foreach ($authors as $author) {
-            if (!$this->hasValidOrcidAccessToken($author)) {
+            if (!$this->hasAuthenticatedOrcid($author)) {
                 $authorsWithoutAuthorization[] = $author;
             }
         }
