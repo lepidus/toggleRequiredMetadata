@@ -2,11 +2,7 @@
 
 namespace APP\plugins\generic\toggleRequiredMetadata\classes;
 
-use APP\submission\Submission;
-use APP\facades\Repo;
 use APP\author\Author;
-use APP\core\Application;
-use PKP\log\event\PKPSubmissionEventLogEntry;
 
 class MetadataChecker
 {
@@ -87,64 +83,16 @@ class MetadataChecker
         return strtotime($expirationDate) > time();
     }
 
-    public function checkContributorsOrcidAuthentication(Submission $submission, array $authors): bool
+    public function getAuthorsWithoutOrcidAuthorization(array $authors): array
     {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() !== $submittingAuthor->getEmail();
-            });
-        }
-
-        if (empty($authors)) {
-            return true;
-        }
+        $authorsWithoutAuthorization = [];
 
         foreach ($authors as $author) {
-            $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');
-            $hasOrcid = $this->checkHasMetadata($author, 'orcid');
-
-            if ($hasOrcidEmailToken && !$hasOrcid) {
-                return false;
+            if (!$this->hasValidOrcidAccessToken($author)) {
+                $authorsWithoutAuthorization[] = $author;
             }
         }
 
-        return true;
-    }
-
-    private function getSubmittingAuthor(Submission $submission, array $authors): ?Author
-    {
-        $user = $this->getSubmittingUser($submission);
-        if (!$user) {
-            return null;
-        }
-
-        foreach ($authors as $author) {
-            if ($author->getEmail() === $user->getEmail()) {
-                return $author;
-            }
-        }
-
-        return null;
-    }
-
-    private function getSubmittingUser(Submission $submission)
-    {
-        if ($submission->getData('submissionProgress')) {
-            return Application::get()->getRequest()->getUser();
-        }
-
-        $submissionSubmitEventLogEntry = Repo::eventLog()->getCollector()
-            ->filterByAssoc(Application::ASSOC_TYPE_SUBMISSION, [$submission->getId()])
-            ->getQueryBuilder()
-            ->where('event_type', '=', PKPSubmissionEventLogEntry::SUBMISSION_LOG_SUBMISSION_SUBMIT)
-            ->first();
-
-        if (!$submissionSubmitEventLogEntry) {
-            return null;
-        }
-
-        return Repo::user()->get($submissionSubmitEventLogEntry->user_id);
+        return $authorsWithoutAuthorization;
     }
 }

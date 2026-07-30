@@ -133,21 +133,36 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
+        if (!$this->isOrcidProfilePluginEnabled()) {
+            return false;
+        }
+
         $submission = $templateMgr->getTemplateVars('submission');
         $publication = $submission->getCurrentPublication();
         $authors = $publication->getData('authors')->toArray();
 
         $metadataChecker = new MetadataChecker();
-        if ($metadataChecker->checkContributorsOrcidAuthentication($submission, $authors)) {
+        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutOrcidAuthorization($authors);
+        if (empty($authorsWithoutAuthorization)) {
             return false;
         }
 
-        $orcidWarningMessage = $template === 'workflow/workflow.tpl'
-            ? __('plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning')
-            : __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning');
+        $messageKey = $template === 'workflow/workflow.tpl'
+            ? 'plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning'
+            : 'plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning';
+        $orcidWarningMessage = __($messageKey, ['pendingAuthors' => $this->getAuthorNames($authorsWithoutAuthorization)]);
 
         $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
         $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    private function getAuthorNames(array $authors): string
+    {
+        $names = array_map(function ($author) {
+            return $author->getFullName();
+        }, $authors);
+
+        return implode(', ', $names);
     }
 
     public function orcidWarningFilter($output, $templateMgr)
