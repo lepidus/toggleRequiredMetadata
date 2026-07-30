@@ -38,14 +38,18 @@ msgstr "Por favor, insira o Resumo da Biografia do seu autor."
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores. "
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
+msgstr "A autorização ORCID não foi iniciada para todos os coautores. Edite cada coautor pendente e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\", para que ele receba o link de autorização. Coautores que já autenticaram o ORCID iD não precisam disso."
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "O campo \"Afiliação\" é requerido para todos os coautores. "
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores. "
 
-msgid "plugins.generic.toggleRequiredMetadata.validation.error.requestOrcidAuthorization"
-msgstr "É obrigatório enviar o email de autorização de ORCID para os coautores."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
+msgstr "ORCID iD ainda não autenticado por: {$pendingAuthors}. A autenticação só é concluída quando o autor abre o link de autorização enviado por e-mail e, até lá, o ORCID iD registrado não está confirmado. Para enviar essa solicitação, acesse a aba Publicação, edite o autor e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\"."
 
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.submittingAuthorOrcidAuthorization"
-msgstr "O autor responsável pela submissão deve adicionar seu ORCID iD utilizando o link enviado no e‑mail de autorização."
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
+msgstr "ORCID iD ainda não autenticado por: {$pendingAuthors}. O ORCID iD só é confirmado depois que o autor abre o link de autorização enviado por e-mail. Peça a eles que procurem esse e-mail, inclusive na caixa de spam, ou solicite à revista o envio da solicitação."
+
