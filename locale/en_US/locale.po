@@ -54,7 +54,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticat
 msgstr "At least one contributor must have an authenticated ORCID iD. Contributors authenticate theirs by opening the authorization link sent by e-mail."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "The ORCID authorization has not been started for every contributor. Edit each pending contributor and tick \"Send e-mail to request ORCID authorization from contributor\", so that they receive the authorization link. Contributors who have already authenticated their ORCID iD do not need it."
+msgstr "The ORCID authorization has not been requested from: {$pendingAuthors}. Edit each of them and tick \"Send e-mail to request ORCID authorization from contributor\", so that they receive the authorization link."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "The affiliation field is required for all contributors. "

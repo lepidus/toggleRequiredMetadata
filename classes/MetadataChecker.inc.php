@@ -13,7 +13,7 @@ class MetadataChecker
         return true;
     }
 
-    public function checkMetadata(Author $author, string $metadata): bool
+    private function checkMetadata(Author $author, string $metadata): bool
     {
         if (!$author->getData($metadata)) {
             return false;
@@ -59,15 +59,25 @@ class MetadataChecker
         return false;
     }
 
-    public function checkOrcidsOrAuthorizationRequested(array $authors, $submittingUser = null): bool
+    public function getAuthorsWithoutAuthenticatedOrcid(array $authors): array
     {
-        foreach ($authors as $author) {
-            if (!$this->hasStartedOrcidAuthorization($author, $submittingUser)) {
-                return false;
-            }
-        }
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
+            return $this->hasAuthenticatedOrcid($author);
+        });
+    }
 
-        return true;
+    public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors, $submittingUser = null): array
+    {
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) use ($submittingUser) {
+            return $this->hasStartedOrcidAuthorization($author, $submittingUser);
+        });
+    }
+
+    private function getAuthorsNotMeeting(array $authors, callable $requirement): array
+    {
+        return array_values(array_filter($authors, function (Author $author) use ($requirement) {
+            return !$requirement($author);
+        }));
     }
 
     private function hasStartedOrcidAuthorization(Author $author, $submittingUser): bool
@@ -84,7 +94,7 @@ class MetadataChecker
             && $author->getData('orcid') === $submittingUser->getOrcid();
     }
 
-    public function hasAuthenticatedOrcid($userOrAuthor): bool
+    private function hasAuthenticatedOrcid($userOrAuthor): bool
     {
         if (!$userOrAuthor->getData('orcid') || !$userOrAuthor->getData('orcidAccessToken')) {
             return false;
@@ -93,23 +103,5 @@ class MetadataChecker
         $expirationDate = $userOrAuthor->getData('orcidAccessExpiresOn');
 
         return empty($expirationDate) || strtotime($expirationDate) > time();
-    }
-
-    public function checkOrcidAuthorization(array $authors): bool
-    {
-        return empty($this->getAuthorsWithoutOrcidAuthorization($authors));
-    }
-
-    public function getAuthorsWithoutOrcidAuthorization(array $authors): array
-    {
-        $authorsWithoutAuthorization = [];
-
-        foreach ($authors as $author) {
-            if (!$this->hasAuthenticatedOrcid($author)) {
-                $authorsWithoutAuthorization[] = $author;
-            }
-        }
-
-        return $authorsWithoutAuthorization;
     }
 }
