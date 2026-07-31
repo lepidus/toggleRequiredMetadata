@@ -89,6 +89,38 @@ class MetadataCheckerTest extends TestCase
         $this->assertFalse($this->checker->checkBiographies($this->authors));
     }
 
+    public function testRejectsContributorsThatOnlyHaveUnauthenticatedOrcids(): void
+    {
+        $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+    }
+
+    public function testAcceptsASingleAuthenticatedContributor(): void
+    {
+        $this->authors[1]->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+
+        $this->assertTrue($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+    }
+
+    public function testRejectsAnAuthenticationWhoseAccessTokenHasExpired(): void
+    {
+        $this->completeAuthorizationForEveryAuthor();
+        foreach ($this->authors as $author) {
+            $author->setData('orcidAccessExpiresOn', $this->dateIn('-1 day'));
+        }
+
+        $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+    }
+
+    public function testRejectsAnAuthenticationWhoseAccessTokenCameWithoutAnOrcid(): void
+    {
+        $this->completeAuthorizationForEveryAuthor();
+        foreach ($this->authors as $author) {
+            $author->unsetData('orcid');
+        }
+
+        $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+    }
+
     public function testRejectsContributorThatOnlyHasAnUnauthenticatedOrcid(): void
     {
         $this->assertFalse($this->checker->checkOrcidsOrAuthorizationRequested($this->authors));

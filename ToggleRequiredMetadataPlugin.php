@@ -67,6 +67,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         if ($this->shouldRequireField("requireOrcid")) {
             if ($this->isOrcidProfilePluginEnabled()) {
+                if (!$metadataChecker->checkAnyAuthenticatedOrcid($authors)) {
+                    $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid');
+                }
+
                 if (!$metadataChecker->checkOrcidsOrAuthorizationRequested($authors)) {
                     $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization');
                 }
