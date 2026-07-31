@@ -4,7 +4,7 @@ This plugin makes it possible to make the **Affiliation**, **ORCID** and **Biogr
 
 These fields belong to the Contributor of the Submission.
 
-When the [ORCID Profile Plugin](https://github.com/pkp/orcidProfile) is enabled, this pluign will require authors to have at least started the ORCID iD validation process in order to finish a submission.
+When the [ORCID Profile Plugin](https://github.com/pkp/orcidProfile) is enabled, this plugin will require at least one of the contributors to have an authenticated ORCID iD, and the ORCID authorization to have been requested from the remaining ones, in order to finish a submission.
 
 ## Compatibility
 

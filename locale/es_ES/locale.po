@@ -36,7 +36,7 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field
 msgstr "El campo ORCID queda bajo control del módulo Perfil ORCID."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"
-msgstr "Cada colaborador necesita el ORCID iD autenticado, o la solicitud de autorización enviada, para finalizar el envío."
+msgstr "Al menos un colaborador debe tener el ORCID iD autenticado, y a los demás se les debe haber solicitado la autorización de ORCID, para finalizar el envío."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
 msgstr "El flujo editorial nombra a quienes aún no se han autenticado."
@@ -49,6 +49,9 @@ msgstr "Faltan datos obligatorios de los colaboradores. Los detalles se enumeran
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid"
+msgstr "Al menos un colaborador debe tener el ORCID iD autenticado. El colaborador autentica el suyo abriendo el enlace de autorización enviado por correo electrónico."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
 msgstr "La autorización ORCID no se ha iniciado para todos los colaboradores. Edite cada colaborador pendiente y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\", para que reciba el enlace de autorización. Los colaboradores que ya han autenticado su ORCID iD no lo necesitan."

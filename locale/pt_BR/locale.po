@@ -36,7 +36,7 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field
 msgstr "O campo ORCID fica sob controle do plugin Perfil ORCID."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"
-msgstr "Cada contribuidor precisa do ORCID iD autenticado, ou da solicitação de autorização enviada, para concluir a submissão."
+msgstr "Pelo menos um coautor precisa ter o ORCID iD autenticado, e os demais precisam ter recebido a solicitação de autorização, para concluir a submissão."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
 msgstr "O fluxo editorial nomeia quem ainda não autenticou."
@@ -49,6 +49,9 @@ msgstr "Faltam dados obrigatórios dos contribuidores. Os detalhes estão listad
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid"
+msgstr "Pelo menos um dos coautores precisa ter o ORCID iD autenticado. O coautor autentica o dele abrindo o link de autorização enviado por e-mail."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
 msgstr "A autorização ORCID não foi iniciada para todos os coautores. Edite cada coautor pendente e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\", para que ele receba o link de autorização. Coautores que já autenticaram o ORCID iD não precisam disso."

@@ -36,7 +36,7 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field
 msgstr "The ORCID field stays under the ORCID Profile plugin's control."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"
-msgstr "Each contributor needs an authenticated ORCID iD, or the authorization request sent, to finish a submission."
+msgstr "At least one contributor must have an authenticated ORCID iD, and the ORCID authorization must have been requested from the others, to finish a submission."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
 msgstr "The workflow names the contributors who have not authenticated yet."
@@ -49,6 +49,9 @@ msgstr "Required contributor information is missing. The details are listed next
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors. "
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid"
+msgstr "At least one contributor must have an authenticated ORCID iD. Contributors authenticate theirs by opening the authorization link sent by e-mail."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
 msgstr "The ORCID authorization has not been started for every contributor. Edit each pending contributor and tick \"Send e-mail to request ORCID authorization from contributor\", so that they receive the authorization link. Contributors who have already authenticated their ORCID iD do not need it."

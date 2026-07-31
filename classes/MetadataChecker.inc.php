@@ -48,6 +48,17 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
+    public function checkAnyAuthenticatedOrcid(array $authors): bool
+    {
+        foreach ($authors as $author) {
+            if ($this->hasAuthenticatedOrcid($author)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function checkOrcidsOrAuthorizationRequested(array $authors, $submittingUser = null): bool
     {
         foreach ($authors as $author) {
