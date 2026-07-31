@@ -54,7 +54,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticat
 msgstr "Pelo menos um dos coautores precisa ter o ORCID iD autenticado. O coautor autentica o dele abrindo o link de autorização enviado por e-mail."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "A solicitação de autorização ORCID não foi enviada para: {$pendingAuthors}. Edite cada um deles e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\", para que recebam o link de autorização."
+msgstr "A solicitação de autorização ORCID não foi enviada para: {$pendingAuthors}. Edite este(s) coautor(es) e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\", para que recebam o link de autorização."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "O campo \"Afiliação\" é requerido para todos os coautores. "
