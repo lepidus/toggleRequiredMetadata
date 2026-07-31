@@ -146,28 +146,48 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors');
         $metadataChecker = new MetadataChecker();
 
+        $missingMetadata = array();
+
         if ($this->shouldRequireField("requireOrcid")) {
             if ($this->isOrcidProfilePluginEnabled()) {
                 $submittingUser = Application::get()->getRequest()->getUser();
+
                 if (!$metadataChecker->checkOrcidsOrAuthorizationRequested($authors, $submittingUser)) {
-                    $form->addErrorField('requiredOrcidMetadata');
-                    $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization'));
+                    $missingMetadata[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization');
                 }
             } elseif (!$metadataChecker->checkOrcids($authors)) {
-                $form->addErrorField('requiredOrcidMetadata');
-                $form->addError('requiredOrcidMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid'));
+                $missingMetadata[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
             }
         }
 
         if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
-            $form->addErrorField('requiredAffiliationMetadata');
-            $form->addError('requiredAffiliationMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation'));
+            $missingMetadata[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation');
         }
 
         if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
-            $form->addErrorField('requiredBiographyMetadata');
-            $form->addError('requiredBiographyMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography'));
+            $missingMetadata[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography');
         }
+
+        if (empty($missingMetadata)) {
+            return false;
+        }
+
+        // A single summary, so the form's notification does not repeat the whole list
+        $form->addErrorField('requiredContributorMetadata');
+        $form->addError('requiredContributorMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors'));
+
+        // step3.tpl leaves this slot right below the contributors list
+        $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
+
+        return false;
+    }
+
+    private function renderMissingMetadata(array $missingMetadata)
+    {
+        $templateMgr = TemplateManager::getManager(Application::get()->getRequest());
+        $templateMgr->assign('missingMetadata', $missingMetadata);
+
+        return $templateMgr->fetch($this->getTemplateResource('missingMetadata.tpl'));
     }
 
     public function addOrcidWarning($hookName, $params)

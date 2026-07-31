@@ -44,6 +44,9 @@ msgstr "El flujo editorial nombra a quienes aún no se han autenticado."
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Por favor ingrese lo Resumen biográfico de su autor."
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors"
+msgstr "Faltan datos obligatorios de los colaboradores. Los detalles se enumeran junto a la lista de colaboradores."
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores. "
 

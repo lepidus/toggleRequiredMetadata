@@ -44,6 +44,9 @@ msgstr "The workflow names the contributors who have not authenticated yet."
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Please enter your author's Biography Statement."
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors"
+msgstr "Required contributor information is missing. The details are listed next to the contributors."
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors. "
 
