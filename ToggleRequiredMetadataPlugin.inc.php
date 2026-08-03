@@ -12,6 +12,7 @@
  */
 
 import('lib.pkp.classes.plugins.GenericPlugin');
+import('classes.submission.Submission');
 import('plugins.generic.toggleRequiredMetadata.classes.MetadataChecker');
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
@@ -215,8 +216,19 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         $submission = $templateMgr->getTemplateVars('submission');
+        if (!$submission instanceof Submission) {
+            return false;
+        }
+
         $publication = $submission->getCurrentPublication();
+        if (is_null($publication)) {
+            return false;
+        }
+
         $authors = $publication->getData('authors');
+        if (empty($authors)) {
+            return false;
+        }
 
         $metadataChecker = new MetadataChecker();
         $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutAuthenticatedOrcid($authors);
@@ -244,6 +256,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function orcidWarningFilter($output, $templateMgr)
     {
+        if (!$this->isFullPageOutput($output)) {
+            return $output;
+        }
+
         if (preg_match('/<tabs[^>]*>/', $output, $matches, PREG_OFFSET_CAPTURE)) {
             $match = $matches[0][0];
             $offset = $matches[0][1];
@@ -254,6 +270,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $templateMgr->unregisterFilter('output', [$this, 'orcidWarningFilter']);
         }
         return $output;
+    }
+
+    private function isFullPageOutput($output): bool
+    {
+        return (bool) preg_match('/^\s*<!DOCTYPE\s+html/i', $output);
     }
 
     public function getActions($request, $actionArgs)
@@ -325,7 +346,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function isOrcidProfilePluginEnabled()
     {
-        PluginRegistry::loadCategory('generic');
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
 
         if (is_null($orcidProfilePlugin)) {
