@@ -71,8 +71,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
                     $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid');
                 }
 
-                if (!$metadataChecker->checkOrcidsOrAuthorizationRequested($authors)) {
-                    $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization');
+                $authorsPendingRequest = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
+                if (!empty($authorsPendingRequest)) {
+                    $contributorsErrors[] = __(
+                        'plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization',
+                        ['pendingAuthors' => $this->getAuthorNames($authorsPendingRequest)]
+                    );
                 }
             } elseif (!$metadataChecker->checkOrcids($authors)) {
                 $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid');
@@ -146,7 +150,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $authors = $publication->getData('authors')->toArray();
 
         $metadataChecker = new MetadataChecker();
-        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutOrcidAuthorization($authors);
+        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutAuthenticatedOrcid($authors);
         if (empty($authorsWithoutAuthorization)) {
             return false;
         }

@@ -63,15 +63,25 @@ class MetadataChecker
         return false;
     }
 
-    public function checkOrcidsOrAuthorizationRequested(array $authors): bool
+    public function getAuthorsWithoutAuthenticatedOrcid(array $authors): array
     {
-        foreach ($authors as $author) {
-            if (!$this->hasStartedOrcidAuthorization($author)) {
-                return false;
-            }
-        }
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
+            return $this->hasAuthenticatedOrcid($author);
+        });
+    }
 
-        return true;
+    public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array
+    {
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
+            return $this->hasStartedOrcidAuthorization($author);
+        });
+    }
+
+    private function getAuthorsNotMeeting(array $authors, callable $requirement): array
+    {
+        return array_values(array_filter($authors, function (Author $author) use ($requirement) {
+            return !$requirement($author);
+        }));
     }
 
     private function hasStartedOrcidAuthorization(Author $author): bool
@@ -89,18 +99,5 @@ class MetadataChecker
         $expirationDate = $author->getData('orcidAccessExpiresOn');
 
         return empty($expirationDate) || strtotime($expirationDate) > time();
-    }
-
-    public function getAuthorsWithoutOrcidAuthorization(array $authors): array
-    {
-        $authorsWithoutAuthorization = [];
-
-        foreach ($authors as $author) {
-            if (!$this->hasAuthenticatedOrcid($author)) {
-                $authorsWithoutAuthorization[] = $author;
-            }
-        }
-
-        return $authorsWithoutAuthorization;
     }
 }
