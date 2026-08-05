@@ -26,8 +26,16 @@ function checkFieldsAreNotRequired() {
     cy.get('label[for="contributor-biography-control-en"] .pkpFormFieldLabel__required').should('not.exist');
 }
 
+function waitForContributorForm(modalTitle) {
+    // The modal mounts its fields asynchronously, and typing into the earlier
+    // markup is dropped when it re-renders
+    cy.get('.modal__panel:contains("' + modalTitle + '") input[name="givenName-en"]').should('be.visible');
+    cy.wait(2000); // Avoid occasional failure due to form init taking time
+}
+
 function addContributorWithoutRequirements(contributorData) {
     cy.contains('button', 'Add Contributor').click();
+    waitForContributorForm('Add Contributor');
     checkFieldsAreNotRequired();
 
     cy.get('input[name="givenName-en"]').type(contributorData.given, {delay: 0});
@@ -46,6 +54,7 @@ function fillContributorRequiredFields(contributorData) {
         .parent().parent().within(() => {
             cy.contains('button', 'Edit').click();
         });
+    waitForContributorForm('Edit');
     cy.get('input[name="orcid"]').type(contributorData.orcid, {delay: 0});
     cy.get('input[name="affiliation-en"]').type(contributorData.affiliation, {delay: 0});
     cy.setTinyMceContent('contributor-biography-control-en', contributorData.biography);
@@ -88,7 +97,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
     });
     
     it('Author creates new submission without requirements', function () {
-        cy.login('cmontgomerie', null, 'publicknowledge');
+        cy.loginAs('cmontgomerie');
         cy.get('div#myQueue a:contains("New Submission")').click();
 
         beginSubmission(submissionData);
@@ -106,7 +115,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
         cy.contains('button', 'Submit').should('not.be.disabled');
     });
     it('Sets all metadata as required', function () {
-        cy.login('dbarnes', null, 'publicknowledge');
+        cy.loginAs('dbarnes');
         cy.goToPluginSettings();
         
         cy.get('#requireOrcid').check();
@@ -116,7 +125,7 @@ describe('Toggle Required Metadata - Requirement during submission', function ()
 		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
     });
     it('Author can not finish submission without filling required fields', function () {
-        cy.login('cmontgomerie', null, 'publicknowledge');
+        cy.loginAs('cmontgomerie');
         cy.findSubmission('myQueue', submissionData.title);
 
         cy.contains('button', 'Continue').click();

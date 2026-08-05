@@ -2,11 +2,7 @@
 
 namespace APP\plugins\generic\toggleRequiredMetadata\classes;
 
-use APP\submission\Submission;
-use APP\facades\Repo;
 use APP\author\Author;
-use APP\core\Application;
-use PKP\log\event\PKPSubmissionEventLogEntry;
 
 class MetadataChecker
 {
@@ -56,108 +52,52 @@ class MetadataChecker
         return $this->checkRequiredMetadata($authors, 'biography');
     }
 
-    public function checkContributorsOrcidAuthorization(Submission $submission, array $authors): bool
+    public function checkAnyAuthenticatedOrcid(array $authors): bool
     {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() !== $submittingAuthor->getEmail();
-            });
+        foreach ($authors as $author) {
+            if ($this->hasAuthenticatedOrcid($author)) {
+                return true;
+            }
         }
 
-        if (empty($authors)) {
+        return false;
+    }
+
+    public function getAuthorsWithoutAuthenticatedOrcid(array $authors): array
+    {
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
+            return $this->hasAuthenticatedOrcid($author);
+        });
+    }
+
+    public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array
+    {
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
+            return $this->hasStartedOrcidAuthorization($author);
+        });
+    }
+
+    private function getAuthorsNotMeeting(array $authors, callable $requirement): array
+    {
+        return array_values(array_filter($authors, function (Author $author) use ($requirement) {
+            return !$requirement($author);
+        }));
+    }
+
+    private function hasStartedOrcidAuthorization(Author $author): bool
+    {
+        return $this->checkHasMetadata($author, 'orcidEmailToken')
+            || $this->hasAuthenticatedOrcid($author);
+    }
+
+    private function hasAuthenticatedOrcid(Author $author): bool
+    {
+        if (!$author->getData('orcid') || !$author->getData('orcidAccessToken')) {
             return false;
         }
-        
-        $count = 0;
-        foreach ($authors as $author) {
-            $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');
-            $hasOrcid = $this->checkHasMetadata($author, 'orcid');
 
-            if ($hasOrcidEmailToken || $hasOrcid) {
-                $count++;
-            }
-        }
+        $expirationDate = $author->getData('orcidAccessExpiresOn');
 
-        return $count === count($authors);
-    }
-
-    public function checkContributorsOrcidAuthentication(Submission $submission, array $authors): bool
-    {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() !== $submittingAuthor->getEmail();
-            });
-        }
-
-        if (empty($authors)) {
-            return true;
-        }
-
-        foreach ($authors as $author) {
-            $hasOrcidEmailToken = $this->checkHasMetadata($author, 'orcidEmailToken');
-            $hasOrcid = $this->checkHasMetadata($author, 'orcid');
-
-            if ($hasOrcidEmailToken && !$hasOrcid) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public function checkSubmittingAuthorOrcidAuthorization(Submission $submission, array $authors): bool
-    {
-        $submittingAuthor = $this->getSubmittingAuthor($submission, $authors);
-
-        if ($submittingAuthor) {
-            $authors = array_filter($authors, function ($author) use ($submittingAuthor) {
-                return $author->getEmail() === $submittingAuthor->getEmail();
-            });
-        }
-
-        if (empty($authors)) {
-            return true;
-        }
-
-        return $this->checkRequiredMetadata($authors, 'orcid');
-    }
-
-    private function getSubmittingAuthor(Submission $submission, array $authors): ?Author
-    {
-        $user = $this->getSubmittingUser($submission);
-        if (!$user) {
-            return null;
-        }
-
-        foreach ($authors as $author) {
-            if ($author->getEmail() === $user->getEmail()) {
-                return $author;
-            }
-        }
-
-        return null;
-    }
-
-    private function getSubmittingUser(Submission $submission)
-    {
-        if ($submission->getData('submissionProgress')) {
-            return Application::get()->getRequest()->getUser();
-        }
-
-        $submissionSubmitEventLogEntry = Repo::eventLog()->getCollector()
-            ->filterByAssoc(Application::ASSOC_TYPE_SUBMISSION, [$submission->getId()])
-            ->getQueryBuilder()
-            ->where('event_type', '=', PKPSubmissionEventLogEntry::SUBMISSION_LOG_SUBMISSION_SUBMIT)
-            ->first();
-
-        if (!$submissionSubmitEventLogEntry) {
-            return null;
-        }
-
-        return Repo::user()->get($submissionSubmitEventLogEntry->user_id);
+        return empty($expirationDate) || strtotime($expirationDate) > time();
     }
 }
