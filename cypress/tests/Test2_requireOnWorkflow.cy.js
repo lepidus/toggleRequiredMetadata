@@ -1,22 +1,15 @@
 import '../support/commands';
 
 describe('Toggle Required Metadata - Requirement during workflow', function () {
-    let submissionTitle = 'The Imitation Game';
+    let contributorName = 'Benedict Cumberbatch';
 
-    it('Author can not finish submission without filling required fields', function () {
-        cy.loginAs('dbarnes');
-        cy.findSubmission('active', submissionTitle);
+    it('Contributor form keeps the metadata required in the workflow', function () {
+        cy.findSubmissionAsEditor('dbarnes', null, 'Cumberbatch');
 
-        cy.get('#publication-button').click();
-        cy.get('#contributors-button').click();
+        cy.openWorkflowMenu('Contributors');
+        cy.get('.listPanel__item:contains("' + contributorName + '")').find('button').contains('Edit').click();
 
-        cy.get('.listPanel__itemTitle:visible:contains("Benedict Cumberbatch")')
-            .parent().parent().within(() => {
-                cy.contains('button', 'Edit').click();
-            });
-        
-            cy.get('input[name="orcid"]').should('have.attr', 'required');
-            cy.get('input[name="affiliation-en"]').should('have.attr', 'required');
-            cy.get('label[for="contributor-biography-control-en"] .pkpFormFieldLabel__required');
+        cy.get('label[for="contributor-biography-control-en"] .pkpFormFieldLabel__required').should('exist');
+        cy.get('.trmAffiliationsRequired').should('exist');
     });
 });

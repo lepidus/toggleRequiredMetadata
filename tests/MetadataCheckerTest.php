@@ -2,17 +2,13 @@
 
 use APP\plugins\generic\toggleRequiredMetadata\classes\MetadataChecker;
 use APP\author\Author;
+use PKP\affiliation\Affiliation;
 use PHPUnit\Framework\TestCase;
 
 class MetadataCheckerTest extends TestCase
 {
     private $checker;
     private $authors;
-    private $orcids = [
-        'https://orcid.org/0000-0002-1825-0097',
-        'https://orcid.org/0000-0002-1825-1997',
-        'https://orcid.org/0000-0002-1825-2049'
-    ];
     private $affiliations = ['Harvard', 'UERJ', 'Cambridge'];
     private $biographies = ['I did some things', 'I did more', 'I did nothing'];
 
@@ -27,10 +23,9 @@ class MetadataCheckerTest extends TestCase
     {
         $authors = [];
 
-        for ($i = 0; $i < count($this->orcids) ; $i++) {
+        for ($i = 0; $i < count($this->affiliations); $i++) {
             $author = new Author();
-            $author->setData('orcid', $this->orcids[$i]);
-            $author->setData('affiliation', ['en' => $this->affiliations[$i]]);
+            $author->setAffiliations([$this->createAffiliation(['en' => $this->affiliations[$i]])]);
             $author->setData('biography', ['en' => $this->biographies[$i]]);
 
             $authors[] = $author;
@@ -39,46 +34,49 @@ class MetadataCheckerTest extends TestCase
         return $authors;
     }
 
-    private function requestAuthorizationForEveryAuthor(): void
+    private function createAffiliation(?array $name, ?string $ror = null): Affiliation
+    {
+        $affiliation = new Affiliation();
+        $affiliation->setName($name);
+        $affiliation->setRor($ror);
+
+        return $affiliation;
+    }
+
+    private function requestVerificationForEveryAuthor(): void
     {
         foreach ($this->authors as $author) {
-            $author->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+            $author->setData('orcidVerificationRequested', true);
         }
     }
 
-    private function completeAuthorizationForEveryAuthor(): void
+    private function verifyOrcidForEveryAuthor(): void
     {
         foreach ($this->authors as $author) {
-            $author->setData('orcidAccessToken', 'f6e5d4c3b2a1');
-            $author->setData('orcidAccessExpiresOn', $this->dateIn('+20 years'));
+            $author->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
+            $author->setOrcidVerified(true);
         }
-    }
-
-    private function dateIn(string $interval): string
-    {
-        return date('Y-m-d H:i:s', strtotime($interval));
-    }
-
-    public function testChecksForOrcid(): void
-    {
-        $this->assertTrue($this->checker->checkOrcids($this->authors));
-
-        $this->authors[0]->unsetData('orcid');
-        $this->assertFalse($this->checker->checkOrcids($this->authors));
     }
 
     public function testChecksForAffiliation(): void
     {
         $this->assertTrue($this->checker->checkAffiliations($this->authors));
 
-        $this->authors[1]->unsetData('affiliation');
+        $this->authors[1]->setAffiliations([]);
         $this->assertFalse($this->checker->checkAffiliations($this->authors));
 
-        $this->authors[1]->setData('affiliation', ['en' => 'UFAM', 'pt_BR' => '']);
+        $this->authors[1]->setAffiliations([$this->createAffiliation(['en' => 'UFAM', 'pt_BR' => ''])]);
         $this->assertTrue($this->checker->checkAffiliations($this->authors));
 
-        $this->authors[1]->setData('affiliation', ['en' => '', 'pt_BR' => '']);
+        $this->authors[1]->setAffiliations([$this->createAffiliation(['en' => '', 'pt_BR' => ''])]);
         $this->assertFalse($this->checker->checkAffiliations($this->authors));
+    }
+
+    public function testAcceptsAffiliationIdentifiedOnlyByItsRor(): void
+    {
+        $this->authors[2]->setAffiliations([$this->createAffiliation([], 'https://ror.org/013meh722')]);
+
+        $this->assertTrue($this->checker->checkAffiliations($this->authors));
     }
 
     public function testChecksForBiography(): void
@@ -89,138 +87,65 @@ class MetadataCheckerTest extends TestCase
         $this->assertFalse($this->checker->checkBiographies($this->authors));
     }
 
-    public function testRejectsContributorsThatOnlyHaveUnauthenticatedOrcids(): void
+    public function testRejectsContributorsThatHaveNoVerifiedOrcid(): void
     {
         $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
     }
 
-    public function testAcceptsASingleAuthenticatedContributor(): void
+    public function testAcceptsASingleVerifiedContributor(): void
     {
-        $this->authors[1]->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+        $this->authors[1]->setOrcidVerified(true);
 
         $this->assertTrue($this->checker->checkAnyAuthenticatedOrcid($this->authors));
     }
 
-    public function testRejectsAnAuthenticationWhoseAccessTokenHasExpired(): void
+    public function testRejectsContributorWhoseVerificationWasOnlyRequested(): void
     {
-        $this->completeAuthorizationForEveryAuthor();
-        foreach ($this->authors as $author) {
-            $author->setData('orcidAccessExpiresOn', $this->dateIn('-1 day'));
-        }
+        $this->requestVerificationForEveryAuthor();
 
         $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
     }
 
-    public function testRejectsAnAuthenticationWhoseAccessTokenCameWithoutAnOrcid(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-        foreach ($this->authors as $author) {
-            $author->unsetData('orcid');
-        }
-
-        $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
-    }
-
-    public function testRejectsContributorThatOnlyHasAnUnauthenticatedOrcid(): void
+    public function testRejectsContributorWithoutAnyOrcidStep(): void
     {
         $this->assertNotEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
-    public function testAcceptsContributorsWhoseAuthorizationWasRequested(): void
+    public function testAcceptsContributorsWhoseVerificationWasRequested(): void
     {
-        $this->requestAuthorizationForEveryAuthor();
+        $this->requestVerificationForEveryAuthor();
 
         $this->assertEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
-    public function testRejectsContributorWhoseAuthorizationWasNotRequested(): void
+    public function testRejectsContributorWhoseVerificationWasNotRequested(): void
     {
-        $this->requestAuthorizationForEveryAuthor();
-        $this->authors[1]->unsetData('orcidEmailToken');
+        $this->requestVerificationForEveryAuthor();
+        $this->authors[1]->unsetData('orcidVerificationRequested');
 
         $this->assertNotEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
-    public function testAcceptsContributorsWhoseAuthorizationWasCompleted(): void
+    public function testAcceptsContributorsWhoseOrcidIsAlreadyVerified(): void
     {
-        $this->completeAuthorizationForEveryAuthor();
+        $this->verifyOrcidForEveryAuthor();
 
         $this->assertEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
-    }
-
-    public function testAcceptsContributorWhoseAccessTokenHasNoExpirationDate(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-        $this->authors[1]->unsetData('orcidAccessExpiresOn');
-
-        $this->assertEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
-    }
-
-    public function testRejectsContributorWhoseAccessTokenHasExpired(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-        $this->authors[1]->setData('orcidAccessExpiresOn', $this->dateIn('-1 day'));
-
-        $this->assertNotEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
-    }
-
-    public function testRejectsContributorWhoseAccessTokenCameWithoutAnOrcid(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-        $this->authors[0]->unsetData('orcid');
-
-        $this->assertNotEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
     public function testRejectsSubmittingAuthorLikeEveryOtherContributor(): void
     {
-        $this->requestAuthorizationForEveryAuthor();
-        $this->authors[0]->unsetData('orcidEmailToken');
+        $this->requestVerificationForEveryAuthor();
+        $this->authors[0]->unsetData('orcidVerificationRequested');
 
         $this->assertNotEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
-    public function testListsContributorsWhoseAuthorizationWasNotRequested(): void
+    public function testListsContributorsWhoseVerificationWasNotRequested(): void
     {
-        $this->requestAuthorizationForEveryAuthor();
-        $this->authors[1]->unsetData('orcidEmailToken');
+        $this->requestVerificationForEveryAuthor();
+        $this->authors[1]->unsetData('orcidVerificationRequested');
 
         $this->assertEquals([$this->authors[1]], $this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
-    }
-
-    public function testListsContributorsWithoutCompletedOrcidAuthorization(): void
-    {
-        $this->authors[1]->setData('orcidAccessToken', 'f6e5d4c3b2a1');
-
-        $authorsWithoutAuthorization = $this->checker->getAuthorsWithoutAuthenticatedOrcid($this->authors);
-
-        $this->assertEquals([$this->authors[0], $this->authors[2]], $authorsWithoutAuthorization);
-    }
-
-    public function testListsContributorWhoseAccessTokenHasExpired(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-        $this->authors[2]->setData('orcidAccessExpiresOn', $this->dateIn('-1 day'));
-
-        $authorsWithoutAuthorization = $this->checker->getAuthorsWithoutAuthenticatedOrcid($this->authors);
-
-        $this->assertEquals([$this->authors[2]], $authorsWithoutAuthorization);
-    }
-
-    public function testListsContributorWhoseAccessTokenCameWithoutAnOrcid(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-        $this->authors[0]->unsetData('orcid');
-
-        $authorsWithoutAuthorization = $this->checker->getAuthorsWithoutAuthenticatedOrcid($this->authors);
-
-        $this->assertEquals([$this->authors[0]], $authorsWithoutAuthorization);
-    }
-
-    public function testListsNoContributorWhenEveryOrcidAuthorizationWasCompleted(): void
-    {
-        $this->completeAuthorizationForEveryAuthor();
-
-        $this->assertEquals([], $this->checker->getAuthorsWithoutAuthenticatedOrcid($this->authors));
     }
 }

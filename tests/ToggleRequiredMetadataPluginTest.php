@@ -4,62 +4,83 @@ namespace APP\plugins\generic\toggleRequiredMetadata\tests;
 
 use PKP\tests\PKPTestCase;
 use PKP\components\forms\publication\ContributorForm;
-use PKP\components\forms\FormComponent;
-use APP\submission\Submission;
-use PKP\components\forms\FieldText;
-use APP\journal\Journal;
-use PKP\plugins\Hook;
+use APP\core\Application;
+use PKP\context\Context;
+use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
 class ToggleRequiredMetadataPluginTest extends PKPTestCase
 {
+    private ContributorForm $contributorForm;
+
     public function setUp(): void
     {
         parent::setUp();
-        Hook::register('Form::config::before', array($this, 'editAuthorFormDataFields'));
+        $this->mockRequest();
+        $this->contributorForm = new ContributorForm('url', [], null, $this->createContext());
     }
 
-    public function editAuthorFormDataFields(string $hookName, FormComponent $form): void
+    private function createContext(): Context
     {
-        if (!defined('FORM_CONTRIBUTOR') || $form->id !== FORM_CONTRIBUTOR) {
-            return;
-        }
-        $form->removeField('biography');
-
-        $form->addField(new FieldText('biography', [
-            'label' => __('user.biography'),
-            'isMultilingual' => true,
-            'isRequired' => true,
-        ]));
-    }
-
-    public function createSubmission()
-    {
-        $submission = new Submission();
-
-        return $submission;
-    }
-
-    public function createContext()
-    {
-        $context = new Journal();
+        $context = Application::getContextDAO()->newDataObject();
         $context->setId(1);
 
         return $context;
     }
 
-    public function testBiographyRequiredField()
+    private function createPluginRequiring(bool $required): ToggleRequiredMetadataPlugin
     {
-        $form = new ContributorForm(
-            'url',
-            [],
-            $this->createSubmission(),
-            $this->createContext()
-        );
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField'])
+            ->getMock();
+        $plugin->method('shouldRequireField')->willReturn($required);
 
-        $formConfig = $form->getConfig();
+        return $plugin;
+    }
 
-        $biographyField = $form->getField('biography');
+    public function testMakesBiographyRequired(): void
+    {
+        $plugin = $this->createPluginRequiring(true);
 
-        $this->assertTrue($biographyField->isRequired);
+        $plugin->editAuthorFormDataFields('Form::config::before', $this->contributorForm);
+
+        $this->assertTrue($this->contributorForm->getField('biography')->isRequired);
+    }
+
+    public function testMarksTheAffiliationsFieldRightBeforeIt(): void
+    {
+        $plugin = $this->createPluginRequiring(true);
+
+        $plugin->editAuthorFormDataFields('Form::config::before', $this->contributorForm);
+
+        $fieldNames = array_map(fn ($field) => $field->name, $this->contributorForm->fields);
+        $noticePosition = array_search('trmAffiliationsRequired', $fieldNames);
+        $affiliationsPosition = array_search('affiliations', $fieldNames);
+
+        $this->assertNotFalse($noticePosition);
+        $this->assertSame($affiliationsPosition - 1, $noticePosition);
+    }
+
+    /**
+     * The field is left alone on purpose: adding an affiliation emits no change
+     * event, so an error raised for it is never cleared and the contributor form
+     * can no longer be saved.
+     */
+    public function testLeavesTheAffiliationsFieldSaveable(): void
+    {
+        $plugin = $this->createPluginRequiring(true);
+
+        $plugin->editAuthorFormDataFields('Form::config::before', $this->contributorForm);
+
+        $this->assertFalse($this->contributorForm->getField('affiliations')->isRequired);
+    }
+
+    public function testLeavesFieldsAloneWhenNothingIsRequired(): void
+    {
+        $plugin = $this->createPluginRequiring(false);
+
+        $plugin->editAuthorFormDataFields('Form::config::before', $this->contributorForm);
+
+        $this->assertFalse($this->contributorForm->getField('biography')->isRequired);
+        $this->assertNull($this->contributorForm->getField('trmAffiliationsRequired'));
     }
 }

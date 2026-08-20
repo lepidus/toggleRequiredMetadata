@@ -6,56 +6,32 @@ use APP\author\Author;
 
 class MetadataChecker
 {
-    private function checkRequiredMetadata(array $authors, string $metadata): bool
-    {
-        foreach ($authors as $author) {
-            if (!$this->checkHasMetadata($author, $metadata)) {
-                return false;
-            };
-        }
-
-        return true;
-    }
-
-    private function checkHasMetadata(Author $author, string $metadata): bool
-    {
-        if (!$author->getData($metadata)) {
-            return false;
-        } elseif (is_array($author->getData($metadata))) {
-            $entryFilled = false;
-            foreach ($author->getData($metadata) as $entry) {
-                if ($entry) {
-                    $entryFilled = true;
-                    break;
-                }
-            }
-            if (!$entryFilled) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public function checkOrcids(array $authors): bool
-    {
-        return $this->checkRequiredMetadata($authors, 'orcid');
-    }
-
     public function checkAffiliations(array $authors): bool
     {
-        return $this->checkRequiredMetadata($authors, 'affiliation');
+        foreach ($authors as $author) {
+            if (!$this->hasAffiliation($author)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function checkBiographies(array $authors): bool
     {
-        return $this->checkRequiredMetadata($authors, 'biography');
+        foreach ($authors as $author) {
+            if (!$this->hasAnyLocalizedValue($author->getData('biography'))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function checkAnyAuthenticatedOrcid(array $authors): bool
     {
         foreach ($authors as $author) {
-            if ($this->hasAuthenticatedOrcid($author)) {
+            if ($author->hasVerifiedOrcid()) {
                 return true;
             }
         }
@@ -63,41 +39,42 @@ class MetadataChecker
         return false;
     }
 
-    public function getAuthorsWithoutAuthenticatedOrcid(array $authors): array
-    {
-        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
-            return $this->hasAuthenticatedOrcid($author);
-        });
-    }
-
     public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array
     {
-        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
-            return $this->hasStartedOrcidAuthorization($author);
-        });
+        return array_values(array_filter($authors, function (Author $author) {
+            return !$this->hasStartedOrcidAuthorization($author);
+        }));
     }
 
-    private function getAuthorsNotMeeting(array $authors, callable $requirement): array
+    private function hasAffiliation(Author $author): bool
     {
-        return array_values(array_filter($authors, function (Author $author) use ($requirement) {
-            return !$requirement($author);
-        }));
+        foreach ($author->getAffiliations() as $affiliation) {
+            if ($affiliation->getRor() || $this->hasAnyLocalizedValue($affiliation->getName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function hasStartedOrcidAuthorization(Author $author): bool
     {
-        return $this->checkHasMetadata($author, 'orcidEmailToken')
-            || $this->hasAuthenticatedOrcid($author);
+        return (bool) $author->getData('orcidVerificationRequested')
+            || $author->hasVerifiedOrcid();
     }
 
-    private function hasAuthenticatedOrcid(Author $author): bool
+    private function hasAnyLocalizedValue($value): bool
     {
-        if (!$author->getData('orcid') || !$author->getData('orcidAccessToken')) {
-            return false;
+        if (!is_array($value)) {
+            return !empty($value);
         }
 
-        $expirationDate = $author->getData('orcidAccessExpiresOn');
+        foreach ($value as $localizedValue) {
+            if (!empty($localizedValue)) {
+                return true;
+            }
+        }
 
-        return empty($expirationDate) || strtotime($expirationDate) > time();
+        return false;
     }
 }

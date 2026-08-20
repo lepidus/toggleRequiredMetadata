@@ -29,29 +29,23 @@ msgstr "Afiliación"
 msgid "plugins.generic.toggleRequiredMetadata.settings.requireBiography"
 msgstr "Resumen Biográfico"
 
-msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.status"
-msgstr "Módulo Perfil ORCID activo"
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcid.enabled.status"
+msgstr "ORCID habilitado"
 
-msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field"
-msgstr "El campo ORCID queda bajo control del módulo Perfil ORCID."
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcid.enabled.effect.submission"
+msgstr "Al menos un colaborador debe tener el ORCID iD verificado, y a los demás se les debe haber solicitado la verificación de ORCID, para finalizar el envío."
 
-msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"
-msgstr "Al menos un colaborador debe tener el ORCID iD autenticado, y a los demás se les debe haber solicitado la autorización de ORCID, para finalizar el envío."
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcid.disabled.status"
+msgstr "ORCID no habilitado"
 
-msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
-msgstr "El flujo editorial nombra a quienes aún no se han autenticado."
-
-msgid "plugins.generic.toggleRequiredMetadata.error"
-msgstr "Por favor ingrese lo Resumen biográfico de su autor."
-
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
-msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores"
+msgid "plugins.generic.toggleRequiredMetadata.settings.orcid.disabled.effect"
+msgstr "La opción ORCID está desactivada y no se puede cambiar: los colaboradores solo pueden proporcionar un ORCID iD cuando ORCID está habilitado en la configuración de ORCID. La elección guardada se mantiene y vuelve a aplicarse en cuanto se habilite ORCID."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid"
-msgstr "Al menos un colaborador debe tener el ORCID iD autenticado. El colaborador autentica el suyo abriendo el enlace de autorización enviado por correo electrónico."
+msgstr "Al menos un colaborador debe tener el ORCID iD verificado. El colaborador verifica el suyo abriendo el enlace de verificación enviado por correo electrónico."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "No se ha solicitado la autorización de ORCID a: {$pendingAuthors}. Edite el/los colaborador(es) y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\", para que reciban el enlace de autorización."
+msgstr "No se ha solicitado la verificación de ORCID a: {$pendingAuthors}. Edite el/los colaborador(es) y use \"Solicitar verificación\" en el campo ORCID, para que reciban el enlace de verificación."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"
@@ -59,8 +53,14 @@ msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores"
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
-msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. La autenticación solo se completa cuando el colaborador abre el enlace de autorización enviado por correo electrónico y, hasta entonces, el ORCID iD registrado no está confirmado. Para enviar esa solicitud, vaya a la pestaña Publicación, edite el colaborador y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\"."
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
-msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. El ORCID iD solo se confirma después de que el colaborador abre el enlace de autorización enviado por correo electrónico. Pídales que busquen ese correo electrónico, incluso en la carpeta de spam, o solicite a la revista el envío de la solicitud."
+msgid "plugins.generic.toggleRequiredMetadata.contributorForm.affiliationRequired"
+msgstr "Afiliaciones: obligatorio."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification"
+msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Para enviarlo de nuevo, edite el colaborador y use \"Reenviar el correo electrónico de verificación\" en el campo ORCID."
+
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.pendingVerification"
+msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Pídale que busque ese correo electrónico, incluso en la carpeta de spam, o solicite a la revista que lo envíe de nuevo."
+
