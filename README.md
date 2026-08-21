@@ -1,5 +1,7 @@
 # Toggle Required Metadata Plugin
 
+**English** · [Português (Brasil)](README.pt_BR.md) · [Español](README.es.md)
+
 This plugin lets a journal, press or server demand more from the contributors of a submission than the application does on its own: an **Affiliation**, a **Biography Statement** and an **ORCID iD** can each be made mandatory.
 
 Each requirement is checked when the submission is completed, so no submission gets through without it. All three are also marked as required in the Contributor form, where the author fills them in.
