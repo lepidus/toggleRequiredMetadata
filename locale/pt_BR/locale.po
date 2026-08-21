@@ -41,11 +41,20 @@ msgstr "ORCID não habilitado"
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcid.disabled.effect"
 msgstr "A opção ORCID está desativada e não pode ser alterada: os contribuidores só podem informar um ORCID iD quando o ORCID está habilitado nas configurações de ORCID. A escolha salva é preservada e volta a valer assim que o ORCID for habilitado."
 
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid"
-msgstr "Pelo menos um dos coautores precisa ter o ORCID iD verificado. O coautor verifica o dele abrindo o link de verificação enviado por e-mail."
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.summary"
+msgstr "ORCID iD — {$verified} de {$total} coautores verificados"
 
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "A solicitação de verificação ORCID não foi enviada para: {$pendingAuthors}. Edite este(s) coautor(es) e use \"Solicitar verificação\" no campo ORCID, para que recebam o link de verificação."
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.rule"
+msgstr "Basta um iD verificado para concluir a submissão, mas a verificação precisa ter sido solicitada a todos os coautores."
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.verified"
+msgstr "verificado"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.awaitingVerification"
+msgstr "e-mail enviado — aguardando que ele abra o link de verificação"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.notRequested"
+msgstr "ainda não solicitado — edite este coautor e use \"Solicitar verificação\" no campo ORCID"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "O campo \"Afiliação\" é requerido para todos os coautores"

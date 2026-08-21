@@ -4,7 +4,7 @@ This plugin lets a journal, press or server demand more from the contributors of
 
 Each requirement is checked when the submission is completed, so no submission gets through without it. All three are also marked as required in the Contributor form, where the author fills them in.
 
-The ORCID requirement is different in kind, because since 3.5 nobody types an ORCID iD: it is only recorded when the contributor authorises it through the verification e-mail. So what the plugin requires is that **at least one contributor has a verified ORCID iD** and that the **verification has been requested from all the others**. While any contributor is still unverified, the submission workflow shows a warning naming them.
+The ORCID requirement is different in kind, because since 3.5 nobody types an ORCID iD: it is only recorded when the contributor authorises it through the verification e-mail. So what the plugin requires is that **at least one contributor has a verified ORCID iD** and that the **verification has been requested from all the others**. On the last step of the submission this is shown as a single block, counting how many contributors have verified and naming where each of them stands, so that the author can tell apart what is still up to them from what is only waiting on someone else. While any contributor is still unverified, the submission workflow shows a warning naming them.
 
 ## Compatibility
 
@@ -39,7 +39,7 @@ All three requirements are enabled by default. To change that:
 |---|---|---|
 | Affiliation | marked as required | blocked until every contributor has at least one affiliation |
 | Biography Statement | marked as required; the form cannot be saved without it | blocked until every contributor has one |
-| ORCID | marked as required beside the verification button; not editable by hand in 3.5 | blocked until one contributor has a verified iD and the verification has been requested from all the others |
+| ORCID | marked as required beside the verification button; not editable by hand in 3.5 | blocked until one contributor has a verified iD and the verification has been requested from all the others, shown as one block with the standing of each contributor |
 
 ## Notes for 3.5
 
@@ -49,7 +49,7 @@ All three requirements are enabled by default. To change that:
 
 ## Building the front-end assets
 
-The required marks on the affiliations and ORCID fields and the workflow ORCID warning are Vue components, built with Vite. The build output is committed under `public/build/`, so installing the plugin needs no build step. To rebuild after changing anything under `resources/`:
+The required marks on the affiliations and ORCID fields, the ORCID block on the last step of the submission and the workflow ORCID warning are Vue components, built with Vite. The build output is committed under `public/build/`, so installing the plugin needs no build step. To rebuild after changing anything under `resources/`:
 
 ```
 npm install

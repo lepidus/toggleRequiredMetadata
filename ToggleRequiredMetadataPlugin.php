@@ -13,6 +13,7 @@
 
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
+use APP\author\Author;
 use APP\core\Application;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
@@ -31,6 +32,18 @@ use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettin
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
+    /**
+     * Key the ORCID requirement is reported under when the submission is
+     * validated.
+     *
+     * It is deliberately not `contributors`, which the review step renders as
+     * one plain warning per message: the requirement has two halves and reads
+     * as two unrelated problems that way. Under a key of its own it still
+     * blocks the submission, since the wizard only counts the keys, while the
+     * plugin renders it as a single block naming where each contributor stands.
+     */
+    public const ORCID_REQUIREMENT = 'toggleRequiredMetadataOrcid';
+
     public function register($category, $path, $mainContextId = null)
     {
         $success = parent::register($category, $path);
@@ -43,6 +56,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addBackendAssets']);
+            Hook::add('Template::SubmissionWizard::Section::Review::Contributors', [$this, 'addOrcidRequirementToReviewStep']);
         }
 
         return $success;
@@ -69,16 +83,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $metadataChecker = new MetadataChecker();
 
         if ($this->shouldRequireField("requireOrcid") and $this->isOrcidEnabled()) {
-            if (!$metadataChecker->checkAnyAuthenticatedOrcid($authors)) {
-                $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid');
-            }
+            $orcidRequirement = $this->describeOrcidRequirement($authors);
 
-            $authorsPendingRequest = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
-            if (!empty($authorsPendingRequest)) {
-                $contributorsErrors[] = __(
-                    'plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization',
-                    ['pendingAuthors' => $this->getAuthorNames($authorsPendingRequest)]
-                );
+            if (!is_null($orcidRequirement)) {
+                $errors[self::ORCID_REQUIREMENT] = $orcidRequirement;
             }
         }
 
@@ -221,13 +229,81 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->setState(['pageInitConfig' => $pageInitConfig]);
     }
 
-    private function getAuthorNames(array $authors): string
+    /**
+     * Describes what the ORCID requirement is still waiting for, or null once
+     * it is met.
+     *
+     * The description carries the rule, how far the contributors are from it
+     * and where each of them stands, so that the review step can show it as one
+     * block instead of two warnings that read as unrelated problems. It is
+     * built here, and not in the browser, because the wizard holds summarized
+     * contributors and `orcidVerificationRequested` is not a summary property:
+     * the two unverified states cannot be told apart there. The wizard
+     * revalidates whenever the review step is opened, so this stays current
+     * while the author acts on it.
+     */
+    private function describeOrcidRequirement(array $authors): ?array
     {
-        $names = array_map(function ($author) {
-            return $author->getFullName();
-        }, $authors);
+        $metadataChecker = new MetadataChecker();
+        $verifiedAuthors = $metadataChecker->getAuthorsWithVerifiedOrcid($authors);
+        $authorsPendingRequest = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
 
-        return implode(', ', $names);
+        if (!empty($verifiedAuthors) && empty($authorsPendingRequest)) {
+            return null;
+        }
+
+        return [
+            'summary' => __(
+                'plugins.generic.toggleRequiredMetadata.stepValidation.orcid.summary',
+                ['verified' => count($verifiedAuthors), 'total' => count($authors)]
+            ),
+            'rule' => __('plugins.generic.toggleRequiredMetadata.stepValidation.orcid.rule'),
+            'contributors' => array_map(
+                fn (Author $author) => $this->describeAuthorOrcidStatus($author),
+                array_values($authors)
+            ),
+        ];
+    }
+
+    private function describeAuthorOrcidStatus(Author $author): array
+    {
+        if ($author->hasVerifiedOrcid()) {
+            $status = 'verified';
+        } elseif ($author->getData('orcidVerificationRequested')) {
+            $status = 'awaitingVerification';
+        } else {
+            $status = 'notRequested';
+        }
+
+        return [
+            'name' => $author->getFullName(),
+            'status' => $status,
+            'note' => __("plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.{$status}"),
+        ];
+    }
+
+    /**
+     * Renders the ORCID requirement inside the contributors panel of the review
+     * step, where the Edit button that resolves it already is.
+     *
+     * The hook is called at the end of the contributor list, so the block
+     * carries the CSS that lifts it to the top, where the errors the wizard
+     * raises itself are: warnings belong together, whichever end they are at.
+     *
+     * The block is bound to the wizard's own `errors`, so it follows every
+     * revalidation without a page reload, and leaves the list empty-handed as
+     * soon as the requirement is met.
+     */
+    public function addOrcidRequirementToReviewStep(string $hookName, array $args): bool
+    {
+        if (!$this->shouldRequireField("requireOrcid") || !$this->isOrcidEnabled()) {
+            return false;
+        }
+
+        $requirement = 'errors.' . self::ORCID_REQUIREMENT;
+        $args[2] .= "<trm-orcid-requirement :requirement=\"{$requirement}\"></trm-orcid-requirement>";
+
+        return false;
     }
 
     public function getActions($request, $actionArgs)

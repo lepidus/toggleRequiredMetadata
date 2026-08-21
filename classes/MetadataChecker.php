@@ -28,15 +28,11 @@ class MetadataChecker
         return true;
     }
 
-    public function checkAnyAuthenticatedOrcid(array $authors): bool
+    public function getAuthorsWithVerifiedOrcid(array $authors): array
     {
-        foreach ($authors as $author) {
-            if ($author->hasVerifiedOrcid()) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_values(array_filter($authors, function (Author $author) {
+            return $author->hasVerifiedOrcid();
+        }));
     }
 
     public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array

@@ -41,11 +41,20 @@ msgstr "ORCID no habilitado"
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcid.disabled.effect"
 msgstr "La opción ORCID está desactivada y no se puede cambiar: los colaboradores solo pueden proporcionar un ORCID iD cuando ORCID está habilitado en la configuración de ORCID. La elección guardada se mantiene y vuelve a aplicarse en cuanto se habilite ORCID."
 
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid"
-msgstr "Al menos un colaborador debe tener el ORCID iD verificado. El colaborador verifica el suyo abriendo el enlace de verificación enviado por correo electrónico."
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.summary"
+msgstr "ORCID iD — {$verified} de {$total} colaboradores verificados"
 
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcidAuthorization"
-msgstr "No se ha solicitado la verificación de ORCID a: {$pendingAuthors}. Edite el/los colaborador(es) y use \"Solicitar verificación\" en el campo ORCID, para que reciban el enlace de verificación."
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.rule"
+msgstr "Basta un iD verificado para finalizar el envío, pero la verificación debe haberse solicitado a todos los colaboradores."
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.verified"
+msgstr "verificado"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.awaitingVerification"
+msgstr "correo enviado — esperando a que abra el enlace de verificación"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.notRequested"
+msgstr "aún no solicitado — edite a este colaborador y use \"Solicitar verificación\" en el campo ORCID"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"

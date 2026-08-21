@@ -87,23 +87,23 @@ class MetadataCheckerTest extends TestCase
         $this->assertFalse($this->checker->checkBiographies($this->authors));
     }
 
-    public function testRejectsContributorsThatHaveNoVerifiedOrcid(): void
+    public function testFindsNoVerifiedContributorWhenNobodyVerified(): void
     {
-        $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+        $this->assertEmpty($this->checker->getAuthorsWithVerifiedOrcid($this->authors));
     }
 
-    public function testAcceptsASingleVerifiedContributor(): void
+    public function testFindsTheContributorsThatVerified(): void
     {
         $this->authors[1]->setOrcidVerified(true);
 
-        $this->assertTrue($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+        $this->assertSame([$this->authors[1]], $this->checker->getAuthorsWithVerifiedOrcid($this->authors));
     }
 
-    public function testRejectsContributorWhoseVerificationWasOnlyRequested(): void
+    public function testDoesNotCountAContributorWhoseVerificationWasOnlyRequested(): void
     {
         $this->requestVerificationForEveryAuthor();
 
-        $this->assertFalse($this->checker->checkAnyAuthenticatedOrcid($this->authors));
+        $this->assertEmpty($this->checker->getAuthorsWithVerifiedOrcid($this->authors));
     }
 
     public function testRejectsContributorWithoutAnyOrcidStep(): void

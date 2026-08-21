@@ -2,7 +2,11 @@
 
 namespace APP\plugins\generic\toggleRequiredMetadata\tests;
 
+use Illuminate\Support\Collection;
 use PKP\tests\PKPTestCase;
+use APP\author\Author;
+use APP\publication\Publication;
+use APP\submission\Submission;
 use PKP\components\forms\FieldOrcid;
 use PKP\components\forms\publication\ContributorForm;
 use APP\core\Application;
@@ -56,6 +60,95 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $fieldNames = array_map(fn ($field) => $field->name, $this->contributorForm->fields);
 
         return array_search($fieldName, $fieldNames);
+    }
+
+    private function createPluginRequiringOnlyOrcid(): ToggleRequiredMetadataPlugin
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField', 'isOrcidEnabled'])
+            ->getMock();
+        $plugin->method('shouldRequireField')
+            ->willReturnCallback(fn (string $setting) => $setting === 'requireOrcid');
+        $plugin->method('isOrcidEnabled')->willReturn(true);
+
+        return $plugin;
+    }
+
+    private function createAuthor(string $fullName, bool $verified = false, bool $requested = false): Author
+    {
+        $author = new Author();
+        $author->setGivenName($fullName, 'en');
+        $author->setData('orcidVerificationRequested', $requested);
+
+        if ($verified) {
+            $author->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
+            $author->setOrcidVerified(true);
+        }
+
+        return $author;
+    }
+
+    private function validateSubmissionOf(ToggleRequiredMetadataPlugin $plugin, array $authors): array
+    {
+        $publication = new Publication();
+        $publication->setId(1);
+        $publication->setData('authors', new Collection($authors));
+
+        $submission = new Submission();
+        $submission->setData('currentPublicationId', 1);
+        $submission->setData('publications', [$publication]);
+
+        $errors = [];
+        $plugin->validateSubmissionFields('Submission::validateSubmit', [&$errors, $submission]);
+
+        return $errors;
+    }
+
+    public function testReportsTheOrcidRequirementUnderItsOwnKey(): void
+    {
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [
+            $this->createAuthor('Ana'),
+        ]);
+
+        $this->assertArrayHasKey(ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT, $errors);
+        $this->assertArrayNotHasKey('contributors', $errors);
+    }
+
+    public function testDescribesWhereEachContributorStandsOnOrcid(): void
+    {
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [
+            $this->createAuthor('Ana', verified: true),
+            $this->createAuthor('Bruno', requested: true),
+            $this->createAuthor('Carla'),
+        ]);
+
+        $statuses = array_column($errors[ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT]['contributors'], 'status');
+
+        $this->assertSame(['verified', 'awaitingVerification', 'notRequested'], $statuses);
+    }
+
+    /**
+     * One verified iD is enough, so the requirement is met even while the
+     * others are only waiting for their own verification.
+     */
+    public function testReportsNothingOnceOneContributorVerifiedAndTheRestWereAsked(): void
+    {
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [
+            $this->createAuthor('Ana', verified: true),
+            $this->createAuthor('Bruno', requested: true),
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
+    public function testReportsTheRequirementWhileNobodyVerified(): void
+    {
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [
+            $this->createAuthor('Ana', requested: true),
+            $this->createAuthor('Bruno', requested: true),
+        ]);
+
+        $this->assertArrayHasKey(ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT, $errors);
     }
 
     public function testMakesBiographyRequired(): void

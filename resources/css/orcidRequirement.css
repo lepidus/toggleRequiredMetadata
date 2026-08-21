@@ -1,0 +1,56 @@
+/*
+ * The hook that renders the block is called at the end of the contributor list,
+ * while the errors the wizard raises itself are rendered at the start of it.
+ * Ordering the list puts them together, which asks for a flex container: the
+ * rule is written so that it only takes hold in the list the block is actually
+ * in, and does nothing to the one the files step renders with the same class.
+ */
+.submissionWizard__reviewPanel__list:has(> .trmOrcidRequirement) {
+	display: flex;
+	flex-direction: column;
+}
+
+/*
+ * The review step lays its list items out as centred flex rows, which suits a
+ * contributor name and its badges but not a block of its own.
+ */
+li.trmOrcidRequirement {
+	display: block;
+	order: -1;
+}
+
+.trmOrcidRequirement__summary {
+	margin: 0;
+	font-size: inherit;
+	font-weight: 700;
+}
+
+.trmOrcidRequirement__rule {
+	margin: 0.25rem 0 0;
+}
+
+.trmOrcidRequirement__contributors {
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+li.trmOrcidRequirement .trmOrcidRequirement__contributors li {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	margin: 0.25rem 0 0;
+}
+
+.trmOrcidRequirement__name {
+	font-weight: 700;
+}
+
+.trmOrcidRequirement__note {
+	color: #4e4e4e;
+}
+
+.trmOrcidRequirement__contributor--verified .trmOrcidRequirement__note {
+	/* @yes from the ui-library palette */
+	color: #00b28d;
+}

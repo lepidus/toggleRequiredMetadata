@@ -1,11 +1,16 @@
 import '../css/requiredMark.css';
+import '../css/orcidRequirement.css';
 
 import TrmRequiredMark from './Components/TrmRequiredMark.vue';
+import TrmOrcidRequirement from './Components/TrmOrcidRequirement.vue';
 import TrmOrcidWarning from './Components/TrmOrcidWarning.vue';
 
 // Registered under the name the form config asks for, so the contributor form
 // renders it like any other field.
 pkp.registry.registerComponent('trm-required-mark', TrmRequiredMark);
+// Rendered as <trm-orcid-requirement> from the review step of the wizard, which
+// Vue resolves to the name registered here.
+pkp.registry.registerComponent('TrmOrcidRequirement', TrmOrcidRequirement);
 pkp.registry.registerComponent('TrmOrcidWarning', TrmOrcidWarning);
 
 pkp.registry.storeExtendFn('workflow', 'getPrimaryItems', (items, args) => {
