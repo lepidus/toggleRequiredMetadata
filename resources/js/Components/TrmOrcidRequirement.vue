@@ -41,9 +41,10 @@ defineProps({
 });
 
 // Telling "waiting on someone else" apart from "still up to you" is the whole
-// point of the block, so each state carries its own icon.
+// point of the block, so each state carries its own icon. A verified iD gets
+// the ORCID mark itself, which is what the contributor sees everywhere else.
 const statusIcons = {
-	verified: 'Complete',
+	verified: 'Orcid',
 	awaitingVerification: 'Clock',
 	notRequested: 'Error',
 };
