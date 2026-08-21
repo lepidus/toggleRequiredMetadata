@@ -44,6 +44,9 @@ li.trmOrcidRequirement .trmOrcidRequirement__contributors li {
 
 .trmOrcidRequirement__name {
 	font-weight: 700;
+	/* The note beside it is the part that wraps, as it does for the contributor
+	   names the review panel itself lists */
+	white-space: nowrap;
 }
 
 .trmOrcidRequirement__note {
