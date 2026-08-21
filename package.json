@@ -1,0 +1,17 @@
+{
+  "name": "togglerequiredmetadataplugin",
+  "version": "1.0.0",
+  "description": "Toggle Required Metadata plugin for PKP applications",
+  "main": "resources/js/main.js",
+  "private": true,
+  "scripts": {
+    "dev": "vite build --watch --mode development --minify=false",
+    "build": "vite build"
+  },
+  "author": "Lepidus Tecnologia",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.6",
+    "vite": "^7.1.0"
+  }
+}

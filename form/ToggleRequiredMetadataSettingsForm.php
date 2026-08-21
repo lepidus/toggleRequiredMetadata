@@ -3,7 +3,7 @@
 /**
  * @file plugins/generic/toggleRequiredMetadata/ToggleRequiredMetadataSettingsForm.php
  *
- * Copyright (c) 2022 Lepidus Tecnologia
+ * Copyright (c) 2022-2026 Lepidus Tecnologia
  * Distributed under the GNU GPL v3. For full terms see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt
  *
  * @class ToggleRequiredMetadataSettingsForm
@@ -32,6 +32,7 @@ class ToggleRequiredMetadataSettingsForm extends Form
 
     public function fetch($request, $template = null, $display = false)
     {
+        $orcidEnabled = $this->plugin->isOrcidEnabled();
         $requireOrcid = $this->plugin->shouldRequireField("requireOrcid");
         $requireAffiliation = $this->plugin->shouldRequireField("requireAffiliation");
         $requireBiography = $this->plugin->shouldRequireField("requireBiography");
@@ -42,7 +43,8 @@ class ToggleRequiredMetadataSettingsForm extends Form
             "requireOrcid" => $requireOrcid,
             "requireAffiliation" => $requireAffiliation,
             "requireBiography" => $requireBiography,
-            "orcidProfilePluginEnabled" => $this->plugin->isOrcidProfilePluginEnabled()
+            "orcidEnabled" => $orcidEnabled,
+            "orcidDisabled" => !$orcidEnabled
         ));
 
         return parent::fetch($request, $template, $display);
@@ -55,7 +57,13 @@ class ToggleRequiredMetadataSettingsForm extends Form
 
     public function execute(...$functionArgs)
     {
-        $this->updatePluginSettings("requireOrcid");
+        // With ORCID off the checkbox is disabled, so the browser sends nothing
+        // for it. Saving that absence would silently clear a preference the
+        // manager never touched.
+        if ($this->plugin->isOrcidEnabled()) {
+            $this->updatePluginSettings("requireOrcid");
+        }
+
         $this->updatePluginSettings("requireAffiliation");
         $this->updatePluginSettings("requireBiography");
         parent::execute(...$functionArgs);

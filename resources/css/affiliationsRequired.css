@@ -1,0 +1,12 @@
+/*
+ * The affiliations field of 3.5 renders its own label and ignores the label
+ * configured for it, so the required mark cannot be set through the form
+ * config. The rule below only matches when the plugin placed its own field
+ * right before the affiliations one, which it does only when the affiliation
+ * is required.
+ */
+.trmAffiliationsRequired + .pkpFormField--affiliations .pkpFormFieldLabel::after {
+	content: '*';
+	margin-inline-start: 0.25rem;
+	color: #d00a6c; /* @no from the ui-library palette, same as the native required mark */
+}

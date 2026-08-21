@@ -10,7 +10,9 @@ describe('Toogle Required Metadata - Plugin enabling and setup', function() {
 		cy.wait(2000); // Let the enabling request finish before navigating away
 
 		cy.goToPluginSettings();
-		cy.get('#requireOrcid').uncheck();
+		// ORCID is not enabled in the test data, so the option is offered as
+		// disabled and the saved choice is left untouched
+		cy.get('#requireOrcid').should('be.disabled');
 		cy.get('#requireAffiliation').uncheck();
 		cy.get('#requireBiography').uncheck();
 

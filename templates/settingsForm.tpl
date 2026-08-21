@@ -7,11 +7,6 @@
         background: #f4f8fb;
         font-size: 0.82rem;
         line-height: 1.45;
-        transition: opacity 0.2s ease;
-    }
-
-    .trmOrcidNotice--inactive {
-        opacity: 0.45;
     }
 
     .trmOrcidNotice__status {
@@ -34,30 +29,15 @@
         margin-top: 0.2rem;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        .trmOrcidNotice {
-            transition: none;
-        }
+    .trmOrcidNotice--disabled {
+        border-left-color: #7a8b99;
+        background: #f4f6f8;
     }
 </style>
 
 <script>
     $(function() {
         $('#toggleRequiredMetadataSettingsForm').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
-
-        var $requireOrcid = $('#requireOrcid');
-        var $notice = $('.trmOrcidNotice');
-
-        if (!$requireOrcid.length || !$notice.length) {
-            return;
-        }
-
-        var syncOrcidNotice = function() {
-            $notice.toggleClass('trmOrcidNotice--inactive', !$requireOrcid.is(':checked'));
-        };
-
-        $requireOrcid.on('change', syncOrcidNotice);
-        syncOrcidNotice();
     });
 </script>
 {/literal}
@@ -74,7 +54,7 @@
 
         {fbvFormSection list="true"}
 
-        {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid"}
+        {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid disabled=$orcidDisabled label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid"}
 
         <br>
         {fbvElement type="checkbox" name="requireAffiliation" id="requireAffiliation" checked=$requireAffiliation label="plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"}
@@ -83,16 +63,19 @@
         {fbvElement type="checkbox" name="requireBiography" id="requireBiography" checked=$requireBiography label="plugins.generic.toggleRequiredMetadata.settings.requireBiography"}
         {/fbvFormSection}
 
-        {if $orcidProfilePluginEnabled}
-            <div class="trmOrcidNotice">
-                <span class="trmOrcidNotice__status">{translate key="plugins.generic.toggleRequiredMetadata.settings.orcidProfile.status"}</span>
+        <div class="trmOrcidNotice{if !$orcidEnabled} trmOrcidNotice--disabled{/if}" data-cy="trm-orcid-notice">
+            {if $orcidEnabled}
+                <span class="trmOrcidNotice__status">{translate key="plugins.generic.toggleRequiredMetadata.settings.orcid.enabled.status"}</span>
                 <ul class="trmOrcidNotice__list">
-                    <li>{translate key="plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.field"}</li>
-                    <li>{translate key="plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submission"}</li>
-                    <li>{translate key="plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"}</li>
+                    <li>{translate key="plugins.generic.toggleRequiredMetadata.settings.orcid.enabled.effect.submission"}</li>
                 </ul>
-            </div>
-        {/if}
+            {else}
+                <span class="trmOrcidNotice__status">{translate key="plugins.generic.toggleRequiredMetadata.settings.orcid.disabled.status"}</span>
+                <ul class="trmOrcidNotice__list">
+                    <li>{translate key="plugins.generic.toggleRequiredMetadata.settings.orcid.disabled.effect"}</li>
+                </ul>
+            {/if}
+        </div>
 
         {fbvFormButtons id="toggleRequiredMetadataSettingsFormSubmit" submitText="common.save"}
         {/fbvFormArea}

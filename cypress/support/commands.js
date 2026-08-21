@@ -3,7 +3,7 @@ Cypress.Commands.add('loginAs', (username) => {
 	cy.logout();
 	cy.login(username, null, 'publicknowledge');
 	// Let the login land: navigating while it is in flight cancels it, and the session never exists
-	cy.location('pathname').should('include', '/submissions');
+	cy.location('pathname').should('include', '/dashboard');
 });
 
 Cypress.Commands.add('goToPluginsGrid', () => {
@@ -20,12 +20,4 @@ Cypress.Commands.add('goToPluginSettings', () => {
 	cy.get('#' + pluginRowId + ' > .first_column > .show_extras').click();
 	cy.get('a[id^='+ pluginRowId + '-settings-button]').click();
 	cy.wait(2000); // Avoid occasional failure due to form init taking time
-});
-
-Cypress.Commands.add('findSubmission', function(tab, title) {
-	cy.get('#' + tab + '-button').click();
-    cy.get('.listPanel__itemSubtitle:visible:contains("' + title + '")').first()
-        .parent().parent().within(() => {
-            cy.get('.pkpButton:contains("View")').click();
-        });
 });
