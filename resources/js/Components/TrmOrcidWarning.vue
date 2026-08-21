@@ -1,5 +1,8 @@
 <template>
 	<PkpNotification v-if="pendingNames.length" type="warning">
+		<!-- The same clock the review step uses for a verification already asked
+		     for and not yet given, so both surfaces read alike. -->
+		<PkpIcon icon="Clock" class="h-5 w-5" :inline="true" />
 		{{ warning }}
 	</PkpNotification>
 </template>
