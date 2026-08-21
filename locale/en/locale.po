@@ -57,6 +57,9 @@ msgstr "The biography statement field is required for all contributors"
 msgid "plugins.generic.toggleRequiredMetadata.contributorForm.affiliationRequired"
 msgstr "Affiliations: required."
 
+msgid "plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired"
+msgstr "ORCID iD: required. Every contributor must at least have the verification requested."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification"
 msgstr "Waiting for the ORCID iD verification of: {$pendingAuthors}. The verification e-mail was already sent, and the iD is only confirmed once the contributor opens the link in it. To send the e-mail again, edit the contributor and use \"Resend Verification Email\" on the ORCID field."
 

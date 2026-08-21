@@ -57,6 +57,9 @@ msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaborad
 msgid "plugins.generic.toggleRequiredMetadata.contributorForm.affiliationRequired"
 msgstr "Afiliaciones: obligatorio."
 
+msgid "plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired"
+msgstr "ORCID iD: obligatorio. Todo colaborador debe al menos tener la verificación solicitada."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification"
 msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Para enviarlo de nuevo, edite el colaborador y use \"Reenviar el correo electrónico de verificación\" en el campo ORCID."
 

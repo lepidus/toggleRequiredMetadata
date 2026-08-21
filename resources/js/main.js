@@ -1,14 +1,11 @@
-import '../css/affiliationsRequired.css';
+import '../css/requiredMark.css';
 
-import TrmAffiliationsRequired from './Components/TrmAffiliationsRequired.vue';
+import TrmRequiredMark from './Components/TrmRequiredMark.vue';
 import TrmOrcidWarning from './Components/TrmOrcidWarning.vue';
 
 // Registered under the name the form config asks for, so the contributor form
 // renders it like any other field.
-pkp.registry.registerComponent(
-	'trm-affiliations-required',
-	TrmAffiliationsRequired,
-);
+pkp.registry.registerComponent('trm-required-mark', TrmRequiredMark);
 pkp.registry.registerComponent('TrmOrcidWarning', TrmOrcidWarning);
 
 pkp.registry.storeExtendFn('workflow', 'getPrimaryItems', (items, args) => {

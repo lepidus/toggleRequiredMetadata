@@ -1,0 +1,11 @@
+/*
+ * The affiliations and ORCID fields of 3.5 render their own label and ignore
+ * the label configured for them, so the required mark cannot be set through the
+ * form config. The rule below only matches the field placed right after a mark
+ * of the plugin, which the plugin adds only when that metadata is required.
+ */
+.trmRequiredMark + .pkpFormField .pkpFormField__heading > .pkpFormFieldLabel::after {
+	content: '*';
+	margin-inline-start: 0.25rem;
+	color: #d00a6c; /* @no from the ui-library palette, same as the native required mark */
+}

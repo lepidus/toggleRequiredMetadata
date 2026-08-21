@@ -57,6 +57,9 @@ msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores"
 msgid "plugins.generic.toggleRequiredMetadata.contributorForm.affiliationRequired"
 msgstr "Afiliações: obrigatório."
 
+msgid "plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired"
+msgstr "ORCID iD: obrigatório. Todo coautor precisa ao menos ter a verificação solicitada."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification"
 msgstr "Aguardando a verificação do ORCID iD de: {$pendingAuthors}. O e-mail de verificação já foi enviado, e o iD só é confirmado quando o contribuidor abre o link contido nele. Para enviar o e-mail novamente, edite o contribuidor e use \"Reenviar e-mail de verificação\" no campo ORCID."
 

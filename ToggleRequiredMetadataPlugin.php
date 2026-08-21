@@ -25,7 +25,7 @@ use PKP\components\forms\FormComponent;
 use PKP\components\forms\publication\ContributorForm;
 use PKP\orcid\OrcidManager;
 use APP\template\TemplateManager;
-use APP\plugins\generic\toggleRequiredMetadata\classes\FieldAffiliationsRequired;
+use APP\plugins\generic\toggleRequiredMetadata\classes\FieldRequiredMark;
 use APP\plugins\generic\toggleRequiredMetadata\classes\MetadataChecker;
 use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettingsForm;
 
@@ -110,39 +110,44 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($this->shouldRequireField("requireAffiliation")) {
-            $this->requireAffiliations($form);
+            $this->markFieldAsRequired($form, 'affiliations', 'plugins.generic.toggleRequiredMetadata.contributorForm.affiliationRequired');
+        }
+
+        if ($this->shouldRequireField("requireOrcid") && $this->isOrcidEnabled()) {
+            $this->markFieldAsRequired($form, 'orcid', 'plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired');
         }
 
         return false;
     }
 
     /**
-     * Marks the affiliations field as required.
+     * Marks a field as required, which the affiliations and the ORCID fields
+     * cannot be told to do: they render their own label and ignore the one
+     * configured for them, so the required mark cannot come from the form
+     * config. The plugin field added here carries it through a CSS sibling
+     * rule, and states the requirement for screen readers.
      *
-     * The field renders its own label and ignores the one configured for it, so
-     * the required mark cannot come from the form config. The plugin field added
-     * here carries it through a CSS sibling rule, and states the requirement for
-     * screen readers.
-     *
-     * The field is deliberately NOT flagged with `isRequired`: adding an
-     * affiliation pushes onto the value in place without emitting a change
-     * event (FieldAffiliations.vue, handleInsertToAffiliationsList), so the form
-     * never clears an error raised for it, and the save button of the
-     * single-page contributor form stays disabled even after the contributor
-     * fills the affiliation in. The requirement is enforced when the submission
-     * is completed instead.
+     * The marked field is deliberately NOT flagged with `isRequired`. The
+     * affiliations field pushes onto its value in place without emitting a
+     * change event (FieldAffiliations.vue, handleInsertToAffiliationsList), so
+     * the form never clears an error raised for it, and the save button of the
+     * single-page contributor form would stay disabled even after the
+     * contributor filled the affiliation in. The ORCID field holds no value the
+     * contributor can type at all. Both requirements are enforced when the
+     * submission is completed instead.
      */
-    private function requireAffiliations(FormComponent $form): void
+    private function markFieldAsRequired(FormComponent $form, string $fieldName, string $requiredLabelKey): void
     {
-        if (is_null($form->getField('affiliations'))) {
+        if (is_null($form->getField($fieldName))) {
             return;
         }
 
         $form->addField(
-            new FieldAffiliationsRequired('trmAffiliationsRequired', [
-                'requiredLabel' => __('plugins.generic.toggleRequiredMetadata.contributorForm.affiliationRequired'),
+            new FieldRequiredMark('trmRequired' . ucfirst($fieldName), [
+                'markedField' => $fieldName,
+                'requiredLabel' => __($requiredLabelKey),
             ]),
-            [FIELD_POSITION_BEFORE, 'affiliations']
+            [FIELD_POSITION_BEFORE, $fieldName]
         );
     }
 

@@ -32,7 +32,7 @@ function checkRequiredMarks(required) {
     cy.get('label[for="contributor-biography-control-en"] .pkpFormFieldLabel__required').should(assertion);
     // The affiliations field renders its own label, so the plugin marks it from
     // an adjacent element instead of through the form config
-    cy.get('.trmAffiliationsRequired').should(assertion);
+    cy.get('.trmRequiredMark--affiliations').should(assertion);
 }
 
 function addContributorWithoutRequirements(contributorData) {

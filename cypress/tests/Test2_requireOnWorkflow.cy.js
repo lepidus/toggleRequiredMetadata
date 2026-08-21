@@ -10,6 +10,6 @@ describe('Toggle Required Metadata - Requirement during workflow', function () {
         cy.get('.listPanel__item:contains("' + contributorName + '")').find('button').contains('Edit').click();
 
         cy.get('label[for="contributor-biography-control-en"] .pkpFormFieldLabel__required').should('exist');
-        cy.get('.trmAffiliationsRequired').should('exist');
+        cy.get('.trmRequiredMark--affiliations').should('exist');
     });
 });
