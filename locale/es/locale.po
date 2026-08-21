@@ -70,9 +70,9 @@ msgid "plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired"
 msgstr "ORCID iD: obligatorio. Todo colaborador debe al menos tener la verificación solicitada."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification"
-msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Para enviarlo de nuevo, edite el colaborador y use \"Reenviar el correo electrónico de verificación\" en el campo ORCID."
+msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Para enviarlo de nuevo, edite el colaborador y use \"Reenviar el correo electrónico de verificación\" en el campo ORCID — el reenvío invalida el enlace anterior."
 
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.pendingVerification"
-msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Pídale que busque ese correo electrónico, incluso en la carpeta de spam, o solicite a la revista que lo envíe de nuevo."
+msgstr "Esperando la verificación del ORCID iD de: {$pendingAuthors}. El correo electrónico de verificación ya fue enviado, y el iD solo se confirma cuando el colaborador abre el enlace que contiene. Pídale que busque el correo electrónico más reciente, incluso en la carpeta de spam, ya que solo su enlace funciona, o solicite a la revista que lo envíe de nuevo."
 
