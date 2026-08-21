@@ -13,6 +13,18 @@ pkp.registry.registerComponent('trm-required-mark', TrmRequiredMark);
 pkp.registry.registerComponent('TrmOrcidRequirement', TrmOrcidRequirement);
 pkp.registry.registerComponent('TrmOrcidWarning', TrmOrcidWarning);
 
+/**
+ * The contributors tab of the workflow, which is where the ORCID warning
+ * belongs for an editor: they work through every stage of every submission, and
+ * a warning about contributors would otherwise follow them the whole way.
+ */
+function isContributorsMenu(menuState) {
+	return (
+		menuState?.primaryMenuItem === 'publication' &&
+		menuState?.secondaryMenuItem === 'contributors'
+	);
+}
+
 pkp.registry.storeExtendFn('workflow', 'getPrimaryItems', (items, args) => {
 	const config =
 		args.pageInitConfig?.componentForms?.toggleRequiredMetadataOrcidWarning;
@@ -23,15 +35,22 @@ pkp.registry.storeExtendFn('workflow', 'getPrimaryItems', (items, args) => {
 
 	// `getPrimaryItems` is not given the dashboard page directly, but the page
 	// config it does receive carries it.
-	const message =
-		args.pageInitConfig.dashboardPage === 'editorialDashboard'
-			? config.editorMessage
-			: config.authorMessage;
+	const isEditor =
+		args.pageInitConfig.dashboardPage === 'editorialDashboard';
+
+	// An author only ever opens their own submission, and the warning is the
+	// one thing they may still have to act on, so theirs stays where it is.
+	if (isEditor && !isContributorsMenu(args.selectedMenuState)) {
+		return items;
+	}
 
 	return [
 		{
 			component: 'TrmOrcidWarning',
-			props: {message, publication: args.selectedPublication},
+			props: {
+				message: isEditor ? config.editorMessage : config.authorMessage,
+				publication: args.selectedPublication,
+			},
 		},
 		...items,
 	];

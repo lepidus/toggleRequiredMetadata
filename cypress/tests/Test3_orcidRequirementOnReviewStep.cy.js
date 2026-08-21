@@ -59,6 +59,8 @@ function addContributor(contributor) {
     cy.waitJQuery();
 }
 
+const orcidWarning = 'Waiting for the ORCID iD verification of';
+
 describe('Toggle Required Metadata - ORCID requirement on the review step', function () {
     it('Enables ORCID in the journal', function () {
         cy.loginAs('dbarnes');
@@ -139,5 +141,25 @@ describe('Toggle Required Metadata - ORCID requirement on the review step', func
         });
 
         cy.contains('button', 'Submit').should('be.disabled');
+    });
+
+    /**
+     * An editor works through every stage of every submission, so the warning is
+     * kept to the tab it is about instead of following them the whole way.
+     */
+    it('Shows the editor warning only in the contributors tab', function () {
+        cy.findSubmissionAsEditor('dbarnes', null, 'Cumberbatch');
+
+        cy.get('[data-cy="active-modal"]').should('be.visible');
+        cy.contains(orcidWarning).should('not.exist');
+
+        cy.openWorkflowMenu('Contributors');
+        cy.contains(orcidWarning).should('be.visible');
+        cy.contains('Benedict Cumberbatch').should('be.visible');
+
+        // Leaving the tab hides it again, which is what tells the absence above
+        // apart from the workflow simply not having finished rendering
+        cy.openWorkflowMenu('Title & Abstract');
+        cy.contains(orcidWarning).should('not.exist');
     });
 });
