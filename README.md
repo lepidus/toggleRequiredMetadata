@@ -6,7 +6,9 @@ This plugin lets a journal, press or server demand more from the contributors of
 
 Each requirement is checked when the submission is completed, so no submission gets through without it. All three are also marked as required in the Contributor form, where the author fills them in.
 
-The ORCID requirement is different in kind, because since 3.5 nobody types an ORCID iD: it is only recorded when the contributor authorises it through the verification e-mail. So what the plugin requires is that **at least one contributor has a verified ORCID iD** and that the **verification has been requested from all the others**. On the last step of the submission this is shown as a single block, counting how many contributors have verified and naming where each of them stands, so that the author can tell apart what is still up to them from what is only waiting on someone else. While any contributor is still unverified, the submission workflow shows a warning naming them.
+The ORCID requirement is different in kind, because since 3.5 nobody types an ORCID iD: it is only recorded when the contributor authorises it through the verification e-mail. So what the plugin requires is that **at least one contributor has a verified ORCID iD** and that the **verification has been requested from all the others**. On the last step of the submission this is shown as a single block, counting how many contributors have verified and naming where each of them stands, so that the author can tell apart what is still up to them from what is only waiting on someone else.
+
+![The ORCID requirement on the last step of a submission](/assets/review-orcid-requirement.png)
 
 ## Compatibility
 
@@ -24,16 +26,13 @@ Install the **Toggle Required Metadata** plugin via the **Plugin Gallery** in **
 
 ## Settings
 
-All three requirements are enabled by default. To change that:
+All three requirements are enabled by default. The plugin settings, reached from **Dashboard > Website > Plugins**, are where you pick which of them a submission has to meet:
 
-1. After the plugin is installed, go to the plugin settings:
-![plugin-settings-section](/assets/plugin-settings-section.png)
+![The plugin settings with the three requirements enabled](/assets/settings-orcid-enabled.png)
 
-2. Select the metadata to be required. The ORCID option is only available while ORCID is enabled in the application's ORCID settings; when it is not, the option is shown disabled, along with a note explaining why:
-![plugin-settings](/assets/plugin-settings.png)
+The ORCID option is only available while ORCID is enabled in the application's ORCID settings. When it is not, the option is shown disabled, along with a note explaining why, and the saved choice is left untouched:
 
-3. The Contributor form then marks the selected metadata as required:
-![plugin-in-action](/assets/application.png)
+![The plugin settings with ORCID not enabled in the application](/assets/settings-orcid-disabled.png)
 
 ## Where each requirement is enforced
 
@@ -42,6 +41,28 @@ All three requirements are enabled by default. To change that:
 | Affiliation | marked as required | blocked until every contributor has at least one affiliation |
 | Biography Statement | marked as required; the form cannot be saved without it | blocked until every contributor has one |
 | ORCID | marked as required beside the verification button; not editable by hand in 3.5 | blocked until one contributor has a verified iD and the verification has been requested from all the others, shown as one block with the standing of each contributor |
+
+### In the Contributor form
+
+The selected metadata is marked as required where the author fills it in. The ORCID iD is marked beside the verification button, which is the only way a contributor can supply one in 3.5:
+
+![The ORCID field of the Contributor form, marked as required](/assets/contributor-form-orcid-required.png)
+
+![The same field once the verification has been requested](/assets/contributor-form-orcid-requested.png)
+
+### When the submission is completed
+
+Every requirement is checked again on the last step, and the submission cannot be sent until all of them are met. The warnings are grouped at the top of the contributors panel, next to the Edit button that resolves them:
+
+![The last step of a submission with all three requirements unmet](/assets/review-all-requirements.png)
+
+## While the submission is in the workflow
+
+Once the submission is in, the ORCID requirement can still be waiting on a contributor who has not opened the verification e-mail. The workflow says who, with the advice that fits the reader — an editor can resend the e-mail, an author can only chase the contributor:
+
+![The ORCID warning as an editor sees it](/assets/workflow-warning-editor.png)
+
+![The ORCID warning as an author sees it](/assets/workflow-warning-author.png)
 
 ## Notes for 3.5
 

@@ -6,7 +6,9 @@ Este plugin permite que uma revista, editora ou servidor exija dos contribuidore
 
 Cada exigência é verificada na conclusão da submissão, de modo que nenhuma submissão passa sem ela. As três também são marcadas como obrigatórias no formulário de Contribuidor, onde o autor as preenche.
 
-A exigência de ORCID é de outra natureza, porque desde a 3.5 ninguém digita um ORCID iD: ele só é registrado quando o contribuidor o autoriza pelo e-mail de verificação. Por isso o que o plugin exige é que **pelo menos um contribuidor tenha o ORCID iD verificado** e que a **verificação tenha sido solicitada a todos os demais**. Na última etapa da submissão isso aparece como um bloco único, que conta quantos contribuidores já verificaram e diz em que ponto cada um está, para que o autor distinga o que ainda depende dele do que apenas aguarda outra pessoa. Enquanto algum contribuidor seguir sem verificação, o fluxo de trabalho da submissão exibe um aviso nomeando-o.
+A exigência de ORCID é de outra natureza, porque desde a 3.5 ninguém digita um ORCID iD: ele só é registrado quando o contribuidor o autoriza pelo e-mail de verificação. Por isso o que o plugin exige é que **pelo menos um contribuidor tenha o ORCID iD verificado** e que a **verificação tenha sido solicitada a todos os demais**. Na última etapa da submissão isso aparece como um bloco único, que conta quantos contribuidores já verificaram e diz em que ponto cada um está, para que o autor distinga o que ainda depende dele do que apenas aguarda outra pessoa.
+
+![A exigência de ORCID na última etapa de uma submissão](/assets/review-orcid-requirement.png)
 
 ## Compatibilidade
 
@@ -24,16 +26,13 @@ Instale o plugin **Toggle Required Metadata** pela **Galeria de Plugins**, em **
 
 ## Configurações
 
-As três exigências vêm habilitadas por padrão. Para alterá-las:
+As três exigências vêm habilitadas por padrão. As configurações do plugin, acessadas em **Painel de Controle > Website > Plugins**, são onde se escolhe quais delas uma submissão precisa cumprir:
 
-1. Depois de instalado o plugin, vá até as configurações dele:
-![plugin-settings-section](/assets/plugin-settings-section.png)
+![As configurações do plugin com as três exigências habilitadas](/assets/settings-orcid-enabled.png)
 
-2. Selecione os metadados a serem exigidos. A opção ORCID só fica disponível enquanto o ORCID estiver habilitado nas configurações de ORCID da aplicação; quando não estiver, a opção aparece desabilitada, junto de uma nota explicando o motivo:
-![plugin-settings](/assets/plugin-settings.png)
+A opção ORCID só fica disponível enquanto o ORCID estiver habilitado nas configurações de ORCID da aplicação. Quando não estiver, a opção aparece desabilitada, junto de uma nota explicando o motivo, e a escolha salva é preservada:
 
-3. O formulário de Contribuidor passa então a marcar como obrigatórios os metadados selecionados:
-![plugin-in-action](/assets/application.png)
+![As configurações do plugin com o ORCID não habilitado na aplicação](/assets/settings-orcid-disabled.png)
 
 ## Onde cada exigência é aplicada
 
@@ -42,6 +41,28 @@ As três exigências vêm habilitadas por padrão. Para alterá-las:
 | Afiliação | marcada como obrigatória | bloqueada até que todo contribuidor tenha ao menos uma afiliação |
 | Resumo da Biografia | marcado como obrigatório; o formulário não pode ser salvo sem ele | bloqueada até que todo contribuidor tenha um |
 | ORCID | marcado como obrigatório ao lado do botão de verificação; não editável manualmente na 3.5 | bloqueada até que um contribuidor tenha o iD verificado e a verificação tenha sido solicitada a todos os demais, exibido como um bloco único com a situação de cada contribuidor |
+
+### No formulário de Contribuidor
+
+Os metadados selecionados são marcados como obrigatórios onde o autor os preenche. O ORCID iD é marcado ao lado do botão de verificação, que na 3.5 é o único caminho pelo qual um contribuidor pode fornecer um:
+
+![O campo ORCID do formulário de Contribuidor, marcado como obrigatório](/assets/contributor-form-orcid-required.png)
+
+![O mesmo campo depois que a verificação foi solicitada](/assets/contributor-form-orcid-requested.png)
+
+### Na conclusão da submissão
+
+Toda exigência é verificada de novo na última etapa, e a submissão não pode ser enviada até que todas sejam cumpridas. Os avisos ficam agrupados no topo do painel de contribuidores, ao lado do botão Editar que os resolve:
+
+![A última etapa de uma submissão com as três exigências não cumpridas](/assets/review-all-requirements.png)
+
+## Com a submissão já no fluxo de trabalho
+
+Depois de submetido, a exigência de ORCID ainda pode estar aguardando um contribuidor que não abriu o e-mail de verificação. O fluxo de trabalho diz quem é, com a orientação que cabe a quem lê — um editor pode reenviar o e-mail, um autor só pode cobrar o contribuidor:
+
+![O aviso de ORCID como o editor o vê](/assets/workflow-warning-editor.png)
+
+![O aviso de ORCID como o autor o vê](/assets/workflow-warning-author.png)
 
 ## Notas sobre a 3.5
 
