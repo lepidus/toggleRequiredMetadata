@@ -29,15 +29,33 @@
         margin-top: 0.2rem;
     }
 
-    .trmOrcidNotice--disabled {
+    .trmOrcidNotice--disabled,
+    .trmOrcidNotice--notRequired {
         border-left-color: #7a8b99;
         background: #f4f6f8;
+    }
+
+    /* The requirement is off, so what the notice describes does not apply now */
+    .trmOrcidNotice--notRequired {
+        opacity: 0.55;
     }
 </style>
 
 <script>
     $(function() {
         $('#toggleRequiredMetadataSettingsForm').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
+
+        // The notice describes what requiring ORCID does, so it is dimmed while
+        // the requirement is unchecked and nothing of it applies
+        var $requireOrcid = $('#requireOrcid');
+        var $orcidNotice = $('#toggleRequiredMetadataSettingsForm .trmOrcidNotice');
+
+        function dimOrcidNoticeWhenNotRequired() {
+            $orcidNotice.toggleClass('trmOrcidNotice--notRequired', !$requireOrcid.prop('checked'));
+        }
+
+        $requireOrcid.on('change', dimOrcidNoticeWhenNotRequired);
+        dimOrcidNoticeWhenNotRequired();
     });
 </script>
 {/literal}
