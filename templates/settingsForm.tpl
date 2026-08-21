@@ -54,13 +54,13 @@
 
         {fbvFormSection list="true"}
 
-        {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid disabled=$orcidDisabled label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid"}
-
-        <br>
         {fbvElement type="checkbox" name="requireAffiliation" id="requireAffiliation" checked=$requireAffiliation label="plugins.generic.toggleRequiredMetadata.settings.requireAffiliation"}
 
         <br>
         {fbvElement type="checkbox" name="requireBiography" id="requireBiography" checked=$requireBiography label="plugins.generic.toggleRequiredMetadata.settings.requireBiography"}
+
+        <br>
+        {fbvElement type="checkbox" name="requireOrcid" id="requireOrcid" checked=$requireOrcid disabled=$orcidDisabled label="plugins.generic.toggleRequiredMetadata.settings.requireOrcid"}
         {/fbvFormSection}
 
         <div class="trmOrcidNotice{if !$orcidEnabled} trmOrcidNotice--disabled{/if}" data-cy="trm-orcid-notice">
