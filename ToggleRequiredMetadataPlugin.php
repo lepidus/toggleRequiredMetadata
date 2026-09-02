@@ -195,12 +195,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     private function registerVueAssets(TemplateManager $templateMgr): void
     {
-        $request = Application::get()->getRequest();
-        $basePluginUrl = "{$request->getBaseUrl()}/{$this->getPluginPath()}";
-
         $templateMgr->addJavaScript(
             'toggleRequiredMetadata',
-            "{$basePluginUrl}/public/build/toggleRequiredMetadata.iife.js",
+            $this->assetUrl('toggleRequiredMetadata.iife.js'),
             [
                 'inline' => false,
                 'contexts' => ['backend'],
@@ -210,13 +207,32 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         $templateMgr->addStyleSheet(
             'toggleRequiredMetadata',
-            "{$basePluginUrl}/public/build/toggleRequiredMetadata.css",
+            $this->assetUrl('toggleRequiredMetadata.css'),
             [
                 'inline' => false,
                 'contexts' => ['backend'],
                 'priority' => TemplateManager::STYLE_SEQUENCE_LAST,
             ]
         );
+    }
+
+    /**
+     * The URL of a built asset, carrying the version of the plugin.
+     *
+     * The application would otherwise stamp its own version on it, which does
+     * not change when the plugin alone is updated: the browser would go on
+     * serving the bundle of the previous release from its cache, and the
+     * components and the required marks would quietly be the old ones.
+     */
+    private function assetUrl(string $fileName): string
+    {
+        $request = Application::get()->getRequest();
+        $url = "{$request->getBaseUrl()}/{$this->getPluginPath()}/public/build/{$fileName}";
+        $installedVersion = $this->getCurrentVersion();
+
+        return $installedVersion
+            ? "{$url}?v={$installedVersion->getVersionString()}"
+            : $url;
     }
 
     private function addOrcidWarningState(TemplateManager $templateMgr): void
