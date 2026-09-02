@@ -17,6 +17,9 @@ import('plugins.generic.toggleRequiredMetadata.classes.MetadataChecker');
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
+    /** @var array What each requirement answered in this request, by context. */
+    private $requiredFields = array();
+
     public function register($category, $path, $mainContextId = null)
     {
         $success = parent::register($category, $path, $mainContextId);
@@ -326,16 +329,43 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
     }
 
-    public function shouldRequireField($settingName)
+    /**
+     * Whether the given metadata is required, in the given context or, for the
+     * hooks that only ever run inside one, in the context of the request.
+     *
+     * Answering is a read, and stays one: the default is not written to the
+     * database on the way past. That matters more here than anywhere else,
+     * since register() asks for a requirement on every page of the site.
+     *
+     * What tells a requirement nobody ever chose from one that was turned off
+     * is the absence of the setting, since an unticked checkbox is saved as an
+     * empty setting and not as a missing one.
+     */
+    public function shouldRequireField($settingName, $contextId = null)
     {
-        $context = Application::get()->getRequest()->getContext();
-        if (!is_null($context)) {
-            $contextId = $context->getId();
-            if (!$this->settingExists($contextId, $settingName)) {
-                $this->updateSetting($contextId, $settingName, 'on');
-            }
-            return $this->getSetting($contextId, $settingName);
+        if (is_null($contextId)) {
+            $context = Application::get()->getRequest()->getContext();
+            $contextId = is_null($context) ? null : $context->getId();
         }
+
+        if (is_null($contextId)) {
+            return false;
+        }
+
+        if (!isset($this->requiredFields[$contextId][$settingName])) {
+            $this->requiredFields[$contextId][$settingName] = $this->readRequirement($contextId, $settingName);
+        }
+
+        return $this->requiredFields[$contextId][$settingName];
+    }
+
+    private function readRequirement($contextId, $settingName)
+    {
+        if (!$this->settingExists($contextId, $settingName)) {
+            return true;
+        }
+
+        return (bool) $this->getSetting($contextId, $settingName);
     }
 
     public function settingExists($contextId, $name): bool
