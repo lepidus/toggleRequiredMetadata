@@ -156,6 +156,25 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([1, 1, 1], $contextIds);
     }
 
+    /**
+     * The review step hides the list these errors are rendered in when there is
+     * no contributor, so reporting a requirement would disable the submission
+     * with nothing on screen to explain what for. The application has its own
+     * warning for an empty contributor list.
+     */
+    public function testReportsNothingWhenThereAreNoContributorsAtAll(): void
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField', 'isOrcidProfilePluginEnabled'])
+            ->getMock();
+        $plugin->method('shouldRequireField')->willReturn(true);
+        $plugin->method('isOrcidProfilePluginEnabled')->willReturn(true);
+
+        $errors = $this->validateSubmissionOf($plugin, []);
+
+        $this->assertSame([], $errors);
+    }
+
     public function testBiographyRequiredField()
     {
         $form = new ContributorForm(

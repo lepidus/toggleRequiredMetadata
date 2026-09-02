@@ -64,6 +64,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * request: the submission being validated is what the requirements are
      * about, and reading the request instead leaves them to be silently
      * dropped wherever it carries no context.
+     *
+     * A submission with no contributors at all is left to the application,
+     * which has its own warning for it: the review step drops the list these
+     * errors are rendered in, so raising one here would block the submission
+     * with nothing on screen to explain what for.
      */
     public function validateSubmissionFields($hookName, $params)
     {
@@ -77,7 +82,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $contributorsErrors = $errors['contributors'] ?? [];
         $metadataChecker = new MetadataChecker();
 
-        if ($this->shouldRequireField("requireOrcid", $contextId)) {
+        if ($this->shouldRequireField("requireOrcid", $contextId) && !empty($authors)) {
             if ($this->isOrcidProfilePluginEnabled($contextId)) {
                 if (!$metadataChecker->checkAnyAuthenticatedOrcid($authors)) {
                     $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid');
