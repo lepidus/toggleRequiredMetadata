@@ -24,6 +24,7 @@ use PKP\db\DAORegistry;
 use PKP\config\Config;
 use PKP\components\forms\FormComponent;
 use PKP\components\forms\publication\ContributorForm;
+use PKP\context\Context;
 use PKP\orcid\OrcidManager;
 use APP\template\TemplateManager;
 use APP\plugins\generic\toggleRequiredMetadata\classes\FieldRequiredMark;
@@ -43,6 +44,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * plugin renders it as a single block naming where each contributor stands.
      */
     public const ORCID_REQUIREMENT = 'toggleRequiredMetadataOrcid';
+
+    /** What each requirement answered in this request, by context. */
+    private array $requiredFields = [];
 
     public function register($category, $path, $mainContextId = null)
     {
@@ -72,17 +76,25 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
 
+    /**
+     * The context is the one the hook hands over, and not the one of the
+     * request: the submission being validated is what the requirements are
+     * about, and reading the request instead leaves them to be silently
+     * dropped wherever it carries no context.
+     */
     public function validateSubmissionFields($hookName, $params)
     {
         $errors = &$params[0];
         $submission = $params[1];
+        $context = $params[2];
         $publication = $submission->getCurrentPublication();
         $authors = $publication->getData('authors')->toArray();
 
+        $contextId = $context->getId();
         $contributorsErrors = $errors['contributors'] ?? [];
         $metadataChecker = new MetadataChecker();
 
-        if ($this->shouldRequireField("requireOrcid") and $this->isOrcidEnabled()) {
+        if ($this->shouldRequireField("requireOrcid", $contextId) && $this->isOrcidEnabled($context)) {
             $orcidRequirement = $this->describeOrcidRequirement($authors);
 
             if (!is_null($orcidRequirement)) {
@@ -90,11 +102,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             }
         }
 
-        if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
+        if ($this->shouldRequireField("requireAffiliation", $contextId) && !$metadataChecker->checkAffiliations($authors)) {
             $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation');
         }
 
-        if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
+        if ($this->shouldRequireField("requireBiography", $contextId) && !$metadataChecker->checkBiographies($authors)) {
             $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography');
         }
 
@@ -183,12 +195,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     private function registerVueAssets(TemplateManager $templateMgr): void
     {
-        $request = Application::get()->getRequest();
-        $basePluginUrl = "{$request->getBaseUrl()}/{$this->getPluginPath()}";
-
         $templateMgr->addJavaScript(
             'toggleRequiredMetadata',
-            "{$basePluginUrl}/public/build/toggleRequiredMetadata.iife.js",
+            $this->assetUrl('toggleRequiredMetadata.iife.js'),
             [
                 'inline' => false,
                 'contexts' => ['backend'],
@@ -198,13 +207,32 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         $templateMgr->addStyleSheet(
             'toggleRequiredMetadata',
-            "{$basePluginUrl}/public/build/toggleRequiredMetadata.css",
+            $this->assetUrl('toggleRequiredMetadata.css'),
             [
                 'inline' => false,
                 'contexts' => ['backend'],
                 'priority' => TemplateManager::STYLE_SEQUENCE_LAST,
             ]
         );
+    }
+
+    /**
+     * The URL of a built asset, carrying the version of the plugin.
+     *
+     * The application would otherwise stamp its own version on it, which does
+     * not change when the plugin alone is updated: the browser would go on
+     * serving the bundle of the previous release from its cache, and the
+     * components and the required marks would quietly be the old ones.
+     */
+    private function assetUrl(string $fileName): string
+    {
+        $request = Application::get()->getRequest();
+        $url = "{$request->getBaseUrl()}/{$this->getPluginPath()}/public/build/{$fileName}";
+        $installedVersion = $this->getCurrentVersion();
+
+        return $installedVersion
+            ? "{$url}?v={$installedVersion->getVersionString()}"
+            : $url;
     }
 
     private function addOrcidWarningState(TemplateManager $templateMgr): void
@@ -241,9 +269,18 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * the two unverified states cannot be told apart there. The wizard
      * revalidates whenever the review step is opened, so this stays current
      * while the author acts on it.
+     *
+     * A submission with no contributors at all is left to the application,
+     * which has its own warning for it: the review step drops the list this
+     * block is rendered in, so a requirement reported here would block the
+     * submission with nothing on screen to explain what for.
      */
     private function describeOrcidRequirement(array $authors): ?array
     {
+        if (empty($authors)) {
+            return null;
+        }
+
         $metadataChecker = new MetadataChecker();
         $verifiedAuthors = $metadataChecker->getAuthorsWithVerifiedOrcid($authors);
         $authorsPendingRequest = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
@@ -364,16 +401,34 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     }
 
 
-    public function shouldRequireField($settingName)
+    /**
+     * Whether the given metadata is required, in the given context or, for the
+     * hooks that only ever run inside one, in the context of the request.
+     *
+     * Answering is a read, and stays one: the default is not written to the
+     * database on the way past. What tells a requirement nobody ever chose
+     * from one that was turned off is the absence of the setting, since an
+     * unticked checkbox is saved as an empty setting and not as a missing one.
+     */
+    public function shouldRequireField(string $settingName, ?int $contextId = null): bool
     {
-        $context = Application::get()->getRequest()->getContext();
-        if (!is_null($context)) {
-            $contextId = $context->getId();
-            if (!$this->settingExists($contextId, $settingName)) {
-                $this->updateSetting($contextId, $settingName, 'on');
-            }
-            return $this->getSetting($contextId, $settingName);
+        $contextId ??= Application::get()->getRequest()->getContext()?->getId();
+
+        if (is_null($contextId)) {
+            return false;
         }
+
+        return $this->requiredFields[$contextId][$settingName]
+            ??= $this->readRequirement($contextId, $settingName);
+    }
+
+    private function readRequirement(int $contextId, string $settingName): bool
+    {
+        if (!$this->settingExists($contextId, $settingName)) {
+            return true;
+        }
+
+        return (bool) $this->getSetting($contextId, $settingName);
     }
 
     public function settingExists($contextId, $name): bool
@@ -382,8 +437,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
     }
 
-    public function isOrcidEnabled(): bool
+    public function isOrcidEnabled(?Context $context = null): bool
     {
-        return OrcidManager::isEnabled(Application::get()->getRequest()->getContext());
+        return OrcidManager::isEnabled($context);
     }
 }

@@ -99,9 +99,33 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $submission->setData('publications', [$publication]);
 
         $errors = [];
-        $plugin->validateSubmissionFields('Submission::validateSubmit', [&$errors, $submission]);
+        $plugin->validateSubmissionFields('Submission::validateSubmit', [&$errors, $submission, $this->createContext()]);
 
         return $errors;
+    }
+
+    /**
+     * The requirements are about the submission being validated, so they are
+     * answered for the context the hook hands over and not for the one the
+     * request happens to carry.
+     */
+    public function testChecksTheRequirementsAgainstTheContextBeingValidated(): void
+    {
+        $contextIds = [];
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField', 'isOrcidEnabled'])
+            ->getMock();
+        $plugin->method('shouldRequireField')
+            ->willReturnCallback(function (string $setting, ?int $contextId = null) use (&$contextIds) {
+                $contextIds[] = $contextId;
+
+                return false;
+            });
+        $plugin->method('isOrcidEnabled')->willReturn(true);
+
+        $this->validateSubmissionOf($plugin, [$this->createAuthor('Ana')]);
+
+        $this->assertSame([1, 1, 1], $contextIds);
     }
 
     public function testReportsTheOrcidRequirementUnderItsOwnKey(): void
@@ -141,6 +165,19 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([], $errors);
     }
 
+    /**
+     * The review step hides the list the block is rendered in when there is no
+     * contributor, so reporting the requirement would disable the submission
+     * with nothing on screen to explain what for. The application has its own
+     * warning for an empty contributor list.
+     */
+    public function testReportsNothingWhenThereAreNoContributorsAtAll(): void
+    {
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), []);
+
+        $this->assertSame([], $errors);
+    }
+
     public function testReportsTheRequirementWhileNobodyVerified(): void
     {
         $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [
@@ -149,6 +186,62 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         ]);
 
         $this->assertArrayHasKey(ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT, $errors);
+    }
+
+    private function createPluginWithSetting(bool $exists, mixed $value = null): ToggleRequiredMetadataPlugin
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['settingExists', 'getSetting', 'updateSetting'])
+            ->getMock();
+        $plugin->method('settingExists')->willReturn($exists);
+        $plugin->method('getSetting')->willReturn($value);
+
+        return $plugin;
+    }
+
+    public function testRequiresTheMetadataUntilTheJournalChoosesOtherwise(): void
+    {
+        $plugin = $this->createPluginWithSetting(false);
+
+        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+    }
+
+    public function testDoesNotRequireTheMetadataOnceTheRequirementWasTurnedOff(): void
+    {
+        $plugin = $this->createPluginWithSetting(true, null);
+
+        $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
+    }
+
+    public function testRequiresTheMetadataWhileTheRequirementIsTurnedOn(): void
+    {
+        $plugin = $this->createPluginWithSetting(true, 'on');
+
+        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+    }
+
+    /**
+     * Reading a requirement used to write the default back, on every page that
+     * asked for it, which is a write on a path that only reads.
+     */
+    public function testDoesNotWriteTheDefaultWhileReadingIt(): void
+    {
+        $plugin = $this->createPluginWithSetting(false);
+        $plugin->expects($this->never())->method('updateSetting');
+
+        $plugin->shouldRequireField('requireAffiliation', 1);
+    }
+
+    public function testLooksARequirementUpOnlyOncePerRequest(): void
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['settingExists', 'getSetting'])
+            ->getMock();
+        $plugin->expects($this->once())->method('settingExists')->willReturn(true);
+        $plugin->method('getSetting')->willReturn('on');
+
+        $plugin->shouldRequireField('requireAffiliation', 1);
+        $plugin->shouldRequireField('requireAffiliation', 1);
     }
 
     public function testMakesBiographyRequired(): void

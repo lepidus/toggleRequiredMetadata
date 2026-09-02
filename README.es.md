@@ -56,6 +56,10 @@ Cada requisito se comprueba de nuevo en el último paso, y el envío no puede en
 
 ![El último paso de un envío con los tres requisitos sin cumplir](/assets/review-all-requirements.png)
 
+### Lo que la comprobación no cubre
+
+Los requisitos son sobre lo que llega por el formulario de envío, y ahí es donde se aplican: se comprueban cuando la persona autora finaliza el envío, y en ningún otro lugar. Un colaborador editado después en el flujo de trabajo, un envío creado por la API REST y todo lo que entra por importación o por QuickSubmit no pasan por la comprobación, y la publicación tampoco. Lo que el módulo guarda es la puerta: ningún envío se *recibe* sin los metadatos, lo que no es lo mismo que ningún envío de la revista se quede sin ellos.
+
 ## Con el envío ya en el flujo de trabajo
 
 Una vez enviado, el requisito de ORCID todavía puede estar esperando a un colaborador que no abrió el correo de verificación. El flujo de trabajo dice quién es, con el consejo que corresponde a quien lee — un editor puede reenviar el correo, un autor solo puede insistirle al colaborador:

@@ -56,6 +56,10 @@ Toda exigência é verificada de novo na última etapa, e a submissão não pode
 
 ![A última etapa de uma submissão com as três exigências não cumpridas](/assets/review-all-requirements.png)
 
+### O que a verificação não cobre
+
+As exigências são sobre o que chega pelo formulário de submissão, e é aí que valem: são verificadas quando o autor conclui a submissão, e em nenhum outro lugar. Contribuidor editado depois no fluxo de trabalho, submissão criada pela API REST e tudo que entra por importação ou pelo QuickSubmit não passam pela verificação, nem a publicação passa. O que o plugin guarda é a porta: nenhuma submissão é *recebida* sem os metadados, o que não é o mesmo que nenhuma submissão da revista ficar sem eles.
+
 ## Com a submissão já no fluxo de trabalho
 
 Depois de submetido, a exigência de ORCID ainda pode estar aguardando um contribuidor que não abriu o e-mail de verificação. O fluxo de trabalho diz quem é, com a orientação que cabe a quem lê — um editor pode reenviar o e-mail, um autor só pode cobrar o contribuidor:

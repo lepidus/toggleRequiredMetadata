@@ -33,9 +33,9 @@ class ToggleRequiredMetadataSettingsForm extends Form
     public function fetch($request, $template = null, $display = false)
     {
         $orcidEnabled = $this->plugin->isOrcidEnabled();
-        $requireOrcid = $this->plugin->shouldRequireField("requireOrcid");
-        $requireAffiliation = $this->plugin->shouldRequireField("requireAffiliation");
-        $requireBiography = $this->plugin->shouldRequireField("requireBiography");
+        $requireOrcid = $this->plugin->shouldRequireField("requireOrcid", $this->contextId);
+        $requireAffiliation = $this->plugin->shouldRequireField("requireAffiliation", $this->contextId);
+        $requireBiography = $this->plugin->shouldRequireField("requireBiography", $this->contextId);
 
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->assign(array(
