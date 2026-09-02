@@ -51,6 +51,63 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         return $context;
     }
 
+    private function createPluginWithSetting(bool $exists, mixed $value = null): ToggleRequiredMetadataPlugin
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['settingExists', 'getSetting', 'updateSetting'])
+            ->getMock();
+        $plugin->method('settingExists')->willReturn($exists);
+        $plugin->method('getSetting')->willReturn($value);
+
+        return $plugin;
+    }
+
+    public function testRequiresTheMetadataUntilTheJournalChoosesOtherwise(): void
+    {
+        $plugin = $this->createPluginWithSetting(false);
+
+        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+    }
+
+    public function testDoesNotRequireTheMetadataOnceTheRequirementWasTurnedOff(): void
+    {
+        $plugin = $this->createPluginWithSetting(true, null);
+
+        $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
+    }
+
+    public function testRequiresTheMetadataWhileTheRequirementIsTurnedOn(): void
+    {
+        $plugin = $this->createPluginWithSetting(true, 'on');
+
+        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+    }
+
+    /**
+     * Reading a requirement used to write the default back, on every page that
+     * asked for it, which is a write on a path that only reads. On this line it
+     * also runs from the plugin's own register(), so on every page at all.
+     */
+    public function testDoesNotWriteTheDefaultWhileReadingIt(): void
+    {
+        $plugin = $this->createPluginWithSetting(false);
+        $plugin->expects($this->never())->method('updateSetting');
+
+        $plugin->shouldRequireField('requireAffiliation', 1);
+    }
+
+    public function testLooksARequirementUpOnlyOncePerRequest(): void
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['settingExists', 'getSetting'])
+            ->getMock();
+        $plugin->expects($this->once())->method('settingExists')->willReturn(true);
+        $plugin->method('getSetting')->willReturn('on');
+
+        $plugin->shouldRequireField('requireAffiliation', 1);
+        $plugin->shouldRequireField('requireAffiliation', 1);
+    }
+
     private function createAuthor(string $givenName): Author
     {
         $author = new Author();
