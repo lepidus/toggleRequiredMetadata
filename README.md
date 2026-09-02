@@ -56,6 +56,10 @@ Every requirement is checked again on the last step, and the submission cannot b
 
 ![The last step of a submission with all three requirements unmet](/assets/review-all-requirements.png)
 
+### What the check does not cover
+
+The requirements are about what comes in through the submission form, and that is where they are enforced: they are checked when an author completes a submission, and nowhere else. A contributor edited later in the workflow, a submission created through the REST API, and anything brought in by an import or by QuickSubmit never go through the check, and neither does publication. What the plugin holds is the door: no submission is *received* without the metadata, which is not the same as no submission in the journal ever lacking it.
+
 ## While the submission is in the workflow
 
 Once the submission is in, the ORCID requirement can still be waiting on a contributor who has not opened the verification e-mail. The workflow says who, with the advice that fits the reader — an editor can resend the e-mail, an author can only chase the contributor:
