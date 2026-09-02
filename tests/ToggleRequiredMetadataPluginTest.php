@@ -99,9 +99,33 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $submission->setData('publications', [$publication]);
 
         $errors = [];
-        $plugin->validateSubmissionFields('Submission::validateSubmit', [&$errors, $submission]);
+        $plugin->validateSubmissionFields('Submission::validateSubmit', [&$errors, $submission, $this->createContext()]);
 
         return $errors;
+    }
+
+    /**
+     * The requirements are about the submission being validated, so they are
+     * answered for the context the hook hands over and not for the one the
+     * request happens to carry.
+     */
+    public function testChecksTheRequirementsAgainstTheContextBeingValidated(): void
+    {
+        $contextIds = [];
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField', 'isOrcidEnabled'])
+            ->getMock();
+        $plugin->method('shouldRequireField')
+            ->willReturnCallback(function (string $setting, ?int $contextId = null) use (&$contextIds) {
+                $contextIds[] = $contextId;
+
+                return false;
+            });
+        $plugin->method('isOrcidEnabled')->willReturn(true);
+
+        $this->validateSubmissionOf($plugin, [$this->createAuthor('Ana')]);
+
+        $this->assertSame([1, 1, 1], $contextIds);
     }
 
     public function testReportsTheOrcidRequirementUnderItsOwnKey(): void
