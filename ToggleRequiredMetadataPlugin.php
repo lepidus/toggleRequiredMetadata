@@ -45,6 +45,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      */
     public const ORCID_REQUIREMENT = 'toggleRequiredMetadataOrcid';
 
+    /** What each requirement answered in this request, by context. */
+    private array $requiredFields = [];
+
     public function register($category, $path, $mainContextId = null)
     {
         $success = parent::register($category, $path);
@@ -376,6 +379,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     /**
      * Whether the given metadata is required, in the given context or, for the
      * hooks that only ever run inside one, in the context of the request.
+     *
+     * Answering is a read, and stays one: the default is not written to the
+     * database on the way past. What tells a requirement nobody ever chose
+     * from one that was turned off is the absence of the setting, since an
+     * unticked checkbox is saved as an empty setting and not as a missing one.
      */
     public function shouldRequireField(string $settingName, ?int $contextId = null): bool
     {
@@ -385,8 +393,14 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
+        return $this->requiredFields[$contextId][$settingName]
+            ??= $this->readRequirement($contextId, $settingName);
+    }
+
+    private function readRequirement(int $contextId, string $settingName): bool
+    {
         if (!$this->settingExists($contextId, $settingName)) {
-            $this->updateSetting($contextId, $settingName, 'on');
+            return true;
         }
 
         return (bool) $this->getSetting($contextId, $settingName);
