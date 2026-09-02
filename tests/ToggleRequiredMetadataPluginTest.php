@@ -165,6 +165,19 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([], $errors);
     }
 
+    /**
+     * The review step hides the list the block is rendered in when there is no
+     * contributor, so reporting the requirement would disable the submission
+     * with nothing on screen to explain what for. The application has its own
+     * warning for an empty contributor list.
+     */
+    public function testReportsNothingWhenThereAreNoContributorsAtAll(): void
+    {
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), []);
+
+        $this->assertSame([], $errors);
+    }
+
     public function testReportsTheRequirementWhileNobodyVerified(): void
     {
         $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [

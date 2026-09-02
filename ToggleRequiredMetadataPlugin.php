@@ -253,9 +253,18 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * the two unverified states cannot be told apart there. The wizard
      * revalidates whenever the review step is opened, so this stays current
      * while the author acts on it.
+     *
+     * A submission with no contributors at all is left to the application,
+     * which has its own warning for it: the review step drops the list this
+     * block is rendered in, so a requirement reported here would block the
+     * submission with nothing on screen to explain what for.
      */
     private function describeOrcidRequirement(array $authors): ?array
     {
+        if (empty($authors)) {
+            return null;
+        }
+
         $metadataChecker = new MetadataChecker();
         $verifiedAuthors = $metadataChecker->getAuthorsWithVerifiedOrcid($authors);
         $authorsPendingRequest = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
