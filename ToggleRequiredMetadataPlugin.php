@@ -56,18 +56,26 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return __('plugins.generic.toggleRequiredMetadata.description');
     }
 
+    /**
+     * The context is the one the hook hands over, and not the one of the
+     * request: the submission being validated is what the requirements are
+     * about, and reading the request instead leaves them to be silently
+     * dropped wherever it carries no context.
+     */
     public function validateSubmissionFields($hookName, $params)
     {
         $errors = &$params[0];
         $submission = $params[1];
+        $context = $params[2];
         $publication = $submission->getCurrentPublication();
         $authors = $publication->getData('authors')->toArray();
 
+        $contextId = $context->getId();
         $contributorsErrors = $errors['contributors'] ?? [];
         $metadataChecker = new MetadataChecker();
 
-        if ($this->shouldRequireField("requireOrcid")) {
-            if ($this->isOrcidProfilePluginEnabled()) {
+        if ($this->shouldRequireField("requireOrcid", $contextId)) {
+            if ($this->isOrcidProfilePluginEnabled($contextId)) {
                 if (!$metadataChecker->checkAnyAuthenticatedOrcid($authors)) {
                     $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.noAuthenticatedOrcid');
                 }
@@ -84,11 +92,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             }
         }
 
-        if ($this->shouldRequireField("requireAffiliation") and !$metadataChecker->checkAffiliations($authors)) {
+        if ($this->shouldRequireField("requireAffiliation", $contextId) && !$metadataChecker->checkAffiliations($authors)) {
             $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation');
         }
 
-        if ($this->shouldRequireField("requireBiography") and !$metadataChecker->checkBiographies($authors)) {
+        if ($this->shouldRequireField("requireBiography", $contextId) && !$metadataChecker->checkBiographies($authors)) {
             $contributorsErrors[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography');
         }
 
@@ -266,16 +274,22 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     }
 
 
-    public function shouldRequireField($settingName)
+    /**
+     * Whether the given metadata is required, in the given context or, for the
+     * hooks that only ever run inside one, in the context of the request.
+     */
+    public function shouldRequireField(string $settingName, ?int $contextId = null): bool
     {
-        $context = Application::get()->getRequest()->getContext();
-        if (!is_null($context)) {
-            $contextId = $context->getId();
+        $contextId ??= Application::get()->getRequest()->getContext()?->getId();
+
+        if (!is_null($contextId)) {
             if (!$this->settingExists($contextId, $settingName)) {
                 $this->updateSetting($contextId, $settingName, 'on');
             }
-            return $this->getSetting($contextId, $settingName);
+            return (bool) $this->getSetting($contextId, $settingName);
         }
+
+        return false;
     }
 
     public function settingExists($contextId, $name): bool
@@ -284,7 +298,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
     }
 
-    public function isOrcidProfilePluginEnabled()
+    public function isOrcidProfilePluginEnabled(?int $contextId = null)
     {
         $orcidProfilePlugin = PluginRegistry::getPlugin('generic', 'orcidprofileplugin');
 
@@ -292,6 +306,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        return $orcidProfilePlugin->getEnabled();
+        return $orcidProfilePlugin->getEnabled($contextId);
     }
 }

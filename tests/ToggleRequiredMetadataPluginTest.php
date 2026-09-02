@@ -2,13 +2,17 @@
 
 namespace APP\plugins\generic\toggleRequiredMetadata\tests;
 
+use Illuminate\Support\Collection;
 use PKP\tests\PKPTestCase;
 use PKP\components\forms\publication\ContributorForm;
 use PKP\components\forms\FormComponent;
+use APP\author\Author;
+use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\components\forms\FieldText;
 use APP\journal\Journal;
 use PKP\plugins\Hook;
+use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
 class ToggleRequiredMetadataPluginTest extends PKPTestCase
 {
@@ -45,6 +49,54 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $context->setId(1);
 
         return $context;
+    }
+
+    private function createAuthor(string $givenName): Author
+    {
+        $author = new Author();
+        $author->setGivenName($givenName, 'en');
+
+        return $author;
+    }
+
+    private function validateSubmissionOf(ToggleRequiredMetadataPlugin $plugin, array $authors): array
+    {
+        $publication = new Publication();
+        $publication->setId(1);
+        $publication->setData('authors', new Collection($authors));
+
+        $submission = new Submission();
+        $submission->setData('currentPublicationId', 1);
+        $submission->setData('publications', [$publication]);
+
+        $errors = [];
+        $plugin->validateSubmissionFields('Submission::validateSubmit', [&$errors, $submission, $this->createContext()]);
+
+        return $errors;
+    }
+
+    /**
+     * The requirements are about the submission being validated, so they are
+     * answered for the context the hook hands over and not for the one the
+     * request happens to carry.
+     */
+    public function testChecksTheRequirementsAgainstTheContextBeingValidated(): void
+    {
+        $contextIds = [];
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField', 'isOrcidProfilePluginEnabled'])
+            ->getMock();
+        $plugin->method('shouldRequireField')
+            ->willReturnCallback(function (string $setting, ?int $contextId = null) use (&$contextIds) {
+                $contextIds[] = $contextId;
+
+                return false;
+            });
+        $plugin->method('isOrcidProfilePluginEnabled')->willReturn(true);
+
+        $this->validateSubmissionOf($plugin, [$this->createAuthor('Ana')]);
+
+        $this->assertSame([1, 1, 1], $contextIds);
     }
 
     public function testBiographyRequiredField()
