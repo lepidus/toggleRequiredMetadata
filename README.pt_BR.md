@@ -18,7 +18,7 @@ Este plugin é compatível com as seguintes aplicações da PKP:
 * OPS 3.5.0
 * OMP 3.5.0
 
-Linhas de versão anteriores são atendidas por outros branches deste plugin: `stable-3_3_0` (OJS 3.3) e `stable-3_4_0` (OJS, OPS e OMP 3.4).
+Linhas de versão anteriores são atendidas por outros branches deste plugin: `stable-3_3_0` (OJS, OPS e OMP 3.3) e `stable-3_4_0` (OJS, OPS e OMP 3.4).
 
 ## Instalação
 

@@ -18,7 +18,7 @@ Este módulo es compatible con las siguientes aplicaciones de PKP:
 * OPS 3.5.0
 * OMP 3.5.0
 
-Las líneas de versión anteriores se atienden en otras ramas de este módulo: `stable-3_3_0` (OJS 3.3) y `stable-3_4_0` (OJS, OPS y OMP 3.4).
+Las líneas de versión anteriores se atienden en otras ramas de este módulo: `stable-3_3_0` (OJS, OPS y OMP 3.3) y `stable-3_4_0` (OJS, OPS y OMP 3.4).
 
 ## Instalación
 
