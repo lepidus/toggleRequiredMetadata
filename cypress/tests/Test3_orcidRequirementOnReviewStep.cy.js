@@ -182,4 +182,13 @@ describe('Toggle Required Metadata - ORCID requirement on the review step', func
         cy.contains(awaitingVerificationWarning).should('contain', 'Benedict Cumberbatch');
         cy.contains(notRequestedWarning).should('not.exist');
     });
+
+    it('Leaves a published article without the warning', function () {
+        cy.findSubmissionAsEditor('dbarnes', null, 'Karbasizaed', null, 'Published');
+        cy.openWorkflowMenu('Contributors');
+
+        cy.get('[data-cy="active-modal"]').contains('Karbasizaed').should('be.visible');
+        cy.contains(notRequestedWarning).should('not.exist');
+        cy.contains(awaitingVerificationWarning).should('not.exist');
+    });
 });

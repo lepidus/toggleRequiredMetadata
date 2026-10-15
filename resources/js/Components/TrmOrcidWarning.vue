@@ -41,6 +41,19 @@ function orcidStatus(author) {
 
 const authors = computed(() => props.publication?.authors ?? []);
 
+const isRequirementMet = computed(
+	() =>
+		authors.value.some(hasVerifiedOrcid) &&
+		authors.value.every((author) => orcidStatus(author) !== 'notRequested'),
+);
+
+const isShown = computed(
+	() =>
+		authors.value.length > 0 &&
+		props.publication?.status !== pkp.const.STATUS_PUBLISHED &&
+		!isRequirementMet.value,
+);
+
 const namesByStatus = computed(() => {
 	const names = {notRequested: [], awaitingVerification: []};
 
@@ -59,8 +72,6 @@ const pendingStatuses = computed(() =>
 		(status) => namesByStatus.value[status].length,
 	),
 );
-
-const isShown = computed(() => pendingStatuses.value.length > 0);
 
 function describe(status) {
 	return props.messages[status].replace(
