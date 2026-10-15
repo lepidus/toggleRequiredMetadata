@@ -11,6 +11,7 @@ describe('Toggle Required Metadata - ORCID warning on the workflow', function ()
 
         cy.get('#' + pluginRowId + ' > .first_column > .show_extras').click();
         cy.get('a[id^=' + pluginRowId + '-settings-button]').click();
+        cy.wait(2000);
         cy.get('select#orcidProfileAPIPath').should('be.visible').select('Public Sandbox');
         cy.get('input[id^=orcidClientId]').type('APP-CYPRESSTEST00000', {delay: 0});
         cy.get('input[id^=orcidClientSecret]').type('abcdef01-2345-6789-abcd-ef0123456789', {delay: 0});
