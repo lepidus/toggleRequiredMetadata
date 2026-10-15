@@ -179,6 +179,17 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([], $errors);
     }
 
+    public function testDoesNotCountAVerificationWithoutAnOrcidStored(): void
+    {
+        $author = $this->createAuthor('Ana');
+        $author->setOrcidVerified(true);
+
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [$author]);
+
+        $statuses = array_column($errors[ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT]['contributors'], 'status');
+        $this->assertSame(['notRequested'], $statuses);
+    }
+
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
     {
         $request = $this->getMockBuilder(Request::class)
