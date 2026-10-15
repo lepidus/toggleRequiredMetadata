@@ -41,9 +41,6 @@ msgstr "Al menos un colaborador debe tener el ORCID iD autenticado, y a los dem�
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
 msgstr "El flujo editorial nombra a quienes aún no se han autenticado."
 
-msgid "plugins.generic.toggleRequiredMetadata.error"
-msgstr "Por favor ingrese lo Resumen biográfico de su autor."
-
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "El campo \"ORCID\" es obligatorio para todos los colaboradores"
 

@@ -41,9 +41,6 @@ msgstr "Pelo menos um coautor precisa ter o ORCID iD autenticado, e os demais pr
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
 msgstr "O fluxo editorial nomeia quem ainda não autenticou."
 
-msgid "plugins.generic.toggleRequiredMetadata.error"
-msgstr "Por favor, insira o Resumo da Biografia do seu autor."
-
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores"
 
