@@ -50,13 +50,13 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function register($category, $path, $mainContextId = null)
     {
-        $success = parent::register($category, $path);
+        $success = parent::register($category, $path, $mainContextId);
 
         if (!Config::getVar('general', 'installed') || defined('RUNNING_UPGRADE')) {
             return true;
         }
 
-        if ($success && $this->getEnabled()) {
+        if ($success && $this->getEnabled($mainContextId)) {
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addBackendAssets']);
