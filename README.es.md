@@ -26,7 +26,7 @@ Instale el módulo **Toggle Required Metadata** desde la **Galería de Módulos*
 
 ## Ajustes
 
-Los tres requisitos vienen habilitados de forma predeterminada. Los ajustes del módulo, accesibles desde **Panel de control > Sitio web > Módulos**, son donde se elige cuáles debe cumplir un envío:
+Habilitar el módulo no exige nada por sí solo: cada requisito queda desactivado hasta que se elija. Los ajustes del módulo, accesibles desde **Panel de control > Sitio web > Módulos**, son donde se elige cuáles debe cumplir un envío:
 
 ![Los ajustes del módulo con los tres requisitos habilitados](/assets/settings-orcid-enabled.png)
 

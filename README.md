@@ -26,7 +26,7 @@ Install the **Toggle Required Metadata** plugin via the **Plugin Gallery** in **
 
 ## Settings
 
-All three requirements are enabled by default. The plugin settings, reached from **Dashboard > Website > Plugins**, are where you pick which of them a submission has to meet:
+Enabling the plugin requires nothing on its own: every requirement is off until it is chosen. The plugin settings, reached from **Dashboard > Website > Plugins**, are where you pick which of them a submission has to meet:
 
 ![The plugin settings with the three requirements enabled](/assets/settings-orcid-enabled.png)
 

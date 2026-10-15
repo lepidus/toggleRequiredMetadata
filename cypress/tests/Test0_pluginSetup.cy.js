@@ -12,11 +12,8 @@ describe('Toogle Required Metadata - Plugin enabling and setup', function() {
 		cy.goToPluginSettings();
 		// ORCID is not enabled in the test data, so the option is offered as
 		// disabled and the saved choice is left untouched
-		cy.get('#requireOrcid').should('be.disabled');
-		cy.get('#requireAffiliation').uncheck();
-		cy.get('#requireBiography').uncheck();
-
-		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
-		cy.wait(2000); // Let the settings request finish before navigating away
+		cy.get('#requireOrcid').should('be.disabled').and('not.be.checked');
+		cy.get('#requireAffiliation').should('not.be.checked');
+		cy.get('#requireBiography').should('not.be.checked');
 	});
 });

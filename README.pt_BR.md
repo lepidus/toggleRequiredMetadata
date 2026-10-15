@@ -26,7 +26,7 @@ Instale o plugin **Toggle Required Metadata** pela **Galeria de Plugins**, em **
 
 ## Configurações
 
-As três exigências vêm habilitadas por padrão. As configurações do plugin, acessadas em **Painel de Controle > Website > Plugins**, são onde se escolhe quais delas uma submissão precisa cumprir:
+Habilitar o plugin não exige nada por si só: cada exigência fica desligada até ser escolhida. As configurações do plugin, acessadas em **Painel de Controle > Website > Plugins**, são onde se escolhe quais delas uma submissão precisa cumprir:
 
 ![As configurações do plugin com as três exigências habilitadas](/assets/settings-orcid-enabled.png)
 

@@ -15,7 +15,7 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar los metadatos requeridos"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Este módulo hace obligatorios la afiliación, el resumen biográfico y el ORCID iD de los colaboradores de un envío."
+msgstr "Permite que una revista, editorial o servidor exija la afiliación, el resumen biográfico y el ORCID iD de los colaboradores de un envío. No se exige nada hasta que se elija en la configuración del módulo."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.description"
 msgstr "Seleccione los metadatos que se exigirán a los colaboradores de un envío:"

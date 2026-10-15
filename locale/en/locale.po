@@ -15,7 +15,7 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Toggle required metadata"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "This plugin makes the affiliation, the biography statement and the ORCID iD of the contributors required in a submission."
+msgstr "Lets a journal, press or server require the affiliation, the biography statement and the ORCID iD of the contributors of a submission. Nothing is required until it is chosen in the plugin settings."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.description"
 msgstr "Select the metadata to be required from the contributors of a submission:"
