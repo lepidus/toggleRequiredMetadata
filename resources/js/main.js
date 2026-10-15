@@ -48,7 +48,7 @@ pkp.registry.storeExtendFn('workflow', 'getPrimaryItems', (items, args) => {
 		{
 			component: 'TrmOrcidWarning',
 			props: {
-				message: isEditor ? config.editorMessage : config.authorMessage,
+				messages: isEditor ? config.editorMessages : config.authorMessages,
 				publication: args.selectedPublication,
 			},
 		},

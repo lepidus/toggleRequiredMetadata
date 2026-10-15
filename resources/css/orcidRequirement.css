@@ -52,3 +52,11 @@ li.trmOrcidRequirement .trmOrcidRequirement__contributors li {
 .trmOrcidRequirement__note {
 	color: #4e4e4e;
 }
+
+.trmOrcidWarning__line {
+	margin: 0;
+}
+
+.trmOrcidWarning__line + .trmOrcidWarning__line {
+	margin-top: 0.5rem;
+}
