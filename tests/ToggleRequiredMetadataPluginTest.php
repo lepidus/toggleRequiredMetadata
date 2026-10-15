@@ -213,34 +213,33 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertArrayHasKey(ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT, $errors);
     }
 
-    private function createPluginWithSetting(bool $exists, mixed $value = null): ToggleRequiredMetadataPlugin
+    private function createPluginWithSetting(mixed $value): ToggleRequiredMetadataPlugin
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
-            ->onlyMethods(['settingExists', 'getSetting', 'updateSetting'])
+            ->onlyMethods(['getSetting', 'updateSetting'])
             ->getMock();
-        $plugin->method('settingExists')->willReturn($exists);
         $plugin->method('getSetting')->willReturn($value);
 
         return $plugin;
     }
 
-    public function testRequiresTheMetadataUntilTheJournalChoosesOtherwise(): void
+    public function testDoesNotRequireTheMetadataUntilTheJournalChoosesIt(): void
     {
-        $plugin = $this->createPluginWithSetting(false);
+        $plugin = $this->createPluginWithSetting(null);
 
-        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+        $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
     }
 
     public function testDoesNotRequireTheMetadataOnceTheRequirementWasTurnedOff(): void
     {
-        $plugin = $this->createPluginWithSetting(true, null);
+        $plugin = $this->createPluginWithSetting('');
 
         $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
     }
 
     public function testRequiresTheMetadataWhileTheRequirementIsTurnedOn(): void
     {
-        $plugin = $this->createPluginWithSetting(true, 'on');
+        $plugin = $this->createPluginWithSetting('on');
 
         $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
     }
@@ -251,7 +250,7 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
      */
     public function testDoesNotWriteTheDefaultWhileReadingIt(): void
     {
-        $plugin = $this->createPluginWithSetting(false);
+        $plugin = $this->createPluginWithSetting(null);
         $plugin->expects($this->never())->method('updateSetting');
 
         $plugin->shouldRequireField('requireAffiliation', 1);
@@ -260,10 +259,9 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
     public function testLooksARequirementUpOnlyOncePerRequest(): void
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
-            ->onlyMethods(['settingExists', 'getSetting'])
+            ->onlyMethods(['getSetting'])
             ->getMock();
-        $plugin->expects($this->once())->method('settingExists')->willReturn(true);
-        $plugin->method('getSetting')->willReturn('on');
+        $plugin->expects($this->once())->method('getSetting')->willReturn('on');
 
         $plugin->shouldRequireField('requireAffiliation', 1);
         $plugin->shouldRequireField('requireAffiliation', 1);

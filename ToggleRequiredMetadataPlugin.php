@@ -20,7 +20,6 @@ use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
 use PKP\plugins\Hook;
-use PKP\db\DAORegistry;
 use PKP\config\Config;
 use PKP\components\forms\FormComponent;
 use PKP\components\forms\publication\ContributorForm;
@@ -410,9 +409,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * hooks that only ever run inside one, in the context of the request.
      *
      * Answering is a read, and stays one: the default is not written to the
-     * database on the way past. What tells a requirement nobody ever chose
-     * from one that was turned off is the absence of the setting, since an
-     * unticked checkbox is saved as an empty setting and not as a missing one.
+     * database on the way past.
      */
     public function shouldRequireField(string $settingName, ?int $contextId = null): bool
     {
@@ -423,22 +420,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         return $this->requiredFields[$contextId][$settingName]
-            ??= $this->readRequirement($contextId, $settingName);
-    }
-
-    private function readRequirement(int $contextId, string $settingName): bool
-    {
-        if (!$this->settingExists($contextId, $settingName)) {
-            return true;
-        }
-
-        return (bool) $this->getSetting($contextId, $settingName);
-    }
-
-    public function settingExists($contextId, $name): bool
-    {
-        $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
-        return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
+            ??= (bool) $this->getSetting($contextId, $settingName);
     }
 
     public function isOrcidEnabled(?Context $context = null): bool
