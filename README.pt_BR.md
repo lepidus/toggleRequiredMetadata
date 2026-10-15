@@ -46,7 +46,7 @@ O metadado selecionado é marcado como obrigatório onde o autor o preenche:
 
 ### Na terceira etapa da submissão
 
-Toda exigência é verificada de novo antes de a submissão seguir adiante, e o que falta é listado logo abaixo dos contribuidores, para o autor saber o que ainda precisa preencher.
+Toda exigência é verificada de novo antes de a submissão seguir adiante, e o que falta é listado logo abaixo dos contribuidores, para o autor saber o que ainda precisa preencher. O OMP ocupa esse lugar com os capítulos, então numa editora a lista aparece no fim dos metadados, logo acima do botão que salva a etapa.
 
 ### O que a verificação não cobre
 
