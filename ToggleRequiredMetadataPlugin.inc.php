@@ -312,6 +312,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         switch ($request->getUserVar('verb')) {
             case 'settings':
                 $context = $request->getContext();
+                if (is_null($context)) {
+                    return new JSONMessage(false);
+                }
+
                 $this->import('form.ToggleRequiredMetadataSettingsForm');
                 $form = new ToggleRequiredMetadataSettingsForm($this, $context->getId());
 
