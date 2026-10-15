@@ -10,6 +10,7 @@ use APP\submission\Submission;
 use PKP\components\forms\FieldOrcid;
 use PKP\components\forms\publication\ContributorForm;
 use APP\core\Application;
+use APP\core\Request;
 use PKP\context\Context;
 use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
@@ -176,6 +177,19 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), []);
 
         $this->assertSame([], $errors);
+    }
+
+    public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(['getContext', 'getUserVar'])
+            ->getMock();
+        $request->method('getContext')->willReturn(null);
+        $request->method('getUserVar')->willReturnMap([['verb', 'settings']]);
+
+        $response = $this->createPluginRequiring(true)->manage([], $request);
+
+        $this->assertFalse($response->getStatus());
     }
 
     public function testReportsTheRequirementWhileNobodyVerified(): void
