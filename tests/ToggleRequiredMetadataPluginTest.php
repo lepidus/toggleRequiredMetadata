@@ -107,12 +107,62 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $plugin->shouldRequireField('requireAffiliation', 1);
     }
 
-    private function createAuthor(string $givenName): Author
+    private function createAuthor(string $givenName, bool $authenticated = false, bool $requested = false): Author
     {
         $author = new Author();
         $author->setGivenName($givenName, 'en');
 
+        if ($authenticated) {
+            $author->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
+            $author->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+        }
+
+        if ($requested) {
+            $author->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+        }
+
         return $author;
+    }
+
+    private function createPublication(array $authors, int $status = Submission::STATUS_QUEUED): Publication
+    {
+        $publication = new Publication();
+        $publication->setData('status', $status);
+        $publication->setData('authors', new Collection($authors));
+
+        return $publication;
+    }
+
+    public function testWarnsAboutTheContributorsNobodyAskedForTheOrcidAuthorization(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', requested: true),
+            $this->createAuthor('Bruno'),
+        ]));
+
+        $this->assertSame(['Bruno'], $this->namesIn($warning['notRequested']));
+        $this->assertSame(['Ana'], $this->namesIn($warning['awaitingAuthorization']));
+    }
+
+    public function testLeavesOutOfTheWarningAStateNobodyIsIn(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', requested: true),
+        ]));
+
+        $this->assertSame(['awaitingAuthorization'], array_keys($warning));
+    }
+
+    public function testDoesNotWarnWithoutContributors(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));
+
+        $this->assertSame([], $warning);
+    }
+
+    private function namesIn(array $authors): array
+    {
+        return array_map(fn (Author $author) => $author->getGivenName('en'), $authors);
     }
 
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
