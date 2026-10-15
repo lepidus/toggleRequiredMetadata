@@ -54,7 +54,7 @@ Los requisitos son sobre lo que llega por el formulario de envío, y ahí es don
 
 ## Con el envío ya en el flujo de trabajo
 
-Una vez que el envío entra, el requisito de ORCID todavía puede estar esperando a una persona colaboradora que no autorizó su iD. El flujo de trabajo dice quién, con la indicación que corresponde a quien lee — una persona editora puede volver a solicitar la autorización, una autora solo puede insistir con la colaboradora.
+Una vez que el envío entra, el requisito de ORCID todavía puede no cumplirse. Mientras sea así, y la publicación no esté publicada, el flujo de trabajo dice quién lo retiene, distinguiendo a las personas colaboradoras a quienes aún nadie solicitó la autorización de las que recibieron el correo y no lo abrieron, con la indicación que corresponde a quien lee — una persona editora puede solicitar la autorización o volver a enviarla, una autora casi solo puede insistir con la colaboradora. El aviso no aparece en una publicación publicada, lo que incluye todo lo publicado antes de habilitar el módulo, ni una vez que una persona colaboradora autenticó su iD y la autorización fue solicitada a todas las demás.
 
 # Licencia
 __Este módulo está licenciado bajo la GNU General Public License v3.0__

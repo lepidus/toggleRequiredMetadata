@@ -39,7 +39,7 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submi
 msgstr "At least one contributor must have an authenticated ORCID iD, and the ORCID authorization must have been requested from the others, to finish a submission."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
-msgstr "The workflow names the contributors who have not authenticated yet."
+msgstr "While the requirement is not met, the workflow of an unpublished submission names the contributors still holding it up."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors"

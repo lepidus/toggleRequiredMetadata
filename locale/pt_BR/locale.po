@@ -39,7 +39,7 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submi
 msgstr "Pelo menos um coautor precisa ter o ORCID iD autenticado, e os demais precisam ter recebido a solicitação de autorização, para concluir a submissão."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
-msgstr "O fluxo editorial nomeia quem ainda não autenticou."
+msgstr "Enquanto a exigência não for cumprida, o fluxo editorial de uma submissão não publicada nomeia os contribuidores que ainda a seguram."
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores"
