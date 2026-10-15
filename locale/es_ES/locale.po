@@ -62,8 +62,14 @@ msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores. "
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores. "
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
-msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. La autenticación solo se completa cuando el colaborador abre el enlace de autorización enviado por correo electrónico y, hasta entonces, el ORCID iD registrado no está confirmado. Para enviar esa solicitud, vaya a la pestaña Publicación, edite el colaborador y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\"."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
+msgstr "Aún no se ha solicitado la autorización ORCID de: {$pendingAuthors}. Para solicitarla, vaya a la pestaña Publicación, edite el colaborador y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\"."
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
-msgstr "ORCID iD aún no autenticado por: {$pendingAuthors}. El ORCID iD solo se confirma después de que el colaborador abre el enlace de autorización enviado por correo electrónico. Pídales que busquen ese correo electrónico, incluso en la carpeta de spam, o solicite a la revista el envío de la solicitud."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingAuthorization"
+msgstr "Esperando la autorización ORCID de: {$pendingAuthors}. El correo electrónico de autorización fue enviado, y el ORCID iD solo se autentica cuando el colaborador abre el enlace que contiene. Para enviarlo de nuevo, vaya a la pestaña Publicación, edite el colaborador y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\"."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested"
+msgstr "Aún no se ha solicitado la autorización ORCID de: {$pendingAuthors}. Si puede editar los colaboradores, marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\" en cada uno; de lo contrario, solicite a la revista que la pida."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingAuthorization"
+msgstr "Esperando la autorización ORCID de: {$pendingAuthors}. El ORCID iD solo se autentica después de que el colaborador abre el enlace de autorización enviado por correo electrónico. Pídales que busquen ese correo electrónico, incluso en la carpeta de spam, o solicite a la revista el reenvío de la solicitud."
