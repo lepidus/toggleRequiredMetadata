@@ -340,10 +340,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * Answering is a read, and stays one: the default is not written to the
      * database on the way past. That matters more here than anywhere else,
      * since register() asks for a requirement on every page of the site.
-     *
-     * What tells a requirement nobody ever chose from one that was turned off
-     * is the absence of the setting, since an unticked checkbox is saved as an
-     * empty setting and not as a missing one.
      */
     public function shouldRequireField($settingName, $contextId = null)
     {
@@ -357,25 +353,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if (!isset($this->requiredFields[$contextId][$settingName])) {
-            $this->requiredFields[$contextId][$settingName] = $this->readRequirement($contextId, $settingName);
+            $this->requiredFields[$contextId][$settingName] = (bool) $this->getSetting($contextId, $settingName);
         }
 
         return $this->requiredFields[$contextId][$settingName];
-    }
-
-    private function readRequirement($contextId, $settingName)
-    {
-        if (!$this->settingExists($contextId, $settingName)) {
-            return true;
-        }
-
-        return (bool) $this->getSetting($contextId, $settingName);
-    }
-
-    public function settingExists($contextId, $name): bool
-    {
-        $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
-        return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
     }
 
     public function isOrcidProfilePluginEnabled()

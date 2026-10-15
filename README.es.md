@@ -24,7 +24,7 @@ Instale el módulo **Toggle Required Metadata** desde la **Galería de módulos*
 
 ## Ajustes
 
-Los tres requisitos vienen habilitados de forma predeterminada. En los ajustes del módulo se elige cuáles debe cumplir un envío:
+Habilitar el módulo no exige nada por sí solo: cada requisito queda desactivado hasta que se elija. En los ajustes del módulo se elige cuáles debe cumplir un envío:
 
 ![La sección de ajustes del módulo](/assets/plugin-settings-section.png)
 
