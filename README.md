@@ -54,7 +54,7 @@ The requirements are about what comes in through the submission form, and that i
 
 ## While the submission is in the workflow
 
-Once the submission is in, the ORCID requirement can still be waiting on a contributor who has not authorised their iD. The workflow says who, with the advice that fits the reader — an editor can ask for the authorisation again, an author can only chase the contributor.
+Once the submission is in, the ORCID requirement can still be unmet. While it is, and the publication is not published, the workflow says who is holding it up, telling apart the contributors nobody asked for the authorisation yet from the ones who were sent the e-mail and have not opened it, with the advice that fits the reader — an editor can request the authorisation or send it again, an author can mostly only chase the contributor. The warning is not shown on a published publication, which includes everything published before the plugin was enabled, nor once one contributor has authenticated their iD and the authorisation was requested from all the others.
 
 # License
 __This plugin is licensed under the GNU General Public License v3.0__

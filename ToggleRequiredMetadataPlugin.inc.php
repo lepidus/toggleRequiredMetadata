@@ -268,6 +268,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function describeOrcidWarning($publication)
     {
+        if ($publication->getData('status') == STATUS_PUBLISHED) {
+            return [];
+        }
+
         $authors = $publication->getData('authors');
         if (empty($authors)) {
             return [];
@@ -275,6 +279,9 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         $metadataChecker = new MetadataChecker();
         $authorsNotRequested = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
+        if ($metadataChecker->checkAnyAuthenticatedOrcid($authors) && empty($authorsNotRequested)) {
+            return [];
+        }
 
         return array_filter([
             'notRequested' => $authorsNotRequested,
