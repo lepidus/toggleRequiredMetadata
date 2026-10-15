@@ -152,6 +152,25 @@ class ToggleRequiredMetadataPluginTest extends TestCase
         $this->assertSame(['awaitingAuthorization'], array_keys($warning));
     }
 
+    public function testDoesNotWarnOnceTheRequirementIsMet(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', true),
+            $this->createAuthor('Bruno', false, true),
+        ]));
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnOnAPublishedPublication(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning(
+            $this->createPublication([$this->createAuthor('Ana')], STATUS_PUBLISHED)
+        );
+
+        $this->assertSame([], $warning);
+    }
+
     public function testDoesNotWarnWithoutContributors(): void
     {
         $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));

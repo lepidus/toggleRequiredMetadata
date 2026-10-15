@@ -39,7 +39,7 @@ msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.submi
 msgstr "Al menos un colaborador debe tener el ORCID iD autenticado, y a los demás se les debe haber solicitado la autorización de ORCID, para finalizar el envío."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
-msgstr "El flujo editorial nombra a quienes aún no se han autenticado."
+msgstr "Mientras el requisito no se cumpla, el flujo editorial de un envío no publicado nombra a los colaboradores que aún lo retienen."
 
 msgid "plugins.generic.toggleRequiredMetadata.error"
 msgstr "Por favor ingrese lo Resumen biográfico de su autor."
