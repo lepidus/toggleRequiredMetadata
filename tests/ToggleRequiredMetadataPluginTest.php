@@ -88,4 +88,11 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
         $this->assertFalse($response->getStatus());
     }
+
+    public function testHandsAnyOtherRequestToTheApplication(): void
+    {
+        $this->expectExceptionMessage('Unhandled management action!');
+
+        (new ToggleRequiredMetadataPlugin())->manage([], $this->createRequest('unknown'));
+    }
 }
