@@ -24,7 +24,7 @@ Instale o plugin **Toggle Required Metadata** pela **Galeria de Plugins**, em **
 
 ## Configurações
 
-As três exigências vêm habilitadas por padrão. Nas configurações do plugin, acessadas em **Painel > Website > Plugins**, você escolhe quais delas uma submissão precisa cumprir:
+Habilitar o plugin não exige nada por si só: cada exigência fica desligada até ser escolhida. Nas configurações do plugin, acessadas em **Painel > Website > Plugins**, você escolhe quais delas uma submissão precisa cumprir:
 
 ![A seção de configurações do plugin](/assets/plugin-settings-section.png)
 
