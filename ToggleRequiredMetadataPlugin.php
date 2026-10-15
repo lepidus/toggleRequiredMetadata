@@ -56,6 +56,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($success && $this->getEnabled($mainContextId)) {
+            Hook::add('Schema::get::author', [$this, 'exposeOrcidVerificationRequest']);
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addBackendAssets']);
@@ -112,6 +113,17 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if (!empty($contributorsErrors)) {
             $errors['contributors'] = $contributorsErrors;
         }
+    }
+
+    public function exposeOrcidVerificationRequest(string $hookName, array $args): bool
+    {
+        $schema = &$args[0];
+
+        if (isset($schema->properties->orcidVerificationRequested)) {
+            $schema->properties->orcidVerificationRequested->apiSummary = true;
+        }
+
+        return false;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)

@@ -190,6 +190,17 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame(['notRequested'], $statuses);
     }
 
+    public function testAddsTheOrcidVerificationRequestToTheContributorSummary(): void
+    {
+        $schema = (object) ['properties' => (object) [
+            'orcidVerificationRequested' => (object) ['type' => 'boolean', 'apiSummary' => false],
+        ]];
+
+        $this->createPluginRequiring(true)->exposeOrcidVerificationRequest('Schema::get::author', [&$schema]);
+
+        $this->assertTrue($schema->properties->orcidVerificationRequested->apiSummary);
+    }
+
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
     {
         $request = $this->getMockBuilder(Request::class)
