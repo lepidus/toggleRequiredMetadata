@@ -41,9 +41,6 @@ msgstr "At least one contributor must have an authenticated ORCID iD, and the OR
 msgid "plugins.generic.toggleRequiredMetadata.settings.orcidProfile.effect.warning"
 msgstr "The workflow names the contributors who have not authenticated yet."
 
-msgid "plugins.generic.toggleRequiredMetadata.error"
-msgstr "Please enter your author's Biography Statement."
-
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors"
 
