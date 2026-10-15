@@ -15,7 +15,7 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar metadados obrigatórios"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Esse plugin permite tornar os campos \"afiliação\" e \"ORCID\" de preenchimento obrigatório para autores de uma submissão."
+msgstr "Permite que uma revista, editora ou servidor exija a afiliação, o resumo da biografia e o ORCID iD dos contribuidores de uma submissão."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.description"
 msgstr "Selecione os campos para se tornarem de preenchimento obrigatório pelos autores de uma submissão:"
