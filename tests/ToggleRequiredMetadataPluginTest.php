@@ -153,6 +153,26 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame(['awaitingAuthorization'], array_keys($warning));
     }
 
+    public function testDoesNotWarnOnceTheRequirementIsMet(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', authenticated: true),
+            $this->createAuthor('Bruno', requested: true),
+        ]));
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnOnAPublishedPublication(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication(
+            [$this->createAuthor('Ana')],
+            Submission::STATUS_PUBLISHED
+        ));
+
+        $this->assertSame([], $warning);
+    }
+
     public function testDoesNotWarnWithoutContributors(): void
     {
         $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));

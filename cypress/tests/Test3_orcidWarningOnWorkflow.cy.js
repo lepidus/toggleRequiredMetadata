@@ -30,4 +30,13 @@ describe('Toggle Required Metadata - ORCID warning on the workflow', function ()
         cy.contains(notRequestedWarning).should('contain', 'Benedict Cumberbatch');
         cy.contains(awaitingAuthorizationWarning).should('not.exist');
     });
+
+    it('Leaves a published article without the warning', function () {
+        cy.loginAs('dbarnes');
+        cy.findSubmission('archive', 'Antimicrobial, heavy metal resistance');
+
+        cy.get('#publication-button').should('be.visible');
+        cy.contains(notRequestedWarning).should('not.exist');
+        cy.contains(awaitingAuthorizationWarning).should('not.exist');
+    });
 });
