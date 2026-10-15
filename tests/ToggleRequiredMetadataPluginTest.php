@@ -11,6 +11,7 @@ use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\components\forms\FieldText;
 use APP\journal\Journal;
+use APP\core\Request;
 use PKP\plugins\Hook;
 use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
@@ -114,6 +115,19 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $author->setGivenName($givenName, 'en');
 
         return $author;
+    }
+
+    public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(['getContext', 'getUserVar'])
+            ->getMock();
+        $request->method('getContext')->willReturn(null);
+        $request->method('getUserVar')->willReturnMap([['verb', 'settings']]);
+
+        $response = (new ToggleRequiredMetadataPlugin())->manage([], $request);
+
+        $this->assertFalse($response->getStatus());
     }
 
     private function validateSubmissionOf(ToggleRequiredMetadataPlugin $plugin, array $authors): array
