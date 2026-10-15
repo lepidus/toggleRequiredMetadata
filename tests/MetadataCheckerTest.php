@@ -94,9 +94,18 @@ class MetadataCheckerTest extends TestCase
 
     public function testFindsTheContributorsThatVerified(): void
     {
+        $this->authors[1]->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
         $this->authors[1]->setOrcidVerified(true);
 
         $this->assertSame([$this->authors[1]], $this->checker->getAuthorsWithVerifiedOrcid($this->authors));
+    }
+
+    public function testDoesNotCountAVerificationWithoutAnOrcidStored(): void
+    {
+        $this->authors[1]->setOrcidVerified(true);
+
+        $this->assertEmpty($this->checker->getAuthorsWithVerifiedOrcid($this->authors));
+        $this->assertContains($this->authors[1], $this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
     public function testDoesNotCountAContributorWhoseVerificationWasOnlyRequested(): void

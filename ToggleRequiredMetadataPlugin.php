@@ -304,7 +304,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     private function describeAuthorOrcidStatus(Author $author): array
     {
-        if ($author->hasVerifiedOrcid()) {
+        if ((new MetadataChecker())->hasVerifiedOrcid($author)) {
             $status = 'verified';
         } elseif ($author->getData('orcidVerificationRequested')) {
             $status = 'awaitingVerification';
