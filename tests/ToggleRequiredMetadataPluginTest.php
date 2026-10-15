@@ -1,6 +1,7 @@
 <?php
 
 import('plugins.generic.toggleRequiredMetadata.ToggleRequiredMetadataPlugin');
+import('classes.core.Request');
 
 use PHPUnit\Framework\TestCase;
 
@@ -68,5 +69,23 @@ class ToggleRequiredMetadataPluginTest extends TestCase
         $plugin = $this->createPluginWithSetting(false);
 
         $this->assertFalse($plugin->shouldRequireField('requireAffiliation', null));
+    }
+
+    private function createRequest(?string $verb)
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(['getContext', 'getUserVar'])
+            ->getMock();
+        $request->method('getContext')->willReturn(null);
+        $request->method('getUserVar')->willReturnMap([['verb', $verb]]);
+
+        return $request;
+    }
+
+    public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
+    {
+        $response = (new ToggleRequiredMetadataPlugin())->manage([], $this->createRequest('settings'));
+
+        $this->assertFalse($response->getStatus());
     }
 }
