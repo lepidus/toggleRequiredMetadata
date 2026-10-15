@@ -62,7 +62,7 @@ The requirements are about what comes in through the submission form, and that i
 
 ## While the submission is in the workflow
 
-Once the submission is in, the ORCID requirement can still be waiting on a contributor who has not opened the verification e-mail. The workflow says who, with the advice that fits the reader — an editor can resend the e-mail, an author can only chase the contributor:
+Once the submission is in, the ORCID requirement can still be unmet. While it is, and the publication is not published, the contributors tab of the workflow says who is holding it up, telling apart the contributors nobody asked yet from the ones who were sent the verification e-mail and have not opened it, with the advice that fits the reader — an editor can request or resend the verification, an author can mostly only chase the contributor. The warning is not shown on a published publication, which includes everything published before the plugin was enabled, nor once one contributor has verified their iD and the verification was requested from all the others:
 
 ![The ORCID warning as an editor sees it](/assets/workflow-warning-editor.png)
 
