@@ -14,6 +14,7 @@
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
 use APP\core\Application;
+use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
@@ -171,24 +172,38 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
+        $orcidWarning = $this->describeOrcidWarning($publication);
+        if (empty($orcidWarning)) {
+            return false;
+        }
+
+        $reader = $template === 'workflow/workflow.tpl' ? 'workflow' : 'authorDashboard';
+        $orcidWarningMessages = [];
+        foreach ($orcidWarning as $status => $authors) {
+            $orcidWarningMessages[] = __(
+                "plugins.generic.toggleRequiredMetadata.notification.{$reader}.{$status}",
+                ['pendingAuthors' => $this->getAuthorNames($authors)]
+            );
+        }
+
+        $templateMgr->assign('orcidWarningMessages', $orcidWarningMessages);
+        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    public function describeOrcidWarning(Publication $publication): array
+    {
         $authors = $publication->getData('authors')?->toArray() ?? [];
         if (empty($authors)) {
-            return false;
+            return [];
         }
 
         $metadataChecker = new MetadataChecker();
-        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutAuthenticatedOrcid($authors);
-        if (empty($authorsWithoutAuthorization)) {
-            return false;
-        }
+        $authorsNotRequested = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
 
-        $messageKey = $template === 'workflow/workflow.tpl'
-            ? 'plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning'
-            : 'plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning';
-        $orcidWarningMessage = __($messageKey, ['pendingAuthors' => $this->getAuthorNames($authorsWithoutAuthorization)]);
-
-        $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
-        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+        return array_filter([
+            'notRequested' => $authorsNotRequested,
+            'awaitingAuthorization' => $metadataChecker->getAuthorsAwaitingOrcidAuthorization($authors),
+        ]);
     }
 
     private function getAuthorNames(array $authors): string

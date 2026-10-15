@@ -63,18 +63,19 @@ class MetadataChecker
         return false;
     }
 
-    public function getAuthorsWithoutAuthenticatedOrcid(array $authors): array
-    {
-        return $this->getAuthorsNotMeeting($authors, function (Author $author) {
-            return $this->hasAuthenticatedOrcid($author);
-        });
-    }
-
     public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array
     {
         return $this->getAuthorsNotMeeting($authors, function (Author $author) {
             return $this->hasStartedOrcidAuthorization($author);
         });
+    }
+
+    public function getAuthorsAwaitingOrcidAuthorization(array $authors): array
+    {
+        return array_values(array_filter($authors, function (Author $author) {
+            return $this->checkHasMetadata($author, 'orcidEmailToken')
+                && !$this->hasAuthenticatedOrcid($author);
+        }));
     }
 
     private function getAuthorsNotMeeting(array $authors, callable $requirement): array
