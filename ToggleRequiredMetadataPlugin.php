@@ -261,8 +261,14 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         // dashboard component's props, and Vue only passes on declared ones: a
         // key of our own at the top level never reaches the workflow.
         $pageInitConfig['componentForms']['toggleRequiredMetadataOrcidWarning'] = [
-            'editorMessage' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification'),
-            'authorMessage' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.pendingVerification'),
+            'editorMessages' => [
+                'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested'),
+                'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification'),
+            ],
+            'authorMessages' => [
+                'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested'),
+                'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification'),
+            ],
         ];
 
         $templateMgr->setState(['pageInitConfig' => $pageInitConfig]);

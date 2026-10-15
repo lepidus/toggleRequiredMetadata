@@ -1,9 +1,13 @@
 <template>
-	<PkpNotification v-if="pendingNames.length" type="warning">
-		<!-- The same clock the review step uses for a verification already asked
-		     for and not yet given, so both surfaces read alike. -->
-		<PkpIcon icon="Clock" class="h-5 w-5" :inline="true" />
-		{{ warning }}
+	<PkpNotification v-if="isShown" type="warning">
+		<p
+			v-for="status in pendingStatuses"
+			:key="status"
+			:class="`trmOrcidWarning__line trmOrcidWarning__line--${status}`"
+		>
+			<PkpIcon :icon="statusIcons[status]" class="h-5 w-5" :inline="true" />
+			{{ describe(status) }}
+		</p>
 	</PkpNotification>
 </template>
 
@@ -11,29 +15,57 @@
 import {computed} from 'vue';
 
 const props = defineProps({
-	/**
-	 * Message naming the contributors still without a verified ORCID iD.
-	 * Carries a `{$pendingAuthors}` placeholder, filled in here so the warning
-	 * follows the contributor list without a page reload.
-	 */
-	message: {type: String, required: true},
+	messages: {type: Object, required: true},
 	/** The publication currently selected in the workflow. */
 	publication: {type: Object, default: null},
 });
 
-// Whether the verification was already requested cannot be told apart here:
-// the publication maps its authors with the summary properties only, and
-// `orcidVerificationRequested` is not one of them. It hardly matters, since a
-// submission cannot be completed until the verification has been requested
-// from every contributor.
-const pendingNames = computed(() =>
-	(props.publication?.authors ?? [])
-		.filter((author) => !author.orcidIsVerified)
-		.map((author) => author.fullName)
-		.filter(Boolean),
+const statusIcons = {
+	notRequested: 'Error',
+	awaitingVerification: 'Clock',
+};
+
+function hasVerifiedOrcid(author) {
+	return !!author.orcid && !!author.orcidIsVerified;
+}
+
+function orcidStatus(author) {
+	if (hasVerifiedOrcid(author)) {
+		return 'verified';
+	}
+
+	return author.orcidVerificationRequested
+		? 'awaitingVerification'
+		: 'notRequested';
+}
+
+const authors = computed(() => props.publication?.authors ?? []);
+
+const namesByStatus = computed(() => {
+	const names = {notRequested: [], awaitingVerification: []};
+
+	authors.value.forEach((author) => {
+		const status = orcidStatus(author);
+		if (names[status] && author.fullName) {
+			names[status].push(author.fullName);
+		}
+	});
+
+	return names;
+});
+
+const pendingStatuses = computed(() =>
+	Object.keys(statusIcons).filter(
+		(status) => namesByStatus.value[status].length,
+	),
 );
 
-const warning = computed(() =>
-	props.message.replace('{$pendingAuthors}', pendingNames.value.join(', ')),
-);
+const isShown = computed(() => pendingStatuses.value.length > 0);
+
+function describe(status) {
+	return props.messages[status].replace(
+		'{$pendingAuthors}',
+		namesByStatus.value[status].join(', '),
+	);
+}
 </script>
