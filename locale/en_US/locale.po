@@ -62,8 +62,14 @@ msgstr "The affiliation field is required for all contributors. "
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors. "
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning"
-msgstr "ORCID iD not authenticated yet by: {$pendingAuthors}. The authentication is only completed once the contributor opens the authorization link sent by e-mail, and until then the ORCID iD on record is not confirmed. To send this request, go to the Publication tab, edit the contributor and tick \"Send e-mail to request ORCID authorization from contributor\"."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
+msgstr "The ORCID authorization was not requested yet from: {$pendingAuthors}. To request it, go to the Publication tab, edit the contributor and tick \"Send e-mail to request ORCID authorization from contributor\"."
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning"
-msgstr "ORCID iD not authenticated yet by: {$pendingAuthors}. The ORCID iD is only confirmed after the contributor opens the authorization link sent by e-mail. Ask them to look for this e-mail, including in the spam folder, or ask the journal to send the request again."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingAuthorization"
+msgstr "Waiting for the ORCID authorization of: {$pendingAuthors}. The authorization e-mail was sent, and the ORCID iD is only authenticated once the contributor opens the link in it. To send it again, go to the Publication tab, edit the contributor and tick \"Send e-mail to request ORCID authorization from contributor\"."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested"
+msgstr "The ORCID authorization was not requested yet from: {$pendingAuthors}. If you can edit the contributors, tick \"Send e-mail to request ORCID authorization from contributor\" on theirs; otherwise, ask the journal to request it."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingAuthorization"
+msgstr "Waiting for the ORCID authorization of: {$pendingAuthors}. The ORCID iD is only authenticated after the contributor opens the authorization link sent by e-mail. Ask them to look for this e-mail, including in the spam folder, or ask the journal to send the request again."

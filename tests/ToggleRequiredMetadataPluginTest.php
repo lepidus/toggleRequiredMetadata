@@ -125,6 +125,40 @@ class ToggleRequiredMetadataPluginTest extends TestCase
         return $publication;
     }
 
+    private function namesIn(array $authors): array
+    {
+        return array_map(function (Author $author) {
+            return $author->getGivenName('en_US');
+        }, $authors);
+    }
+
+    public function testWarnsAboutTheContributorsNobodyAskedForTheOrcidAuthorization(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', false, true),
+            $this->createAuthor('Bruno'),
+        ]));
+
+        $this->assertSame(['Bruno'], $this->namesIn($warning['notRequested']));
+        $this->assertSame(['Ana'], $this->namesIn($warning['awaitingAuthorization']));
+    }
+
+    public function testLeavesOutOfTheWarningAStateNobodyIsIn(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', false, true),
+        ]));
+
+        $this->assertSame(['awaitingAuthorization'], array_keys($warning));
+    }
+
+    public function testDoesNotWarnWithoutContributors(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));
+
+        $this->assertSame([], $warning);
+    }
+
     private function createPluginRequiringOnlyAffiliation(bool $contributorsSlotIsFree)
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
