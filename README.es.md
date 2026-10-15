@@ -46,7 +46,7 @@ El metadato seleccionado se marca como obligatorio donde la persona autora lo co
 
 ### En el tercer paso del envío
 
-Cada requisito se comprueba de nuevo antes de que el envío avance, y lo que falta se lista justo debajo de las personas colaboradoras, para que quien envía sepa qué le queda por completar.
+Cada requisito se comprueba de nuevo antes de que el envío avance, y lo que falta se lista justo debajo de las personas colaboradoras, para que quien envía sepa qué le queda por completar. OMP ocupa ese lugar con los capítulos, así que en una editorial la lista aparece al final de los metadatos, justo encima del botón que guarda el paso.
 
 ### Lo que la comprobación no cubre
 

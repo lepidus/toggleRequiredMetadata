@@ -46,7 +46,7 @@ The selected metadata is marked as required where the author fills it in:
 
 ### On the third step of the submission
 
-Every requirement is checked again before the submission moves on, and what is missing is listed right below the contributors, so the author can tell what is left to fill in.
+Every requirement is checked again before the submission moves on, and what is missing is listed right below the contributors, so the author can tell what is left to fill in. OMP takes that place for the chapters, so on a press the list comes at the end of the metadata, just above the button that saves the step.
 
 ### What the check does not cover
 

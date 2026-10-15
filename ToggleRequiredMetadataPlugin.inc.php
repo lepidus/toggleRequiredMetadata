@@ -20,6 +20,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     /** @var array What each requirement answered in this request, by context. */
     private $requiredFields = array();
 
+    private $missingMetadataAfterMetadataFields = array();
+
     public function register($category, $path, $mainContextId = null)
     {
         $success = parent::register($category, $path, $mainContextId);
@@ -188,13 +190,31 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $form->addErrorField('requiredContributorMetadata');
         $form->addError('requiredContributorMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors'));
 
-        // step3.tpl leaves this slot right below the contributors list
-        $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
+        if ($this->isContributorsSlotFree()) {
+            // step3.tpl leaves this slot right below the contributors list
+            $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
+        } else {
+            $this->missingMetadataAfterMetadataFields = $missingMetadata;
+            HookRegistry::register('Templates::Submission::SubmissionMetadataForm::AdditionalMetadata', array($this, 'listMissingMetadataAfterMetadataFields'));
+        }
 
         return false;
     }
 
-    private function renderMissingMetadata(array $missingMetadata)
+    protected function isContributorsSlotFree()
+    {
+        return Application::get()->getName() !== 'omp';
+    }
+
+    public function listMissingMetadataAfterMetadataFields($hookName, $params)
+    {
+        $output = &$params[2];
+        $output .= $this->renderMissingMetadata($this->missingMetadataAfterMetadataFields);
+
+        return false;
+    }
+
+    protected function renderMissingMetadata(array $missingMetadata)
     {
         $templateMgr = TemplateManager::getManager(Application::get()->getRequest());
         $templateMgr->assign('missingMetadata', $missingMetadata);
