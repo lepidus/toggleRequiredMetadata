@@ -18,6 +18,7 @@ const props = defineProps({
 	messages: {type: Object, required: true},
 	/** The publication currently selected in the workflow. */
 	publication: {type: Object, default: null},
+	submission: {type: Object, default: null},
 });
 
 const statusIcons = {
@@ -58,7 +59,7 @@ const isRequirementMet = computed(
 const isShown = computed(
 	() =>
 		authors.value.length > 0 &&
-		props.publication?.status !== pkp.const.STATUS_PUBLISHED &&
+		props.submission?.status !== pkp.const.STATUS_PUBLISHED &&
 		!isRequirementMet.value,
 );
 
