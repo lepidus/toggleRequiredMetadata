@@ -62,7 +62,7 @@ As exigências são sobre o que chega pelo formulário de submissão, e é aí q
 
 ## Com a submissão já no fluxo de trabalho
 
-Depois de submetido, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a publicação não estiver publicada, a aba de contribuidores do fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou ainda dos que receberam o e-mail de verificação e não o abriram, com a orientação que cabe a quem lê — um editor pode solicitar ou reenviar a verificação, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa publicação publicada, o que inclui tudo o que foi publicado antes de o plugin ser habilitado, nem depois que um contribuidor verificou o seu iD e a verificação foi solicitada a todos os outros:
+Depois de submetido, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a publicação não estiver publicada, a aba de contribuidores do fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou ainda, os que receberam o e-mail de verificação e não o abriram, os que recusaram a autorização no ORCID e os que ficaram sem link de verificação pendente, com a orientação que cabe a quem lê — um editor pode solicitar ou reenviar a verificação, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa publicação publicada, o que inclui tudo o que foi publicado antes de o plugin ser habilitado, nem depois que um contribuidor verificou o seu iD e a verificação foi solicitada a todos os outros:
 
 ![O aviso de ORCID como o editor o vê](/assets/workflow-warning-editor.png)
 

@@ -263,10 +263,14 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $pageInitConfig['componentForms']['toggleRequiredMetadataOrcidWarning'] = [
             'editorMessages' => [
                 'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested'),
+                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.noPendingLink'),
+                'declined' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.declined'),
                 'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification'),
             ],
             'authorMessages' => [
                 'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested'),
+                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.noPendingLink'),
+                'declined' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.declined'),
                 'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification'),
             ],
         ];
