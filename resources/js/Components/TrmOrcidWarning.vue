@@ -22,6 +22,8 @@ const props = defineProps({
 
 const statusIcons = {
 	notRequested: 'Error',
+	noPendingLink: 'Error',
+	declined: 'Error',
 	awaitingVerification: 'Clock',
 };
 
@@ -34,9 +36,15 @@ function orcidStatus(author) {
 		return 'verified';
 	}
 
-	return author.orcidVerificationRequested
-		? 'awaitingVerification'
-		: 'notRequested';
+	if (!author.orcidVerificationRequested) {
+		return 'notRequested';
+	}
+
+	if (author.orcidEmailToken) {
+		return 'awaitingVerification';
+	}
+
+	return author.orcidAccessDenied ? 'declined' : 'noPendingLink';
 }
 
 const authors = computed(() => props.publication?.authors ?? []);
@@ -55,7 +63,9 @@ const isShown = computed(
 );
 
 const namesByStatus = computed(() => {
-	const names = {notRequested: [], awaitingVerification: []};
+	const names = Object.fromEntries(
+		Object.keys(statusIcons).map((status) => [status, []]),
+	);
 
 	authors.value.forEach((author) => {
 		const status = orcidStatus(author);
