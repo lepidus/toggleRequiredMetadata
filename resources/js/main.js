@@ -50,6 +50,7 @@ pkp.registry.storeExtendFn('workflow', 'getPrimaryItems', (items, args) => {
 			props: {
 				messages: isEditor ? config.editorMessages : config.authorMessages,
 				publication: args.selectedPublication,
+				submission: args.submission,
 			},
 		},
 		...items,

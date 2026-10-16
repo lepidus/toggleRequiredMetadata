@@ -59,7 +59,7 @@ function addContributor(contributor) {
     cy.waitJQuery();
 }
 
-const notRequestedWarning = 'The ORCID iD verification was not requested yet from';
+const notRequestedWarning = 'No ORCID iD verification request is pending for';
 const awaitingVerificationWarning = 'Waiting for the ORCID iD verification of';
 
 describe('Toggle Required Metadata - ORCID requirement on the review step', function () {
