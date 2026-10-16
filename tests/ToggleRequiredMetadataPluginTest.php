@@ -81,6 +81,10 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $author->setGivenName($fullName, 'en');
         $author->setData('orcidVerificationRequested', $requested);
 
+        if ($requested) {
+            $author->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+        }
+
         if ($verified) {
             $author->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
             $author->setOrcidVerified(true);
@@ -150,6 +154,18 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $statuses = array_column($errors[ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT]['contributors'], 'status');
 
         $this->assertSame(['verified', 'awaitingVerification', 'notRequested'], $statuses);
+    }
+
+    public function testDescribesAContributorWhoDeclinedTheVerification(): void
+    {
+        $author = $this->createAuthor('Ana');
+        $author->setData('orcidVerificationRequested', true);
+        $author->setData('orcidAccessDenied', '2026-10-16 10:00:00');
+
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [$author]);
+
+        $statuses = array_column($errors[ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT]['contributors'], 'status');
+        $this->assertSame(['declined'], $statuses);
     }
 
     /**
