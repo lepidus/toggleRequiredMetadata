@@ -56,6 +56,12 @@ msgstr "correo enviado — esperando a que abra el enlace de verificación"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.notRequested"
 msgstr "aún no solicitado — edite a este colaborador y use \"Solicitar verificación\" en el campo ORCID"
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.declined"
+msgstr "rechazó la autorización en ORCID — para solicitarla de nuevo, edite a este colaborador y use \"Reenviar el correo electrónico de verificación\" en el campo ORCID"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.noPendingLink"
+msgstr "solicitado, pero no hay ningún enlace de verificación pendiente — edite a este colaborador y use \"Reenviar el correo electrónico de verificación\" en el campo ORCID"
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"
 

@@ -56,6 +56,12 @@ msgstr "e-mail sent — waiting for them to open the verification link"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.notRequested"
 msgstr "not requested yet — edit this contributor and use \"Request verification\" on the ORCID field"
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.declined"
+msgstr "declined the authorization in ORCID — to ask again, edit this contributor and use \"Resend Verification Email\" on the ORCID field"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.noPendingLink"
+msgstr "requested, but no verification link is pending — edit this contributor and use \"Resend Verification Email\" on the ORCID field"
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "The affiliation field is required for all contributors"
 
