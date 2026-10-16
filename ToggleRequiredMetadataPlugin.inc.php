@@ -20,6 +20,8 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     /** @var array What each requirement answered in this request, by context. */
     private $requiredFields = array();
 
+    private $missingMetadataAfterMetadataFields = array();
+
     public function register($category, $path, $mainContextId = null)
     {
         $success = parent::register($category, $path, $mainContextId);
@@ -188,13 +190,31 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $form->addErrorField('requiredContributorMetadata');
         $form->addError('requiredContributorMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors'));
 
-        // step3.tpl leaves this slot right below the contributors list
-        $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
+        if ($this->isContributorsSlotFree()) {
+            // step3.tpl leaves this slot right below the contributors list
+            $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
+        } else {
+            $this->missingMetadataAfterMetadataFields = $missingMetadata;
+            HookRegistry::register('Templates::Submission::SubmissionMetadataForm::AdditionalMetadata', array($this, 'listMissingMetadataAfterMetadataFields'));
+        }
 
         return false;
     }
 
-    private function renderMissingMetadata(array $missingMetadata)
+    protected function isContributorsSlotFree()
+    {
+        return Application::get()->getName() !== 'omp';
+    }
+
+    public function listMissingMetadataAfterMetadataFields($hookName, $params)
+    {
+        $output = &$params[2];
+        $output .= $this->renderMissingMetadata($this->missingMetadataAfterMetadataFields);
+
+        return false;
+    }
+
+    protected function renderMissingMetadata(array $missingMetadata)
     {
         $templateMgr = TemplateManager::getManager(Application::get()->getRequest());
         $templateMgr->assign('missingMetadata', $missingMetadata);
@@ -228,24 +248,45 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
+        $orcidWarning = $this->describeOrcidWarning($publication);
+        if (empty($orcidWarning)) {
+            return false;
+        }
+
+        $reader = $template === 'workflow/workflow.tpl' ? 'workflow' : 'authorDashboard';
+        $orcidWarningMessages = [];
+        foreach ($orcidWarning as $status => $authors) {
+            $orcidWarningMessages[] = __(
+                "plugins.generic.toggleRequiredMetadata.notification.{$reader}.{$status}",
+                ['pendingAuthors' => $this->getAuthorNames($authors)]
+            );
+        }
+
+        $templateMgr->assign('orcidWarningMessages', $orcidWarningMessages);
+        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    public function describeOrcidWarning($publication)
+    {
+        if ($publication->getData('status') == STATUS_PUBLISHED) {
+            return [];
+        }
+
         $authors = $publication->getData('authors');
         if (empty($authors)) {
-            return false;
+            return [];
         }
 
         $metadataChecker = new MetadataChecker();
-        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutAuthenticatedOrcid($authors);
-        if (empty($authorsWithoutAuthorization)) {
-            return false;
+        $authorsNotRequested = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
+        if ($metadataChecker->checkAnyAuthenticatedOrcid($authors) && empty($authorsNotRequested)) {
+            return [];
         }
 
-        $messageKey = $template === 'workflow/workflow.tpl'
-            ? 'plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning'
-            : 'plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning';
-        $orcidWarningMessage = __($messageKey, ['pendingAuthors' => $this->getAuthorNames($authorsWithoutAuthorization)]);
-
-        $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
-        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+        return array_filter([
+            'notRequested' => $authorsNotRequested,
+            'awaitingAuthorization' => $metadataChecker->getAuthorsAwaitingOrcidAuthorization($authors),
+        ]);
     }
 
     private function getAuthorNames(array $authors): string
@@ -312,6 +353,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         switch ($request->getUserVar('verb')) {
             case 'settings':
                 $context = $request->getContext();
+                if (is_null($context)) {
+                    return new JSONMessage(false);
+                }
+
                 $this->import('form.ToggleRequiredMetadataSettingsForm');
                 $form = new ToggleRequiredMetadataSettingsForm($this, $context->getId());
 
@@ -325,7 +370,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
                 return new JSONMessage(true, $form->fetch($request));
             default:
-                return parent::manage($verb, $args, $message, $messageParams);
+                return parent::manage($args, $request);
         }
     }
 
@@ -336,10 +381,6 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * Answering is a read, and stays one: the default is not written to the
      * database on the way past. That matters more here than anywhere else,
      * since register() asks for a requirement on every page of the site.
-     *
-     * What tells a requirement nobody ever chose from one that was turned off
-     * is the absence of the setting, since an unticked checkbox is saved as an
-     * empty setting and not as a missing one.
      */
     public function shouldRequireField($settingName, $contextId = null)
     {
@@ -353,25 +394,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if (!isset($this->requiredFields[$contextId][$settingName])) {
-            $this->requiredFields[$contextId][$settingName] = $this->readRequirement($contextId, $settingName);
+            $this->requiredFields[$contextId][$settingName] = (bool) $this->getSetting($contextId, $settingName);
         }
 
         return $this->requiredFields[$contextId][$settingName];
-    }
-
-    private function readRequirement($contextId, $settingName)
-    {
-        if (!$this->settingExists($contextId, $settingName)) {
-            return true;
-        }
-
-        return (bool) $this->getSetting($contextId, $settingName);
-    }
-
-    public function settingExists($contextId, $name): bool
-    {
-        $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
-        return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
     }
 
     public function isOrcidProfilePluginEnabled()

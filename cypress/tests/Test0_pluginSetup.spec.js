@@ -10,11 +10,8 @@ describe('Toogle Required Metadata - Plugin enabling and setup', function() {
 		cy.wait(2000); // Let the enabling request finish before navigating away
 
 		cy.goToPluginSettings();
-		cy.get('#requireOrcid').uncheck();
-		cy.get('#requireAffiliation').uncheck();
-		cy.get('#requireBiography').uncheck();
-
-		cy.get('#toggleRequiredMetadataSettingsForm .submitFormButton').click();
-		cy.wait(2000); // Let the settings request finish before navigating away
+		cy.get('#requireOrcid').should('not.be.checked');
+		cy.get('#requireAffiliation').should('not.be.checked');
+		cy.get('#requireBiography').should('not.be.checked');
 	});
 });

@@ -24,7 +24,7 @@ Instale o plugin **Toggle Required Metadata** pela **Galeria de Plugins**, em **
 
 ## Configurações
 
-As três exigências vêm habilitadas por padrão. Nas configurações do plugin você escolhe quais delas uma submissão precisa cumprir:
+Habilitar o plugin não exige nada por si só: cada exigência fica desligada até ser escolhida. Nas configurações do plugin você escolhe quais delas uma submissão precisa cumprir:
 
 ![A seção de configurações do plugin](/assets/plugin-settings-section.png)
 
@@ -46,7 +46,7 @@ O metadado selecionado é marcado como obrigatório onde o autor o preenche:
 
 ### Na terceira etapa da submissão
 
-Toda exigência é verificada de novo antes de a submissão seguir adiante, e o que falta é listado logo abaixo dos contribuidores, para o autor saber o que ainda precisa preencher.
+Toda exigência é verificada de novo antes de a submissão seguir adiante, e o que falta é listado logo abaixo dos contribuidores, para o autor saber o que ainda precisa preencher. O OMP ocupa esse lugar com os capítulos, então numa editora a lista aparece no fim dos metadados, logo acima do botão que salva a etapa.
 
 ### O que a verificação não cobre
 
@@ -54,7 +54,7 @@ As exigências são sobre o que chega pelo formulário de submissão, e é aí q
 
 ## Com a submissão já no fluxo de trabalho
 
-Depois que a submissão entra, a exigência de ORCID ainda pode estar esperando por um contribuidor que não autorizou o seu iD. O fluxo de trabalho diz quem, com a orientação que cabe a quem lê — um editor pode solicitar a autorização de novo, um autor só pode cobrar o contribuidor.
+Depois que a submissão entra, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a publicação não estiver publicada, o fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou a autorização ainda dos que receberam o e-mail e não o abriram, com a orientação que cabe a quem lê — um editor pode solicitar a autorização ou enviá-la de novo, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa publicação publicada, o que inclui tudo o que foi publicado antes de o plugin ser habilitado, nem depois que um contribuidor autenticou o seu iD e a autorização foi solicitada a todos os outros.
 
 # Licença
 __Este plugin está licenciado sob a GNU General Public License v3.0__

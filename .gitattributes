@@ -1,0 +1,6 @@
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitlab-ci.yml export-ignore
+/assets export-ignore
+/cypress export-ignore
+/tests export-ignore
