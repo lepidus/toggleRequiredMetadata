@@ -31,8 +31,30 @@ class MetadataChecker
     public function getAuthorsWithVerifiedOrcid(array $authors): array
     {
         return array_values(array_filter($authors, function (Author $author) {
-            return $author->hasVerifiedOrcid();
+            return $this->hasVerifiedOrcid($author);
         }));
+    }
+
+    public function hasVerifiedOrcid(Author $author): bool
+    {
+        return !empty($author->getData('orcid')) && $author->hasVerifiedOrcid();
+    }
+
+    public function getOrcidStatus(Author $author): string
+    {
+        if ($this->hasVerifiedOrcid($author)) {
+            return 'verified';
+        }
+
+        if (!$author->getData('orcidVerificationRequested')) {
+            return 'notRequested';
+        }
+
+        if (!empty($author->getData('orcidEmailToken'))) {
+            return 'awaitingVerification';
+        }
+
+        return empty($author->getData('orcidAccessDenied')) ? 'noPendingLink' : 'declined';
     }
 
     public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array
@@ -56,7 +78,7 @@ class MetadataChecker
     private function hasStartedOrcidAuthorization(Author $author): bool
     {
         return (bool) $author->getData('orcidVerificationRequested')
-            || $author->hasVerifiedOrcid();
+            || $this->hasVerifiedOrcid($author);
     }
 
     private function hasAnyLocalizedValue($value): bool

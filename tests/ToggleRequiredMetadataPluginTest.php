@@ -10,6 +10,7 @@ use APP\submission\Submission;
 use PKP\components\forms\FieldOrcid;
 use PKP\components\forms\publication\ContributorForm;
 use APP\core\Application;
+use APP\core\Request;
 use PKP\context\Context;
 use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
@@ -79,6 +80,10 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $author = new Author();
         $author->setGivenName($fullName, 'en');
         $author->setData('orcidVerificationRequested', $requested);
+
+        if ($requested) {
+            $author->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+        }
 
         if ($verified) {
             $author->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
@@ -151,6 +156,18 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame(['verified', 'awaitingVerification', 'notRequested'], $statuses);
     }
 
+    public function testDescribesAContributorWhoDeclinedTheVerification(): void
+    {
+        $author = $this->createAuthor('Ana');
+        $author->setData('orcidVerificationRequested', true);
+        $author->setData('orcidAccessDenied', '2026-10-16 10:00:00');
+
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [$author]);
+
+        $statuses = array_column($errors[ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT]['contributors'], 'status');
+        $this->assertSame(['declined'], $statuses);
+    }
+
     /**
      * One verified iD is enough, so the requirement is met even while the
      * others are only waiting for their own verification.
@@ -178,6 +195,41 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([], $errors);
     }
 
+    public function testDoesNotCountAVerificationWithoutAnOrcidStored(): void
+    {
+        $author = $this->createAuthor('Ana');
+        $author->setOrcidVerified(true);
+
+        $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [$author]);
+
+        $statuses = array_column($errors[ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT]['contributors'], 'status');
+        $this->assertSame(['notRequested'], $statuses);
+    }
+
+    public function testAddsTheOrcidVerificationRequestToTheContributorSummary(): void
+    {
+        $schema = (object) ['properties' => (object) [
+            'orcidVerificationRequested' => (object) ['type' => 'boolean', 'apiSummary' => false],
+        ]];
+
+        $this->createPluginRequiring(true)->exposeOrcidVerificationRequest('Schema::get::author', [&$schema]);
+
+        $this->assertTrue($schema->properties->orcidVerificationRequested->apiSummary);
+    }
+
+    public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(['getContext', 'getUserVar'])
+            ->getMock();
+        $request->method('getContext')->willReturn(null);
+        $request->method('getUserVar')->willReturnMap([['verb', 'settings']]);
+
+        $response = $this->createPluginRequiring(true)->manage([], $request);
+
+        $this->assertFalse($response->getStatus());
+    }
+
     public function testReportsTheRequirementWhileNobodyVerified(): void
     {
         $errors = $this->validateSubmissionOf($this->createPluginRequiringOnlyOrcid(), [
@@ -188,34 +240,33 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertArrayHasKey(ToggleRequiredMetadataPlugin::ORCID_REQUIREMENT, $errors);
     }
 
-    private function createPluginWithSetting(bool $exists, mixed $value = null): ToggleRequiredMetadataPlugin
+    private function createPluginWithSetting(mixed $value): ToggleRequiredMetadataPlugin
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
-            ->onlyMethods(['settingExists', 'getSetting', 'updateSetting'])
+            ->onlyMethods(['getSetting', 'updateSetting'])
             ->getMock();
-        $plugin->method('settingExists')->willReturn($exists);
         $plugin->method('getSetting')->willReturn($value);
 
         return $plugin;
     }
 
-    public function testRequiresTheMetadataUntilTheJournalChoosesOtherwise(): void
+    public function testDoesNotRequireTheMetadataUntilTheJournalChoosesIt(): void
     {
-        $plugin = $this->createPluginWithSetting(false);
+        $plugin = $this->createPluginWithSetting(null);
 
-        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+        $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
     }
 
     public function testDoesNotRequireTheMetadataOnceTheRequirementWasTurnedOff(): void
     {
-        $plugin = $this->createPluginWithSetting(true, null);
+        $plugin = $this->createPluginWithSetting('');
 
         $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
     }
 
     public function testRequiresTheMetadataWhileTheRequirementIsTurnedOn(): void
     {
-        $plugin = $this->createPluginWithSetting(true, 'on');
+        $plugin = $this->createPluginWithSetting('on');
 
         $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
     }
@@ -226,7 +277,7 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
      */
     public function testDoesNotWriteTheDefaultWhileReadingIt(): void
     {
-        $plugin = $this->createPluginWithSetting(false);
+        $plugin = $this->createPluginWithSetting(null);
         $plugin->expects($this->never())->method('updateSetting');
 
         $plugin->shouldRequireField('requireAffiliation', 1);
@@ -235,10 +286,9 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
     public function testLooksARequirementUpOnlyOncePerRequest(): void
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
-            ->onlyMethods(['settingExists', 'getSetting'])
+            ->onlyMethods(['getSetting'])
             ->getMock();
-        $plugin->expects($this->once())->method('settingExists')->willReturn(true);
-        $plugin->method('getSetting')->willReturn('on');
+        $plugin->expects($this->once())->method('getSetting')->willReturn('on');
 
         $plugin->shouldRequireField('requireAffiliation', 1);
         $plugin->shouldRequireField('requireAffiliation', 1);

@@ -94,9 +94,18 @@ class MetadataCheckerTest extends TestCase
 
     public function testFindsTheContributorsThatVerified(): void
     {
+        $this->authors[1]->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
         $this->authors[1]->setOrcidVerified(true);
 
         $this->assertSame([$this->authors[1]], $this->checker->getAuthorsWithVerifiedOrcid($this->authors));
+    }
+
+    public function testDoesNotCountAVerificationWithoutAnOrcidStored(): void
+    {
+        $this->authors[1]->setOrcidVerified(true);
+
+        $this->assertEmpty($this->checker->getAuthorsWithVerifiedOrcid($this->authors));
+        $this->assertContains($this->authors[1], $this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 
     public function testDoesNotCountAContributorWhoseVerificationWasOnlyRequested(): void
@@ -147,5 +156,56 @@ class MetadataCheckerTest extends TestCase
         $this->authors[1]->unsetData('orcidVerificationRequested');
 
         $this->assertEquals([$this->authors[1]], $this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
+    }
+
+    public function testTellsAContributorNobodyAskedForTheVerification(): void
+    {
+        $this->assertSame('notRequested', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
+    public function testTellsAVerificationWaitingOnItsLink(): void
+    {
+        $this->authors[0]->setData('orcidVerificationRequested', true);
+        $this->authors[0]->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+
+        $this->assertSame('awaitingVerification', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
+    public function testTellsAVerificationTheContributorDeclined(): void
+    {
+        $this->authors[0]->setData('orcidVerificationRequested', true);
+        $this->authors[0]->setData('orcidAccessDenied', '2026-10-16 10:00:00');
+
+        $this->assertSame('declined', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
+    public function testTellsARequestLeftWithoutAPendingLink(): void
+    {
+        $this->authors[0]->setData('orcidVerificationRequested', true);
+
+        $this->assertSame('noPendingLink', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
+    public function testTellsARequestSentAgainAfterADeclineAsWaiting(): void
+    {
+        $this->authors[0]->setData('orcidVerificationRequested', true);
+        $this->authors[0]->setData('orcidAccessDenied', '2026-10-16 10:00:00');
+        $this->authors[0]->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+
+        $this->assertSame('awaitingVerification', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
+    public function testTellsAVerifiedContributor(): void
+    {
+        $this->verifyOrcidForEveryAuthor();
+
+        $this->assertSame('verified', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
+    public function testCountsAVerificationWithoutAPendingLinkAsRequested(): void
+    {
+        $this->requestVerificationForEveryAuthor();
+
+        $this->assertEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors));
     }
 }

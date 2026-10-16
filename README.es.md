@@ -26,7 +26,7 @@ Instale el módulo **Toggle Required Metadata** desde la **Galería de Módulos*
 
 ## Ajustes
 
-Los tres requisitos vienen habilitados de forma predeterminada. Los ajustes del módulo, accesibles desde **Panel de control > Sitio web > Módulos**, son donde se elige cuáles debe cumplir un envío:
+Habilitar el módulo no exige nada por sí solo: cada requisito queda desactivado hasta que se elija. Los ajustes del módulo, accesibles desde **Panel de control > Sitio web > Módulos**, son donde se elige cuáles debe cumplir un envío:
 
 ![Los ajustes del módulo con los tres requisitos habilitados](/assets/settings-orcid-enabled.png)
 
@@ -62,7 +62,7 @@ Los requisitos son sobre lo que llega por el formulario de envío, y ahí es don
 
 ## Con el envío ya en el flujo de trabajo
 
-Una vez enviado, el requisito de ORCID todavía puede estar esperando a un colaborador que no abrió el correo de verificación. El flujo de trabajo dice quién es, con el consejo que corresponde a quien lee — un editor puede reenviar el correo, un autor solo puede insistirle al colaborador:
+Una vez enviado, el requisito de ORCID todavía puede no cumplirse. Mientras sea así, y la publicación no esté publicada, la pestaña de colaboradores del flujo de trabajo dice quién lo retiene, distinguiendo a los colaboradores a quienes aún nadie se lo solicitó, a los que recibieron el correo de verificación y no lo abrieron, a los que rechazaron la autorización en ORCID y a los que se quedaron sin enlace de verificación pendiente, con el consejo que corresponde a quien lee — un editor puede solicitar o reenviar la verificación, un autor casi solo puede insistirle al colaborador. El aviso no aparece en una publicación publicada, lo que incluye todo lo publicado antes de habilitar el módulo, ni una vez que un colaborador verificó su iD y la verificación fue solicitada a todos los demás:
 
 ![El aviso de ORCID como lo ve un editor](/assets/workflow-warning-editor.png)
 

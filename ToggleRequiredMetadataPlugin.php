@@ -20,7 +20,6 @@ use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
 use PKP\plugins\Hook;
-use PKP\db\DAORegistry;
 use PKP\config\Config;
 use PKP\components\forms\FormComponent;
 use PKP\components\forms\publication\ContributorForm;
@@ -50,13 +49,14 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function register($category, $path, $mainContextId = null)
     {
-        $success = parent::register($category, $path);
+        $success = parent::register($category, $path, $mainContextId);
 
         if (!Config::getVar('general', 'installed') || defined('RUNNING_UPGRADE')) {
             return true;
         }
 
-        if ($success && $this->getEnabled()) {
+        if ($success && $this->getEnabled($mainContextId)) {
+            Hook::add('Schema::get::author', [$this, 'exposeOrcidVerificationRequest']);
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addBackendAssets']);
@@ -113,6 +113,17 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if (!empty($contributorsErrors)) {
             $errors['contributors'] = $contributorsErrors;
         }
+    }
+
+    public function exposeOrcidVerificationRequest(string $hookName, array $args): bool
+    {
+        $schema = &$args[0];
+
+        if (isset($schema->properties->orcidVerificationRequested)) {
+            $schema->properties->orcidVerificationRequested->apiSummary = true;
+        }
+
+        return false;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
@@ -250,8 +261,18 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         // dashboard component's props, and Vue only passes on declared ones: a
         // key of our own at the top level never reaches the workflow.
         $pageInitConfig['componentForms']['toggleRequiredMetadataOrcidWarning'] = [
-            'editorMessage' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification'),
-            'authorMessage' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.pendingVerification'),
+            'editorMessages' => [
+                'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested'),
+                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.noPendingLink'),
+                'declined' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.declined'),
+                'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification'),
+            ],
+            'authorMessages' => [
+                'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested'),
+                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.noPendingLink'),
+                'declined' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.declined'),
+                'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification'),
+            ],
         ];
 
         $templateMgr->setState(['pageInitConfig' => $pageInitConfig]);
@@ -304,13 +325,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     private function describeAuthorOrcidStatus(Author $author): array
     {
-        if ($author->hasVerifiedOrcid()) {
-            $status = 'verified';
-        } elseif ($author->getData('orcidVerificationRequested')) {
-            $status = 'awaitingVerification';
-        } else {
-            $status = 'notRequested';
-        }
+        $status = (new MetadataChecker())->getOrcidStatus($author);
 
         return [
             'name' => $author->getFullName(),
@@ -374,6 +389,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         switch ($request->getUserVar('verb')) {
             case 'settings':
                 $context = $request->getContext();
+                if (is_null($context)) {
+                    return new JSONMessage(false);
+                }
+
                 $form = new ToggleRequiredMetadataSettingsForm($this, $context->getId());
 
                 if ($request->getUserVar('save')) {
@@ -406,9 +425,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * hooks that only ever run inside one, in the context of the request.
      *
      * Answering is a read, and stays one: the default is not written to the
-     * database on the way past. What tells a requirement nobody ever chose
-     * from one that was turned off is the absence of the setting, since an
-     * unticked checkbox is saved as an empty setting and not as a missing one.
+     * database on the way past.
      */
     public function shouldRequireField(string $settingName, ?int $contextId = null): bool
     {
@@ -419,22 +436,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         return $this->requiredFields[$contextId][$settingName]
-            ??= $this->readRequirement($contextId, $settingName);
-    }
-
-    private function readRequirement(int $contextId, string $settingName): bool
-    {
-        if (!$this->settingExists($contextId, $settingName)) {
-            return true;
-        }
-
-        return (bool) $this->getSetting($contextId, $settingName);
-    }
-
-    public function settingExists($contextId, $name): bool
-    {
-        $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
-        return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
+            ??= (bool) $this->getSetting($contextId, $settingName);
     }
 
     public function isOrcidEnabled(?Context $context = null): bool

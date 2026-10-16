@@ -15,7 +15,7 @@ msgid "plugins.generic.toggleRequiredMetadata.displayName"
 msgstr "Alternar metadados obrigatórios"
 
 msgid "plugins.generic.toggleRequiredMetadata.description"
-msgstr "Este plugin torna obrigatórios a afiliação, o resumo da biografia e o ORCID iD dos contribuidores de uma submissão."
+msgstr "Permite que uma revista, editora ou servidor exija a afiliação, o resumo da biografia e o ORCID iD dos contribuidores de uma submissão. Nada é exigido até ser escolhido nas configurações do plugin."
 
 msgid "plugins.generic.toggleRequiredMetadata.settings.description"
 msgstr "Selecione os metadados a serem exigidos dos contribuidores de uma submissão:"
@@ -56,6 +56,12 @@ msgstr "e-mail enviado — aguardando que ele abra o link de verificação"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.notRequested"
 msgstr "ainda não solicitado — edite este coautor e use \"Solicitar verificação\" no campo ORCID"
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.declined"
+msgstr "recusou a autorização no ORCID — para pedir de novo, edite este coautor e use \"Reenviar e-mail de verificação\" no campo ORCID"
+
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.noPendingLink"
+msgstr "solicitado, mas não há link de verificação pendente — edite este coautor e use \"Reenviar e-mail de verificação\" no campo ORCID"
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "O campo \"Afiliação\" é requerido para todos os coautores"
 
@@ -69,10 +75,26 @@ msgstr "Afiliações: obrigatório."
 msgid "plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired"
 msgstr "ORCID iD: obrigatório. Todo coautor precisa ao menos ter a verificação solicitada."
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.pendingVerification"
-msgstr "Aguardando a verificação do ORCID iD de: {$pendingAuthors}. O e-mail de verificação já foi enviado, e o iD só é confirmado quando o contribuidor abre o link contido nele. Para enviar o e-mail novamente, edite o contribuidor e use \"Reenviar e-mail de verificação\" no campo ORCID — o reenvio invalida o link anterior."
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
+msgstr "A verificação do ORCID iD ainda não foi solicitada a: {$pendingAuthors}. Para solicitá-la, edite o contribuidor e use \"Solicitar verificação\" no campo ORCID."
 
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification"
+msgstr "Aguardando a verificação do ORCID iD de: {$pendingAuthors}. O e-mail de verificação foi enviado, e o iD só é confirmado quando o contribuidor abre o link contido nele. Para enviar o e-mail novamente, edite o contribuidor e use \"Reenviar e-mail de verificação\" no campo ORCID — o reenvio invalida o link anterior."
 
-msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.pendingVerification"
-msgstr "Aguardando a verificação do ORCID iD de: {$pendingAuthors}. O e-mail de verificação já foi enviado, e o iD só é confirmado quando o contribuidor abre o link contido nele. Peça a ele que procure o e-mail mais recente, inclusive na caixa de spam, pois só esse link funciona, ou solicite à revista o reenvio."
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested"
+msgstr "A verificação do ORCID iD ainda não foi solicitada a: {$pendingAuthors}. Se você puder editar os contribuidores, use \"Solicitar verificação\" no campo ORCID deles; caso contrário, peça à revista que a solicite."
 
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification"
+msgstr "Aguardando a verificação do ORCID iD de: {$pendingAuthors}. O e-mail de verificação foi enviado, e o iD só é confirmado quando o contribuidor abre o link contido nele. Peça a ele que procure o e-mail mais recente, inclusive na caixa de spam, pois só esse link funciona, ou solicite à revista o reenvio."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.noPendingLink"
+msgstr "A verificação do ORCID iD foi solicitada a {$pendingAuthors}, mas não há link de verificação pendente, então ela não pode ser concluída: o e-mail pode não ter sido enviado, ou o iD foi removido depois de verificado. Edite o contribuidor e use \"Reenviar e-mail de verificação\" no campo ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.declined"
+msgstr "A autorização ORCID foi recusada por: {$pendingAuthors}. Para pedir de novo, edite o contribuidor e use \"Reenviar e-mail de verificação\" no campo ORCID."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.noPendingLink"
+msgstr "A verificação do ORCID iD foi solicitada a {$pendingAuthors}, mas não há link de verificação pendente, então ela não pode ser concluída. Peça à revista que envie o e-mail de verificação novamente."
+
+msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.declined"
+msgstr "A autorização ORCID foi recusada por: {$pendingAuthors}. Se quiserem verificar o iD afinal, peça à revista que envie o e-mail de verificação novamente."
