@@ -11,6 +11,7 @@ use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\components\forms\FieldText;
 use APP\journal\Journal;
+use APP\core\Request;
 use PKP\plugins\Hook;
 use APP\plugins\generic\toggleRequiredMetadata\ToggleRequiredMetadataPlugin;
 
@@ -51,34 +52,33 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         return $context;
     }
 
-    private function createPluginWithSetting(bool $exists, mixed $value = null): ToggleRequiredMetadataPlugin
+    private function createPluginWithSetting(mixed $value): ToggleRequiredMetadataPlugin
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
-            ->onlyMethods(['settingExists', 'getSetting', 'updateSetting'])
+            ->onlyMethods(['getSetting', 'updateSetting'])
             ->getMock();
-        $plugin->method('settingExists')->willReturn($exists);
         $plugin->method('getSetting')->willReturn($value);
 
         return $plugin;
     }
 
-    public function testRequiresTheMetadataUntilTheJournalChoosesOtherwise(): void
+    public function testDoesNotRequireTheMetadataUntilTheJournalChoosesIt(): void
     {
-        $plugin = $this->createPluginWithSetting(false);
+        $plugin = $this->createPluginWithSetting(null);
 
-        $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
+        $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
     }
 
     public function testDoesNotRequireTheMetadataOnceTheRequirementWasTurnedOff(): void
     {
-        $plugin = $this->createPluginWithSetting(true, null);
+        $plugin = $this->createPluginWithSetting('');
 
         $this->assertFalse($plugin->shouldRequireField('requireAffiliation', 1));
     }
 
     public function testRequiresTheMetadataWhileTheRequirementIsTurnedOn(): void
     {
-        $plugin = $this->createPluginWithSetting(true, 'on');
+        $plugin = $this->createPluginWithSetting('on');
 
         $this->assertTrue($plugin->shouldRequireField('requireAffiliation', 1));
     }
@@ -90,7 +90,7 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
      */
     public function testDoesNotWriteTheDefaultWhileReadingIt(): void
     {
-        $plugin = $this->createPluginWithSetting(false);
+        $plugin = $this->createPluginWithSetting(null);
         $plugin->expects($this->never())->method('updateSetting');
 
         $plugin->shouldRequireField('requireAffiliation', 1);
@@ -99,21 +99,103 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
     public function testLooksARequirementUpOnlyOncePerRequest(): void
     {
         $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
-            ->onlyMethods(['settingExists', 'getSetting'])
+            ->onlyMethods(['getSetting'])
             ->getMock();
-        $plugin->expects($this->once())->method('settingExists')->willReturn(true);
-        $plugin->method('getSetting')->willReturn('on');
+        $plugin->expects($this->once())->method('getSetting')->willReturn('on');
 
         $plugin->shouldRequireField('requireAffiliation', 1);
         $plugin->shouldRequireField('requireAffiliation', 1);
     }
 
-    private function createAuthor(string $givenName): Author
+    private function createAuthor(string $givenName, bool $authenticated = false, bool $requested = false): Author
     {
         $author = new Author();
         $author->setGivenName($givenName, 'en');
 
+        if ($authenticated) {
+            $author->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
+            $author->setData('orcidAccessToken', 'f6e5d4c3b2a1');
+        }
+
+        if ($requested) {
+            $author->setData('orcidEmailToken', 'a1b2c3d4e5f6');
+        }
+
         return $author;
+    }
+
+    private function createPublication(array $authors, int $status = Submission::STATUS_QUEUED): Publication
+    {
+        $publication = new Publication();
+        $publication->setData('status', $status);
+        $publication->setData('authors', new Collection($authors));
+
+        return $publication;
+    }
+
+    public function testWarnsAboutTheContributorsNobodyAskedForTheOrcidAuthorization(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', requested: true),
+            $this->createAuthor('Bruno'),
+        ]));
+
+        $this->assertSame(['Bruno'], $this->namesIn($warning['notRequested']));
+        $this->assertSame(['Ana'], $this->namesIn($warning['awaitingAuthorization']));
+    }
+
+    public function testLeavesOutOfTheWarningAStateNobodyIsIn(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', requested: true),
+        ]));
+
+        $this->assertSame(['awaitingAuthorization'], array_keys($warning));
+    }
+
+    public function testDoesNotWarnOnceTheRequirementIsMet(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+            $this->createAuthor('Ana', authenticated: true),
+            $this->createAuthor('Bruno', requested: true),
+        ]));
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnOnAPublishedPublication(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication(
+            [$this->createAuthor('Ana')],
+            Submission::STATUS_PUBLISHED
+        ));
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnWithoutContributors(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));
+
+        $this->assertSame([], $warning);
+    }
+
+    private function namesIn(array $authors): array
+    {
+        return array_map(fn (Author $author) => $author->getGivenName('en'), $authors);
+    }
+
+    public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(['getContext', 'getUserVar'])
+            ->getMock();
+        $request->method('getContext')->willReturn(null);
+        $request->method('getUserVar')->willReturnMap([['verb', 'settings']]);
+
+        $response = (new ToggleRequiredMetadataPlugin())->manage([], $request);
+
+        $this->assertFalse($response->getStatus());
     }
 
     private function validateSubmissionOf(ToggleRequiredMetadataPlugin $plugin, array $authors): array

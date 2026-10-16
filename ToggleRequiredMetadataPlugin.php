@@ -14,6 +14,7 @@
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
 use APP\core\Application;
+use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
@@ -21,7 +22,6 @@ use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
-use PKP\db\DAORegistry;
 use PKP\config\Config;
 use PKP\components\forms\FormComponent;
 use APP\plugins\generic\toggleRequiredMetadata\classes\MetadataChecker;
@@ -172,24 +172,45 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
+        $orcidWarning = $this->describeOrcidWarning($publication);
+        if (empty($orcidWarning)) {
+            return false;
+        }
+
+        $reader = $template === 'workflow/workflow.tpl' ? 'workflow' : 'authorDashboard';
+        $orcidWarningMessages = [];
+        foreach ($orcidWarning as $status => $authors) {
+            $orcidWarningMessages[] = __(
+                "plugins.generic.toggleRequiredMetadata.notification.{$reader}.{$status}",
+                ['pendingAuthors' => $this->getAuthorNames($authors)]
+            );
+        }
+
+        $templateMgr->assign('orcidWarningMessages', $orcidWarningMessages);
+        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+    }
+
+    public function describeOrcidWarning(Publication $publication): array
+    {
+        if ($publication->getData('status') == Submission::STATUS_PUBLISHED) {
+            return [];
+        }
+
         $authors = $publication->getData('authors')?->toArray() ?? [];
         if (empty($authors)) {
-            return false;
+            return [];
         }
 
         $metadataChecker = new MetadataChecker();
-        $authorsWithoutAuthorization = $metadataChecker->getAuthorsWithoutAuthenticatedOrcid($authors);
-        if (empty($authorsWithoutAuthorization)) {
-            return false;
+        $authorsNotRequested = $metadataChecker->getAuthorsWithoutRequestedOrcidAuthorization($authors);
+        if ($metadataChecker->checkAnyAuthenticatedOrcid($authors) && empty($authorsNotRequested)) {
+            return [];
         }
 
-        $messageKey = $template === 'workflow/workflow.tpl'
-            ? 'plugins.generic.toggleRequiredMetadata.notification.workflow.orcidWarning'
-            : 'plugins.generic.toggleRequiredMetadata.notification.authorDashboard.orcidWarning';
-        $orcidWarningMessage = __($messageKey, ['pendingAuthors' => $this->getAuthorNames($authorsWithoutAuthorization)]);
-
-        $templateMgr->assign('orcidWarningMessage', $orcidWarningMessage);
-        $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
+        return array_filter([
+            'notRequested' => $authorsNotRequested,
+            'awaitingAuthorization' => $metadataChecker->getAuthorsAwaitingOrcidAuthorization($authors),
+        ]);
     }
 
     private function getAuthorNames(array $authors): string
@@ -255,6 +276,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         switch ($request->getUserVar('verb')) {
             case 'settings':
                 $context = $request->getContext();
+                if (is_null($context)) {
+                    return new JSONMessage(false);
+                }
+
                 $form = new ToggleRequiredMetadataSettingsForm($this, $context->getId());
 
                 if ($request->getUserVar('save')) {
@@ -287,9 +312,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      * hooks that only ever run inside one, in the context of the request.
      *
      * Answering is a read, and stays one: the default is not written to the
-     * database on the way past. What tells a requirement nobody ever chose
-     * from one that was turned off is the absence of the setting, since an
-     * unticked checkbox is saved as an empty setting and not as a missing one.
+     * database on the way past.
      */
     public function shouldRequireField(string $settingName, ?int $contextId = null): bool
     {
@@ -300,22 +323,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         return $this->requiredFields[$contextId][$settingName]
-            ??= $this->readRequirement($contextId, $settingName);
-    }
-
-    private function readRequirement(int $contextId, string $settingName): bool
-    {
-        if (!$this->settingExists($contextId, $settingName)) {
-            return true;
-        }
-
-        return (bool) $this->getSetting($contextId, $settingName);
-    }
-
-    public function settingExists($contextId, $name): bool
-    {
-        $pluginSettingsDao = DAORegistry::getDAO('PluginSettingsDAO');
-        return $pluginSettingsDao->settingExists($contextId, $this->getName(), $name);
+            ??= (bool) $this->getSetting($contextId, $settingName);
     }
 
     public function isOrcidProfilePluginEnabled(?int $contextId = null)
