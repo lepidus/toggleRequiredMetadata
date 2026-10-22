@@ -124,18 +124,23 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         return $author;
     }
 
-    private function createPublication(array $authors, int $status = Submission::STATUS_QUEUED): Publication
+    private function createSubmissionWithAuthors(array $authors, int $status = Submission::STATUS_QUEUED): Submission
     {
         $publication = new Publication();
-        $publication->setData('status', $status);
+        $publication->setId(1);
         $publication->setData('authors', new Collection($authors));
 
-        return $publication;
+        $submission = new Submission();
+        $submission->setData('status', $status);
+        $submission->setData('currentPublicationId', 1);
+        $submission->setData('publications', [$publication]);
+
+        return $submission;
     }
 
     public function testWarnsAboutTheContributorsNobodyAskedForTheOrcidAuthorization(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([
             $this->createAuthor('Ana', requested: true),
             $this->createAuthor('Bruno'),
         ]));
@@ -146,7 +151,7 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
 
     public function testLeavesOutOfTheWarningAStateNobodyIsIn(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([
             $this->createAuthor('Ana', requested: true),
         ]));
 
@@ -155,7 +160,7 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
 
     public function testDoesNotWarnOnceTheRequirementIsMet(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([
             $this->createAuthor('Ana', authenticated: true),
             $this->createAuthor('Bruno', requested: true),
         ]));
@@ -163,9 +168,9 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([], $warning);
     }
 
-    public function testDoesNotWarnOnAPublishedPublication(): void
+    public function testDoesNotWarnOnAPublishedSubmission(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication(
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors(
             [$this->createAuthor('Ana')],
             Submission::STATUS_PUBLISHED
         ));
@@ -173,9 +178,29 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame([], $warning);
     }
 
+    public function testDoesNotWarnOnADeclinedSubmission(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors(
+            [$this->createAuthor('Ana')],
+            Submission::STATUS_DECLINED
+        ));
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnOnAScheduledSubmission(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors(
+            [$this->createAuthor('Ana')],
+            Submission::STATUS_SCHEDULED
+        ));
+
+        $this->assertSame([], $warning);
+    }
+
     public function testDoesNotWarnWithoutContributors(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([]));
 
         $this->assertSame([], $warning);
     }

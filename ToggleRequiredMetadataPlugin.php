@@ -14,7 +14,6 @@
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
 use APP\core\Application;
-use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
@@ -167,12 +166,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        $publication = $submission->getCurrentPublication();
-        if (is_null($publication)) {
-            return false;
-        }
-
-        $orcidWarning = $this->describeOrcidWarning($publication);
+        $orcidWarning = $this->describeOrcidWarning($submission);
         if (empty($orcidWarning)) {
             return false;
         }
@@ -190,9 +184,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
     }
 
-    public function describeOrcidWarning(Publication $publication): array
+    public function describeOrcidWarning(Submission $submission): array
     {
-        if ($publication->getData('status') == Submission::STATUS_PUBLISHED) {
+        $publication = $submission->getCurrentPublication();
+        if ($submission->getData('status') != Submission::STATUS_QUEUED || is_null($publication)) {
             return [];
         }
 
