@@ -19,7 +19,7 @@
 				>
 					<PkpIcon
 						:icon="statusIcons[contributor.status]"
-						class="h-5 w-5"
+						class="trmOrcidRequirement__icon h-5 w-5"
 						:inline="true"
 					/>
 					<span class="trmOrcidRequirement__name">{{ contributor.name }}</span>
