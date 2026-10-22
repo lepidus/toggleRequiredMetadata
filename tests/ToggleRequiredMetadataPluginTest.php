@@ -206,15 +206,31 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame(['notRequested'], $statuses);
     }
 
-    public function testAddsTheOrcidVerificationRequestToTheContributorSummary(): void
+    public function testAddsTheOrcidVerificationStatusToTheContributorSummary(): void
     {
-        $schema = (object) ['properties' => (object) [
-            'orcidVerificationRequested' => (object) ['type' => 'boolean', 'apiSummary' => false],
-        ]];
+        $schema = (object) ['properties' => (object) []];
 
-        $this->createPluginRequiring(true)->exposeOrcidVerificationRequest('Schema::get::author', [&$schema]);
+        $this->createPluginRequiring(true)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
 
-        $this->assertTrue($schema->properties->orcidVerificationRequested->apiSummary);
+        $this->assertTrue($schema->properties->orcidVerificationStatus->apiSummary);
+        $this->assertTrue($schema->properties->orcidVerificationStatus->readOnly);
+    }
+
+    public function testMapsTheOrcidVerificationStatusOfTheContributor(): void
+    {
+        $output = $this->createPluginRequiring(true)->mapOrcidVerificationStatus(
+            ['orcidVerificationStatus' => null],
+            $this->createAuthor('Ana', requested: true)
+        );
+
+        $this->assertSame('awaitingVerification', $output['orcidVerificationStatus']);
+    }
+
+    public function testLeavesTheMapOfAnythingButAContributorAlone(): void
+    {
+        $output = $this->createPluginRequiring(true)->mapOrcidVerificationStatus(['id' => 1], new Submission());
+
+        $this->assertSame(['id' => 1], $output);
     }
 
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void

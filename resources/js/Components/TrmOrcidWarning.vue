@@ -28,32 +28,16 @@ const statusIcons = {
 	awaitingVerification: 'Clock',
 };
 
-function hasVerifiedOrcid(author) {
-	return !!author.orcid && !!author.orcidIsVerified;
-}
-
-function orcidStatus(author) {
-	if (hasVerifiedOrcid(author)) {
-		return 'verified';
-	}
-
-	if (!author.orcidVerificationRequested) {
-		return 'notRequested';
-	}
-
-	if (author.orcidEmailToken) {
-		return 'awaitingVerification';
-	}
-
-	return author.orcidAccessDenied ? 'declined' : 'noPendingLink';
-}
-
 const authors = computed(() => props.publication?.authors ?? []);
 
 const isRequirementMet = computed(
 	() =>
-		authors.value.some(hasVerifiedOrcid) &&
-		authors.value.every((author) => orcidStatus(author) !== 'notRequested'),
+		authors.value.some(
+			(author) => author.orcidVerificationStatus === 'verified',
+		) &&
+		authors.value.every(
+			(author) => author.orcidVerificationStatus !== 'notRequested',
+		),
 );
 
 const isShown = computed(
@@ -69,7 +53,7 @@ const namesByStatus = computed(() => {
 	);
 
 	authors.value.forEach((author) => {
-		const status = orcidStatus(author);
+		const status = author.orcidVerificationStatus;
 		if (names[status] && author.fullName) {
 			names[status].push(author.fullName);
 		}
