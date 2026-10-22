@@ -47,7 +47,7 @@ const isRequirementMet = computed(
 const isShown = computed(
 	() =>
 		authors.value.length > 0 &&
-		props.submission?.status !== pkp.const.STATUS_PUBLISHED &&
+		props.submission?.status === pkp.const.STATUS_QUEUED &&
 		!isRequirementMet.value,
 );
 
