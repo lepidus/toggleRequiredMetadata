@@ -49,5 +49,6 @@ const statusIcons = {
 	declined: 'Error',
 	noPendingLink: 'Error',
 	notRequested: 'Error',
+	unverifiedOrcid: 'Error',
 };
 </script>

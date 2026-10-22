@@ -23,6 +23,7 @@ const props = defineProps({
 
 const statusIcons = {
 	notRequested: 'Error',
+	unverifiedOrcid: 'Error',
 	noPendingLink: 'Error',
 	declined: 'Error',
 	awaitingVerification: 'Clock',
@@ -36,7 +37,10 @@ const isRequirementMet = computed(
 			(author) => author.orcidVerificationStatus === 'verified',
 		) &&
 		authors.value.every(
-			(author) => author.orcidVerificationStatus !== 'notRequested',
+			(author) =>
+				!['notRequested', 'unverifiedOrcid'].includes(
+					author.orcidVerificationStatus,
+				),
 		),
 );
 

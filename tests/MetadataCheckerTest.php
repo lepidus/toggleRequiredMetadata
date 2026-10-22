@@ -163,6 +163,13 @@ class MetadataCheckerTest extends TestCase
         $this->assertSame('notRequested', $this->checker->getOrcidStatus($this->authors[0]));
     }
 
+    public function testTellsAnUnverifiedOrcidStoredWithoutARequest(): void
+    {
+        $this->authors[0]->setData('orcid', 'https://orcid.org/0000-0002-1825-0097');
+
+        $this->assertSame('unverifiedOrcid', $this->checker->getOrcidStatus($this->authors[0]));
+    }
+
     public function testTellsAVerificationWaitingOnItsLink(): void
     {
         $this->authors[0]->setData('orcidVerificationRequested', true);

@@ -47,7 +47,7 @@ class MetadataChecker
         }
 
         if (!$author->getData('orcidVerificationRequested')) {
-            return 'notRequested';
+            return empty($author->getData('orcid')) ? 'notRequested' : 'unverifiedOrcid';
         }
 
         if (!empty($author->getData('orcidEmailToken'))) {
