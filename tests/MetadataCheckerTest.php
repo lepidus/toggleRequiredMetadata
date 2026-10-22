@@ -186,11 +186,11 @@ class MetadataCheckerTest extends TestCase
         $this->assertSame('declined', $this->checker->getOrcidStatus($this->authors[0]));
     }
 
-    public function testTellsARequestLeftWithoutAPendingLink(): void
+    public function testTellsARequestWhoseEmailIsStillQueuedAsWaiting(): void
     {
         $this->authors[0]->setData('orcidVerificationRequested', true);
 
-        $this->assertSame('noPendingLink', $this->checker->getOrcidStatus($this->authors[0]));
+        $this->assertSame('awaitingVerification', $this->checker->getOrcidStatus($this->authors[0]));
     }
 
     public function testTellsARequestSentAgainAfterADeclineAsWaiting(): void

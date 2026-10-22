@@ -277,14 +277,12 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             'editorMessages' => [
                 'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested'),
                 'unverifiedOrcid' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.unverifiedOrcid'),
-                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.noPendingLink'),
                 'declined' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.declined'),
                 'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification'),
             ],
             'authorMessages' => [
                 'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested'),
                 'unverifiedOrcid' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.unverifiedOrcid'),
-                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.noPendingLink'),
                 'declined' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.declined'),
                 'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification'),
             ],

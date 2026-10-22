@@ -51,7 +51,7 @@ msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.verifi
 msgstr "verified"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.awaitingVerification"
-msgstr "e-mail sent — waiting for them to open the verification link"
+msgstr "verification requested — waiting for them to open the link in the e-mail"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.notRequested"
 msgstr "no verification request pending — edit this contributor and use \"Request verification\" on the ORCID field"
@@ -61,9 +61,6 @@ msgstr "an unverified iD is stored — edit this contributor, delete the iD on t
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.declined"
 msgstr "declined the authorization in ORCID — to ask again, edit this contributor and use \"Resend Verification Email\" on the ORCID field"
-
-msgid "plugins.generic.toggleRequiredMetadata.stepValidation.orcid.status.noPendingLink"
-msgstr "requested, but no verification link is pending — edit this contributor and use \"Resend Verification Email\" on the ORCID field"
 
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation"
 msgstr "The affiliation field is required for all contributors"
@@ -85,7 +82,7 @@ msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.unverifiedOr
 msgstr "An ORCID iD that was never verified is stored for: {$pendingAuthors}, and it has to go before the verification can be requested. Edit the contributor, delete the unverified iD on the ORCID field, then use \"Request verification\"."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification"
-msgstr "Waiting for the ORCID iD verification of: {$pendingAuthors}. The verification e-mail was sent, and the iD is only confirmed once the contributor opens the link in it. To send the e-mail again, edit the contributor and use \"Resend Verification Email\" on the ORCID field, which invalidates the previous link."
+msgstr "Waiting for the ORCID iD verification of: {$pendingAuthors}. The verification was requested, and the iD is only confirmed once the contributor opens the link in the e-mail, which can take a few minutes to go out. If they did not get it, edit the contributor and use \"Resend Verification Email\" on the ORCID field, which invalidates the previous link."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested"
 msgstr "No ORCID iD verification request is pending for: {$pendingAuthors}. If you can edit the contributors, use \"Request verification\" on their ORCID field; otherwise, ask the journal to request it."
@@ -94,16 +91,10 @@ msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.unver
 msgstr "An ORCID iD that was never verified is stored for: {$pendingAuthors}. If you can edit the contributors, delete the unverified iD on their ORCID field and then use \"Request verification\"; otherwise, ask the journal to do it."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification"
-msgstr "Waiting for the ORCID iD verification of: {$pendingAuthors}. The verification e-mail was sent, and the iD is only confirmed once the contributor opens the link in it. Ask them to look for the most recent e-mail, including in the spam folder, since only its link works, or ask the journal to send it again."
-
-msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.noPendingLink"
-msgstr "The ORCID iD verification was requested from {$pendingAuthors}, but no verification link is pending, so it cannot be completed: the e-mail may not have gone out, or the iD was removed after being verified. Edit the contributor and use \"Resend Verification Email\" on the ORCID field."
+msgstr "Waiting for the ORCID iD verification of: {$pendingAuthors}. The verification was requested, and the iD is only confirmed once the contributor opens the link in the e-mail, which can take a few minutes to go out. Ask them to look for the most recent e-mail, including in the spam folder, since only its link works, or ask the journal to send it again."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.declined"
 msgstr "The ORCID authorization was declined by: {$pendingAuthors}. To ask again, edit the contributor and use \"Resend Verification Email\" on the ORCID field."
-
-msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.noPendingLink"
-msgstr "The ORCID iD verification was requested from {$pendingAuthors}, but no verification link is pending, so it cannot be completed. Ask the journal to send the verification e-mail again."
 
 msgid "plugins.generic.toggleRequiredMetadata.notification.authorDashboard.declined"
 msgstr "The ORCID authorization was declined by: {$pendingAuthors}. If they want to verify their iD after all, ask the journal to send the verification e-mail again."

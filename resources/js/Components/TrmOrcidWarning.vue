@@ -24,7 +24,6 @@ const props = defineProps({
 const statusIcons = {
 	notRequested: 'Error',
 	unverifiedOrcid: 'Error',
-	noPendingLink: 'Error',
 	declined: 'Error',
 	awaitingVerification: 'Clock',
 };

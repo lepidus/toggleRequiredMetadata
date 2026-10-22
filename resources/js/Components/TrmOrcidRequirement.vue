@@ -47,7 +47,6 @@ const statusIcons = {
 	verified: 'Orcid',
 	awaitingVerification: 'Clock',
 	declined: 'Error',
-	noPendingLink: 'Error',
 	notRequested: 'Error',
 	unverifiedOrcid: 'Error',
 };

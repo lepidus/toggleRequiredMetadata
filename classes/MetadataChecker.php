@@ -50,11 +50,11 @@ class MetadataChecker
             return empty($author->getData('orcid')) ? 'notRequested' : 'unverifiedOrcid';
         }
 
-        if (!empty($author->getData('orcidEmailToken'))) {
-            return 'awaitingVerification';
+        if (empty($author->getData('orcidEmailToken')) && !empty($author->getData('orcidAccessDenied'))) {
+            return 'declined';
         }
 
-        return empty($author->getData('orcidAccessDenied')) ? 'noPendingLink' : 'declined';
+        return 'awaitingVerification';
     }
 
     public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors): array
