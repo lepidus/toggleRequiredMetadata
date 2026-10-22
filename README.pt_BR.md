@@ -54,7 +54,7 @@ As exigências são sobre o que chega pelo formulário de submissão, e é aí q
 
 ## Com a submissão já no fluxo de trabalho
 
-Depois que a submissão entra, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a publicação não estiver publicada, o fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou a autorização ainda dos que receberam o e-mail e não o abriram, com a orientação que cabe a quem lê — um editor pode solicitar a autorização ou enviá-la de novo, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa publicação publicada, o que inclui tudo o que foi publicado antes de o plugin ser habilitado, nem depois que um contribuidor autenticou o seu iD e a autorização foi solicitada a todos os outros.
+Depois que a submissão entra, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a submissão ainda estiver em andamento, o fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou a autorização ainda dos que receberam o e-mail e não o abriram, com a orientação que cabe a quem lê — um editor pode solicitar a autorização ou enviá-la de novo, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa submissão que não está mais em andamento — rejeitada, agendada ou publicada, o que inclui as novas versões de uma publicada e tudo o que foi publicado antes de o plugin ser habilitado — nem depois que um contribuidor autenticou o seu iD e a autorização foi solicitada a todos os outros.
 
 # Licença
 __Este plugin está licenciado sob a GNU General Public License v3.0__

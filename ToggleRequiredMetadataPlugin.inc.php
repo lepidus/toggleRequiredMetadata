@@ -243,12 +243,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        $publication = $submission->getCurrentPublication();
-        if (is_null($publication)) {
-            return false;
-        }
-
-        $orcidWarning = $this->describeOrcidWarning($publication);
+        $orcidWarning = $this->describeOrcidWarning($submission);
         if (empty($orcidWarning)) {
             return false;
         }
@@ -266,9 +261,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
     }
 
-    public function describeOrcidWarning($publication)
+    public function describeOrcidWarning($submission)
     {
-        if ($publication->getData('status') == STATUS_PUBLISHED) {
+        $publication = $submission->getCurrentPublication();
+        if ($submission->getData('status') != STATUS_QUEUED || is_null($publication)) {
             return [];
         }
 
