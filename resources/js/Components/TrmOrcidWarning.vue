@@ -43,13 +43,6 @@ const isRequirementMet = computed(
 		),
 );
 
-const isShown = computed(
-	() =>
-		authors.value.length > 0 &&
-		props.submission?.status === pkp.const.STATUS_QUEUED &&
-		!isRequirementMet.value,
-);
-
 const namesByStatus = computed(() => {
 	const names = Object.fromEntries(
 		Object.keys(statusIcons).map((status) => [status, []]),
@@ -69,6 +62,13 @@ const pendingStatuses = computed(() =>
 	Object.keys(statusIcons).filter(
 		(status) => namesByStatus.value[status].length,
 	),
+);
+
+const isShown = computed(
+	() =>
+		pendingStatuses.value.length > 0 &&
+		props.submission?.status === pkp.const.STATUS_QUEUED &&
+		!isRequirementMet.value,
 );
 
 function describe(status) {
