@@ -261,6 +261,43 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame(['id' => 1], $output);
     }
 
+    private function validateContributorWith(ToggleRequiredMetadataPlugin $plugin, array $props): array
+    {
+        $errors = [];
+        $plugin->rejectOrcidVerificationData('Author::validate', [&$errors, null, $props, ['en'], 'en']);
+
+        return $errors;
+    }
+
+    public function testRejectsOrcidVerificationDataSentForAContributor(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiring(true, true), [
+            'givenName' => ['en' => 'Ana'],
+            'orcidVerificationRequested' => true,
+            'orcidIsVerified' => true,
+        ]);
+
+        $this->assertSame(['orcidVerificationRequested', 'orcidIsVerified'], array_keys($errors));
+    }
+
+    public function testAcceptsAContributorSentWithoutOrcidVerificationData(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiring(true, true), [
+            'givenName' => ['en' => 'Ana'],
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
+    public function testAcceptsOrcidVerificationDataWhileOrcidIsNotRequired(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiring(false, true), [
+            'orcidVerificationRequested' => true,
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
     {
         $request = $this->getMockBuilder(Request::class)

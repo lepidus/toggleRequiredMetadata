@@ -75,6 +75,9 @@ msgstr "Afiliaciones: obligatorio."
 msgid "plugins.generic.toggleRequiredMetadata.contributorForm.orcidRequired"
 msgstr "ORCID iD: obligatorio. Todo colaborador debe al menos tener la verificación solicitada."
 
+msgid "plugins.generic.toggleRequiredMetadata.contributor.error.orcidVerificationData"
+msgstr "Este dato solo lo define la verificación de ORCID y no puede modificarse en el colaborador."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
 msgstr "No hay ninguna solicitud de verificación del ORCID iD pendiente para: {$pendingAuthors}. Para solicitarla, edite el colaborador y use \"Solicitar verificación\" en el campo ORCID."
 

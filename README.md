@@ -72,6 +72,7 @@ Once the submission is in, the ORCID requirement can still be unmet. While it is
 
 * **Contributors cannot be required to type an ORCID iD.** Since 3.5 the application refuses any ORCID iD sent from the Contributor form; an iD is only recorded through the ORCID verification flow. Earlier versions of this plugin required a typed iD whenever the ORCID Profile plugin was off, and that is no longer possible.
 * **The ORCID option follows the application's ORCID settings.** With ORCID disabled the option takes no effect, and the saved choice is kept and applies again as soon as ORCID is enabled. Note that ORCID can also be enabled for the whole installation at the site level, which turns the requirement on for every journal, press or server at once.
+* **The ORCID verification data of a contributor cannot be written through the API while ORCID is required.** The application accepts flags such as `orcidVerificationRequested` and `orcidIsVerified` when a contributor is added or edited, which would let the requirement be met without any verification e-mail. The plugin refuses them there; they are still set by the verification itself.
 * **The affiliation and the ORCID iD are marked in the Contributor form but checked when the submission is completed.** Both fields render their own label, so the plugin adds an element beside each to carry the required mark. Neither is flagged as required to the form itself: neither one clears an error once raised, which would leave the Contributor form impossible to save.
 
 ## Building the front-end assets

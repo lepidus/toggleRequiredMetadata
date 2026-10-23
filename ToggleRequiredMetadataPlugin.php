@@ -45,6 +45,19 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      */
     public const ORCID_REQUIREMENT = 'toggleRequiredMetadataOrcid';
 
+    public const ORCID_VERIFICATION_DATA = [
+        'orcidIsVerified',
+        'orcidVerificationRequested',
+        'orcidEmailToken',
+        'orcidAccessDenied',
+        'orcidAccessToken',
+        'orcidAccessScope',
+        'orcidRefreshToken',
+        'orcidAccessExpiresOn',
+        'orcidSandbox',
+        'orcidWorkPutCode',
+    ];
+
     /** What each requirement answered in this request, by context. */
     private array $requiredFields = [];
 
@@ -60,6 +73,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             Hook::add('Schema::get::author', [$this, 'addOrcidVerificationStatusToSchema']);
             app('maps')->extend(Schema::class, $this->mapOrcidVerificationStatus(...));
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
+            Hook::add('Author::validate', [$this, 'rejectOrcidVerificationData']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addBackendAssets']);
             Hook::add('Template::SubmissionWizard::Section::Review::Contributors', [$this, 'addOrcidRequirementToReviewStep']);
@@ -141,6 +155,22 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         return $output;
+    }
+
+    public function rejectOrcidVerificationData(string $hookName, array $args): bool
+    {
+        $errors = &$args[0];
+        $props = $args[2];
+
+        if (!$this->isOrcidRequired()) {
+            return false;
+        }
+
+        foreach (array_intersect(array_keys($props), self::ORCID_VERIFICATION_DATA) as $propName) {
+            $errors[$propName] = [__('plugins.generic.toggleRequiredMetadata.contributor.error.orcidVerificationData')];
+        }
+
+        return false;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
