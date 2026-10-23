@@ -72,8 +72,7 @@ const isShown = computed(
 );
 
 function describe(status) {
-	return props.messages[status].replace(
-		'{$pendingAuthors}',
+	return props.messages[status].replace('{$pendingAuthors}', () =>
 		namesByStatus.value[status].join(', '),
 	);
 }
