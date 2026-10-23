@@ -210,15 +210,33 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
     {
         $schema = (object) ['properties' => (object) []];
 
-        $this->createPluginRequiring(true)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
+        $this->createPluginRequiring(true, true)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
 
         $this->assertTrue($schema->properties->orcidVerificationStatus->apiSummary);
         $this->assertTrue($schema->properties->orcidVerificationStatus->readOnly);
     }
 
+    public function testLeavesTheContributorSummaryAloneWhileOrcidIsNotRequired(): void
+    {
+        $schema = (object) ['properties' => (object) []];
+
+        $this->createPluginRequiring(false, true)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
+
+        $this->assertObjectNotHasProperty('orcidVerificationStatus', $schema->properties);
+    }
+
+    public function testLeavesTheContributorSummaryAloneWhileOrcidIsNotEnabled(): void
+    {
+        $schema = (object) ['properties' => (object) []];
+
+        $this->createPluginRequiring(true, false)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
+
+        $this->assertObjectNotHasProperty('orcidVerificationStatus', $schema->properties);
+    }
+
     public function testMapsTheOrcidVerificationStatusOfTheContributor(): void
     {
-        $output = $this->createPluginRequiring(true)->mapOrcidVerificationStatus(
+        $output = $this->createPluginRequiring(true, true)->mapOrcidVerificationStatus(
             ['orcidVerificationStatus' => null],
             $this->createAuthor('Ana', requested: true)
         );
@@ -226,9 +244,19 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame('awaitingVerification', $output['orcidVerificationStatus']);
     }
 
+    public function testDoesNotMapTheOrcidVerificationStatusWhileOrcidIsNotRequired(): void
+    {
+        $output = $this->createPluginRequiring(false, true)->mapOrcidVerificationStatus(
+            ['id' => 1],
+            $this->createAuthor('Ana', requested: true)
+        );
+
+        $this->assertSame(['id' => 1], $output);
+    }
+
     public function testLeavesTheMapOfAnythingButAContributorAlone(): void
     {
-        $output = $this->createPluginRequiring(true)->mapOrcidVerificationStatus(['id' => 1], new Submission());
+        $output = $this->createPluginRequiring(true, true)->mapOrcidVerificationStatus(['id' => 1], new Submission());
 
         $this->assertSame(['id' => 1], $output);
     }

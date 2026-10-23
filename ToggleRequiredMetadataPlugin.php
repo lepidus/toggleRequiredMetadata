@@ -121,6 +121,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     {
         $schema = &$args[0];
 
+        if (!$this->isOrcidRequired()) {
+            return false;
+        }
+
         $schema->properties->orcidVerificationStatus = (object) [
             'type' => 'string',
             'apiSummary' => true,
@@ -132,7 +136,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
     public function mapOrcidVerificationStatus(array $output, object $item): array
     {
-        if ($item instanceof Author) {
+        if ($item instanceof Author && $this->isOrcidRequired()) {
             $output['orcidVerificationStatus'] = (new MetadataChecker())->getOrcidStatus($item);
         }
 
@@ -447,6 +451,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         return $this->requiredFields[$contextId][$settingName]
             ??= (bool) $this->getSetting($contextId, $settingName);
+    }
+
+    private function isOrcidRequired(): bool
+    {
+        return $this->shouldRequireField("requireOrcid") && $this->isOrcidEnabled();
     }
 
     public function isOrcidEnabled(?Context $context = null): bool
