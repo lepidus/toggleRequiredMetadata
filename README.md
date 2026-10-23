@@ -48,9 +48,11 @@ The selected metadata is marked as required where the author fills it in:
 
 Every requirement is checked again before the submission moves on, and what is missing is listed right below the contributors, so the author can tell what is left to fill in. OMP takes that place for the chapters, so on a press the list comes at the end of the metadata, just above the button that saves the step.
 
+The same check runs once more when the submission is finished on the confirmation step, so a contributor changed after the third step was saved cannot slip through: the submission is not sent, and the confirmation step lists what is missing and points back to the third step.
+
 ### What the check does not cover
 
-The requirements are about what comes in through the submission form, and that is where they are enforced: they are checked on the third step of a submission, and nowhere else. A contributor edited later in the workflow, a submission created through the REST API, and anything brought in by an import or by QuickSubmit never go through the check, and neither does publication. What the plugin holds is the door: no submission is *received* without the metadata, which is not the same as no submission in the journal ever lacking it.
+The requirements are about what comes in through the submission form, and that is where they are enforced: they are checked on the third and on the last step of a submission, and nowhere else. A contributor edited later in the workflow, a submission created through the REST API, and anything brought in by an import or by QuickSubmit never go through the check, and neither does publication. What the plugin holds is the door: no submission is *received* without the metadata, which is not the same as no submission in the journal ever lacking it.
 
 ## While the submission is in the workflow
 

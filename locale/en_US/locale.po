@@ -47,6 +47,9 @@ msgstr "Please enter your author's Biography Statement."
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors"
 msgstr "Required contributor information is missing. The details are listed below."
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsChanged"
+msgstr "The contributors no longer have all the required information, so the submission cannot be finished yet. Go back to step 3 and complete them:"
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "The ORCID field is required for all contributors. "
 

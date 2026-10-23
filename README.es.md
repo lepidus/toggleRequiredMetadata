@@ -48,9 +48,11 @@ El metadato seleccionado se marca como obligatorio donde la persona autora lo co
 
 Cada requisito se comprueba de nuevo antes de que el envío avance, y lo que falta se lista justo debajo de las personas colaboradoras, para que quien envía sepa qué le queda por completar. OMP ocupa ese lugar con los capítulos, así que en una editorial la lista aparece al final de los metadatos, justo encima del botón que guarda el paso.
 
+La misma comprobación se ejecuta una vez más cuando el envío se finaliza en el paso de confirmación, así que un colaborador modificado después de guardar el tercer paso no pasa: el envío no se realiza, y el paso de confirmación lista lo que falta e indica volver al tercer paso.
+
 ### Lo que la comprobación no cubre
 
-Los requisitos son sobre lo que llega por el formulario de envío, y ahí es donde se aplican: se comprueban en el tercer paso del envío, y en ningún otro lugar. Un colaborador editado después en el flujo de trabajo, un envío creado por la API REST y todo lo que entra por importación o por QuickSubmit no pasan por la comprobación, y la publicación tampoco. Lo que el módulo guarda es la puerta: ningún envío se *recibe* sin los metadatos, lo que no es lo mismo que ningún envío de la revista se quede sin ellos.
+Los requisitos son sobre lo que llega por el formulario de envío, y ahí es donde se aplican: se comprueban en el tercer y en el último paso del envío, y en ningún otro lugar. Un colaborador editado después en el flujo de trabajo, un envío creado por la API REST y todo lo que entra por importación o por QuickSubmit no pasan por la comprobación, y la publicación tampoco. Lo que el módulo guarda es la puerta: ningún envío se *recibe* sin los metadatos, lo que no es lo mismo que ningún envío de la revista se quede sin ellos.
 
 ## Con el envío ya en el flujo de trabajo
 

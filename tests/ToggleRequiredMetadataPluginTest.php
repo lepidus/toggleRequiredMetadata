@@ -263,4 +263,37 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
         $this->assertFalse($form->isValid());
     }
+
+    private function validateStep4With($plugin, array $authors)
+    {
+        $form = new class () extends Form {
+            public $submission;
+        };
+        $form->submission = $this->createSubmissionWithAuthors($authors);
+
+        $plugin->addValidationToStep4('submissionsubmitstep4form::validate', [&$form]);
+
+        return $form;
+    }
+
+    public function testBlocksTheLastStepOnceAContributorLostTheRequiredMetadata(): void
+    {
+        $form = $this->validateStep4With($this->createPluginRequiringOnlyAffiliation(true), [$this->createAuthor('Ana')]);
+
+        $this->assertFalse($form->isValid());
+        $this->assertContains(
+            __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation'),
+            $form->getErrorsArray()
+        );
+    }
+
+    public function testLetsTheLastStepThroughWhileTheContributorsAreComplete(): void
+    {
+        $author = $this->createAuthor('Ana');
+        $author->setData('affiliation', ['en_US' => 'UERJ']);
+
+        $form = $this->validateStep4With($this->createPluginRequiringOnlyAffiliation(true), [$author]);
+
+        $this->assertTrue($form->isValid());
+    }
 }
