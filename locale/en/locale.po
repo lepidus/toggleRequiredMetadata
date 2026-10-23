@@ -56,6 +56,9 @@ msgstr "The affiliation field is required for all contributors"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "The biography statement field is required for all contributors"
 
+msgid "plugins.generic.toggleRequiredMetadata.contributor.error.orcidAuthorizationData"
+msgstr "This is only set by the ORCID authorisation and cannot be changed for a contributor."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
 msgstr "The ORCID authorization was not requested yet from: {$pendingAuthors}. To request it, go to the Publication tab, edit the contributor and tick \"Send e-mail to request ORCID authorization from contributor\"."
 

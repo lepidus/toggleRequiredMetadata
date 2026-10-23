@@ -28,6 +28,17 @@ use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettin
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
+    public const ORCID_AUTHORIZATION_DATA = [
+        'orcidAccessToken',
+        'orcidAccessScope',
+        'orcidRefreshToken',
+        'orcidAccessExpiresOn',
+        'orcidAccessDenied',
+        'orcidEmailToken',
+        'orcidSandbox',
+        'orcidWorkPutCode',
+    ];
+
     /** What each requirement answered in this request, by context. */
     private array $requiredFields = [];
 
@@ -41,6 +52,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         if ($success && $this->getEnabled()) {
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
+            Hook::add('Author::validate', [$this, 'rejectOrcidAuthorizationData']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addOrcidWarning']);
         }
@@ -110,6 +122,22 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         if (!empty($contributorsErrors)) {
             $errors['contributors'] = $contributorsErrors;
         }
+    }
+
+    public function rejectOrcidAuthorizationData(string $hookName, array $args): bool
+    {
+        $errors = &$args[0];
+        $props = $args[2];
+
+        if (!$this->shouldRequireField("requireOrcid") || !$this->isOrcidProfilePluginEnabled()) {
+            return false;
+        }
+
+        foreach (array_intersect(array_keys($props), self::ORCID_AUTHORIZATION_DATA) as $propName) {
+            $errors[$propName] = [__('plugins.generic.toggleRequiredMetadata.contributor.error.orcidAuthorizationData')];
+        }
+
+        return false;
     }
 
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)

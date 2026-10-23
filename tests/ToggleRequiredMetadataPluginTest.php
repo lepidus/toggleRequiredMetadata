@@ -210,6 +210,64 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         return array_map(fn (Author $author) => $author->getGivenName('en'), $authors);
     }
 
+    private function createPluginRequiringOrcid(bool $required, bool $orcidProfileEnabled): ToggleRequiredMetadataPlugin
+    {
+        $plugin = $this->getMockBuilder(ToggleRequiredMetadataPlugin::class)
+            ->onlyMethods(['shouldRequireField', 'isOrcidProfilePluginEnabled'])
+            ->getMock();
+        $plugin->method('shouldRequireField')->willReturn($required);
+        $plugin->method('isOrcidProfilePluginEnabled')->willReturn($orcidProfileEnabled);
+
+        return $plugin;
+    }
+
+    private function validateContributorWith(ToggleRequiredMetadataPlugin $plugin, array $props): array
+    {
+        $errors = [];
+        $plugin->rejectOrcidAuthorizationData('Author::validate', [&$errors, null, $props, ['en'], 'en']);
+
+        return $errors;
+    }
+
+    public function testRejectsOrcidAuthorizationDataSentForAContributor(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiringOrcid(true, true), [
+            'orcid' => 'https://orcid.org/0000-0002-1825-0097',
+            'orcidAccessToken' => 'a1b2c3d4',
+            'orcidEmailToken' => 'e5f6a7b8',
+        ]);
+
+        $this->assertSame(['orcidAccessToken', 'orcidEmailToken'], array_keys($errors));
+    }
+
+    public function testAcceptsTheOrcidProfileRequestAndDeletionOptions(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiringOrcid(true, true), [
+            'requestOrcidAuthorization' => true,
+            'deleteORCID' => false,
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
+    public function testAcceptsOrcidAuthorizationDataWhileOrcidIsNotRequired(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiringOrcid(false, true), [
+            'orcidAccessToken' => 'a1b2c3d4',
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
+    public function testAcceptsOrcidAuthorizationDataWhileTheOrcidProfilePluginIsDisabled(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiringOrcid(true, false), [
+            'orcidAccessToken' => 'a1b2c3d4',
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void
     {
         $request = $this->getMockBuilder(Request::class)
