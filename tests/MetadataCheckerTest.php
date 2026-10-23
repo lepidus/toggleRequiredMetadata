@@ -213,6 +213,16 @@ class MetadataCheckerTest extends TestCase
         $this->assertNotEmpty($this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors, $submittingUser));
     }
 
+    public function testRejectsTheSubmittersOrcidOnAnyContributorButTheFirst(): void
+    {
+        $this->requestAuthorizationForEveryAuthor();
+        $this->authors[1]->unsetData('orcidEmailToken');
+        $this->authors[1]->setData('orcid', $this->orcids[0]);
+        $submittingUser = $this->createUserWithOrcid($this->orcids[0], true);
+
+        $this->assertEquals([$this->authors[1]], $this->checker->getAuthorsWithoutRequestedOrcidAuthorization($this->authors, $submittingUser));
+    }
+
     public function testListsContributorsWhoseAuthorizationWasNotRequested(): void
     {
         $this->requestAuthorizationForEveryAuthor();

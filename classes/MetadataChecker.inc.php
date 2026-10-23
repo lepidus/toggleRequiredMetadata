@@ -69,8 +69,11 @@ class MetadataChecker
 
     public function getAuthorsWithoutRequestedOrcidAuthorization(array $authors, $submittingUser = null): array
     {
-        return $this->getAuthorsNotMeeting($authors, function (Author $author) use ($submittingUser) {
-            return $this->hasStartedOrcidAuthorization($author, $submittingUser);
+        $firstAuthor = reset($authors);
+
+        return $this->getAuthorsNotMeeting($authors, function (Author $author) use ($submittingUser, $firstAuthor) {
+            return $this->hasStartedOrcidAuthorization($author)
+                || ($author === $firstAuthor && $this->matchesAuthenticatedUser($author, $submittingUser));
         });
     }
 
@@ -81,11 +84,10 @@ class MetadataChecker
         }));
     }
 
-    private function hasStartedOrcidAuthorization(Author $author, $submittingUser): bool
+    private function hasStartedOrcidAuthorization(Author $author): bool
     {
         return $this->checkMetadata($author, 'orcidEmailToken')
-            || $this->hasAuthenticatedOrcid($author)
-            || $this->matchesAuthenticatedUser($author, $submittingUser);
+            || $this->hasAuthenticatedOrcid($author);
     }
 
     private function matchesAuthenticatedUser(Author $author, $submittingUser): bool
