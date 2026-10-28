@@ -206,15 +206,96 @@ class ToggleRequiredMetadataPluginTest extends PKPTestCase
         $this->assertSame(['notRequested'], $statuses);
     }
 
-    public function testAddsTheOrcidVerificationRequestToTheContributorSummary(): void
+    public function testAddsTheOrcidVerificationStatusToTheContributorSummary(): void
     {
-        $schema = (object) ['properties' => (object) [
-            'orcidVerificationRequested' => (object) ['type' => 'boolean', 'apiSummary' => false],
-        ]];
+        $schema = (object) ['properties' => (object) []];
 
-        $this->createPluginRequiring(true)->exposeOrcidVerificationRequest('Schema::get::author', [&$schema]);
+        $this->createPluginRequiring(true, true)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
 
-        $this->assertTrue($schema->properties->orcidVerificationRequested->apiSummary);
+        $this->assertTrue($schema->properties->orcidVerificationStatus->apiSummary);
+        $this->assertTrue($schema->properties->orcidVerificationStatus->readOnly);
+    }
+
+    public function testLeavesTheContributorSummaryAloneWhileOrcidIsNotRequired(): void
+    {
+        $schema = (object) ['properties' => (object) []];
+
+        $this->createPluginRequiring(false, true)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
+
+        $this->assertObjectNotHasProperty('orcidVerificationStatus', $schema->properties);
+    }
+
+    public function testLeavesTheContributorSummaryAloneWhileOrcidIsNotEnabled(): void
+    {
+        $schema = (object) ['properties' => (object) []];
+
+        $this->createPluginRequiring(true, false)->addOrcidVerificationStatusToSchema('Schema::get::author', [&$schema]);
+
+        $this->assertObjectNotHasProperty('orcidVerificationStatus', $schema->properties);
+    }
+
+    public function testMapsTheOrcidVerificationStatusOfTheContributor(): void
+    {
+        $output = $this->createPluginRequiring(true, true)->mapOrcidVerificationStatus(
+            ['orcidVerificationStatus' => null],
+            $this->createAuthor('Ana', requested: true)
+        );
+
+        $this->assertSame('awaitingVerification', $output['orcidVerificationStatus']);
+    }
+
+    public function testDoesNotMapTheOrcidVerificationStatusWhileOrcidIsNotRequired(): void
+    {
+        $output = $this->createPluginRequiring(false, true)->mapOrcidVerificationStatus(
+            ['id' => 1],
+            $this->createAuthor('Ana', requested: true)
+        );
+
+        $this->assertSame(['id' => 1], $output);
+    }
+
+    public function testLeavesTheMapOfAnythingButAContributorAlone(): void
+    {
+        $output = $this->createPluginRequiring(true, true)->mapOrcidVerificationStatus(['id' => 1], new Submission());
+
+        $this->assertSame(['id' => 1], $output);
+    }
+
+    private function validateContributorWith(ToggleRequiredMetadataPlugin $plugin, array $props): array
+    {
+        $errors = [];
+        $plugin->rejectOrcidVerificationData('Author::validate', [&$errors, null, $props, ['en'], 'en']);
+
+        return $errors;
+    }
+
+    public function testRejectsOrcidVerificationDataSentForAContributor(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiring(true, true), [
+            'givenName' => ['en' => 'Ana'],
+            'orcidVerificationRequested' => true,
+            'orcidIsVerified' => true,
+        ]);
+
+        $this->assertSame(['orcidVerificationRequested', 'orcidIsVerified'], array_keys($errors));
+    }
+
+    public function testAcceptsAContributorSentWithoutOrcidVerificationData(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiring(true, true), [
+            'givenName' => ['en' => 'Ana'],
+        ]);
+
+        $this->assertSame([], $errors);
+    }
+
+    public function testAcceptsOrcidVerificationDataWhileOrcidIsNotRequired(): void
+    {
+        $errors = $this->validateContributorWith($this->createPluginRequiring(false, true), [
+            'orcidVerificationRequested' => true,
+        ]);
+
+        $this->assertSame([], $errors);
     }
 
     public function testAnswersTheSettingsRequestWithAnErrorOutsideAContext(): void

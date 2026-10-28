@@ -23,44 +23,24 @@ const props = defineProps({
 
 const statusIcons = {
 	notRequested: 'Error',
-	noPendingLink: 'Error',
+	unverifiedOrcid: 'Error',
 	declined: 'Error',
 	awaitingVerification: 'Clock',
 };
-
-function hasVerifiedOrcid(author) {
-	return !!author.orcid && !!author.orcidIsVerified;
-}
-
-function orcidStatus(author) {
-	if (hasVerifiedOrcid(author)) {
-		return 'verified';
-	}
-
-	if (!author.orcidVerificationRequested) {
-		return 'notRequested';
-	}
-
-	if (author.orcidEmailToken) {
-		return 'awaitingVerification';
-	}
-
-	return author.orcidAccessDenied ? 'declined' : 'noPendingLink';
-}
 
 const authors = computed(() => props.publication?.authors ?? []);
 
 const isRequirementMet = computed(
 	() =>
-		authors.value.some(hasVerifiedOrcid) &&
-		authors.value.every((author) => orcidStatus(author) !== 'notRequested'),
-);
-
-const isShown = computed(
-	() =>
-		authors.value.length > 0 &&
-		props.submission?.status !== pkp.const.STATUS_PUBLISHED &&
-		!isRequirementMet.value,
+		authors.value.some(
+			(author) => author.orcidVerificationStatus === 'verified',
+		) &&
+		authors.value.every(
+			(author) =>
+				!['notRequested', 'unverifiedOrcid'].includes(
+					author.orcidVerificationStatus,
+				),
+		),
 );
 
 const namesByStatus = computed(() => {
@@ -69,7 +49,7 @@ const namesByStatus = computed(() => {
 	);
 
 	authors.value.forEach((author) => {
-		const status = orcidStatus(author);
+		const status = author.orcidVerificationStatus;
 		if (names[status] && author.fullName) {
 			names[status].push(author.fullName);
 		}
@@ -84,9 +64,15 @@ const pendingStatuses = computed(() =>
 	),
 );
 
+const isShown = computed(
+	() =>
+		pendingStatuses.value.length > 0 &&
+		props.submission?.status === pkp.const.STATUS_QUEUED &&
+		!isRequirementMet.value,
+);
+
 function describe(status) {
-	return props.messages[status].replace(
-		'{$pendingAuthors}',
+	return props.messages[status].replace('{$pendingAuthors}', () =>
 		namesByStatus.value[status].join(', '),
 	);
 }

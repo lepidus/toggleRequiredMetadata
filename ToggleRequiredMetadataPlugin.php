@@ -24,6 +24,7 @@ use PKP\config\Config;
 use PKP\components\forms\FormComponent;
 use PKP\components\forms\publication\ContributorForm;
 use PKP\context\Context;
+use PKP\core\maps\Schema;
 use PKP\orcid\OrcidManager;
 use APP\template\TemplateManager;
 use APP\plugins\generic\toggleRequiredMetadata\classes\FieldRequiredMark;
@@ -44,6 +45,19 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      */
     public const ORCID_REQUIREMENT = 'toggleRequiredMetadataOrcid';
 
+    public const ORCID_VERIFICATION_DATA = [
+        'orcidIsVerified',
+        'orcidVerificationRequested',
+        'orcidEmailToken',
+        'orcidAccessDenied',
+        'orcidAccessToken',
+        'orcidAccessScope',
+        'orcidRefreshToken',
+        'orcidAccessExpiresOn',
+        'orcidSandbox',
+        'orcidWorkPutCode',
+    ];
+
     /** What each requirement answered in this request, by context. */
     private array $requiredFields = [];
 
@@ -56,8 +70,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
 
         if ($success && $this->getEnabled($mainContextId)) {
-            Hook::add('Schema::get::author', [$this, 'exposeOrcidVerificationRequest']);
+            Hook::add('Schema::get::author', [$this, 'addOrcidVerificationStatusToSchema']);
+            app('maps')->extend(Schema::class, $this->mapOrcidVerificationStatus(...));
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
+            Hook::add('Author::validate', [$this, 'rejectOrcidVerificationData']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addBackendAssets']);
             Hook::add('Template::SubmissionWizard::Section::Review::Contributors', [$this, 'addOrcidRequirementToReviewStep']);
@@ -115,12 +131,43 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
     }
 
-    public function exposeOrcidVerificationRequest(string $hookName, array $args): bool
+    public function addOrcidVerificationStatusToSchema(string $hookName, array $args): bool
     {
         $schema = &$args[0];
 
-        if (isset($schema->properties->orcidVerificationRequested)) {
-            $schema->properties->orcidVerificationRequested->apiSummary = true;
+        if (!$this->isOrcidRequired()) {
+            return false;
+        }
+
+        $schema->properties->orcidVerificationStatus = (object) [
+            'type' => 'string',
+            'apiSummary' => true,
+            'readOnly' => true,
+        ];
+
+        return false;
+    }
+
+    public function mapOrcidVerificationStatus(array $output, object $item): array
+    {
+        if ($item instanceof Author && $this->isOrcidRequired()) {
+            $output['orcidVerificationStatus'] = (new MetadataChecker())->getOrcidStatus($item);
+        }
+
+        return $output;
+    }
+
+    public function rejectOrcidVerificationData(string $hookName, array $args): bool
+    {
+        $errors = &$args[0];
+        $props = $args[2];
+
+        if (!$this->isOrcidRequired()) {
+            return false;
+        }
+
+        foreach (array_intersect(array_keys($props), self::ORCID_VERIFICATION_DATA) as $propName) {
+            $errors[$propName] = [__('plugins.generic.toggleRequiredMetadata.contributor.error.orcidVerificationData')];
         }
 
         return false;
@@ -263,13 +310,13 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $pageInitConfig['componentForms']['toggleRequiredMetadataOrcidWarning'] = [
             'editorMessages' => [
                 'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested'),
-                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.noPendingLink'),
+                'unverifiedOrcid' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.unverifiedOrcid'),
                 'declined' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.declined'),
                 'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.workflow.awaitingVerification'),
             ],
             'authorMessages' => [
                 'notRequested' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.notRequested'),
-                'noPendingLink' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.noPendingLink'),
+                'unverifiedOrcid' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.unverifiedOrcid'),
                 'declined' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.declined'),
                 'awaitingVerification' => __('plugins.generic.toggleRequiredMetadata.notification.authorDashboard.awaitingVerification'),
             ],
@@ -284,10 +331,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
      *
      * The description carries the rule, how far the contributors are from it
      * and where each of them stands, so that the review step can show it as one
-     * block instead of two warnings that read as unrelated problems. It is
-     * built here, and not in the browser, because the wizard holds summarized
-     * contributors and `orcidVerificationRequested` is not a summary property:
-     * the two unverified states cannot be told apart there. The wizard
+     * block instead of two warnings that read as unrelated problems. The wizard
      * revalidates whenever the review step is opened, so this stays current
      * while the author acts on it.
      *
@@ -437,6 +481,11 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         return $this->requiredFields[$contextId][$settingName]
             ??= (bool) $this->getSetting($contextId, $settingName);
+    }
+
+    private function isOrcidRequired(): bool
+    {
+        return $this->shouldRequireField("requireOrcid") && $this->isOrcidEnabled();
     }
 
     public function isOrcidEnabled(?Context $context = null): bool
