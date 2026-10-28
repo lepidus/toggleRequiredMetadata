@@ -56,6 +56,9 @@ msgstr "El campo \"Afiliación\" es obligatorio para todos los colaboradores"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "El campo \"Resumen biográfico\" es obligatorio para todos los colaboradores"
 
+msgid "plugins.generic.toggleRequiredMetadata.contributor.error.orcidAuthorizationData"
+msgstr "Este dato solo lo define la autorización de ORCID y no puede modificarse en el colaborador."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
 msgstr "Aún no se ha solicitado la autorización ORCID de: {$pendingAuthors}. Para solicitarla, vaya a la pestaña Publicación, edite el colaborador y marque \"Enviar correo electrónico para solicitar autorización ORCID del colaborador\"."
 

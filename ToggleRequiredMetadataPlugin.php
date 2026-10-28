@@ -14,7 +14,6 @@
 namespace APP\plugins\generic\toggleRequiredMetadata;
 
 use APP\core\Application;
-use APP\publication\Publication;
 use APP\submission\Submission;
 use PKP\plugins\GenericPlugin;
 use PKP\core\JSONMessage;
@@ -29,6 +28,17 @@ use APP\plugins\generic\toggleRequiredMetadata\form\ToggleRequiredMetadataSettin
 
 class ToggleRequiredMetadataPlugin extends GenericPlugin
 {
+    public const ORCID_AUTHORIZATION_DATA = [
+        'orcidAccessToken',
+        'orcidAccessScope',
+        'orcidRefreshToken',
+        'orcidAccessExpiresOn',
+        'orcidAccessDenied',
+        'orcidEmailToken',
+        'orcidSandbox',
+        'orcidWorkPutCode',
+    ];
+
     /** What each requirement answered in this request, by context. */
     private array $requiredFields = [];
 
@@ -42,6 +52,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
 
         if ($success && $this->getEnabled()) {
             Hook::add('Submission::validateSubmit', [$this, 'validateSubmissionFields']);
+            Hook::add('Author::validate', [$this, 'rejectOrcidAuthorizationData']);
             Hook::add('Form::config::before', [$this, 'editAuthorFormDataFields']);
             Hook::add('TemplateManager::display', [$this, 'addOrcidWarning']);
         }
@@ -113,6 +124,22 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         }
     }
 
+    public function rejectOrcidAuthorizationData(string $hookName, array $args): bool
+    {
+        $errors = &$args[0];
+        $props = $args[2];
+
+        if (!$this->shouldRequireField("requireOrcid") || !$this->isOrcidProfilePluginEnabled()) {
+            return false;
+        }
+
+        foreach (array_intersect(array_keys($props), self::ORCID_AUTHORIZATION_DATA) as $propName) {
+            $errors[$propName] = [__('plugins.generic.toggleRequiredMetadata.contributor.error.orcidAuthorizationData')];
+        }
+
+        return false;
+    }
+
     public function editAuthorFormDataFields(string $hookName, FormComponent $form)
     {
         if (!defined('FORM_CONTRIBUTOR') || $form->id !== FORM_CONTRIBUTOR) {
@@ -167,12 +194,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        $publication = $submission->getCurrentPublication();
-        if (is_null($publication)) {
-            return false;
-        }
-
-        $orcidWarning = $this->describeOrcidWarning($publication);
+        $orcidWarning = $this->describeOrcidWarning($submission);
         if (empty($orcidWarning)) {
             return false;
         }
@@ -190,9 +212,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
     }
 
-    public function describeOrcidWarning(Publication $publication): array
+    public function describeOrcidWarning(Submission $submission): array
     {
-        if ($publication->getData('status') == Submission::STATUS_PUBLISHED) {
+        $publication = $submission->getCurrentPublication();
+        if ($submission->getData('status') != Submission::STATUS_QUEUED || is_null($publication)) {
             return [];
         }
 

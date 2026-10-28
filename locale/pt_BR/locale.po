@@ -56,6 +56,9 @@ msgstr "O campo \"Afiliação\" é requerido para todos os coautores"
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.biography"
 msgstr "O campo \"Resumo da Biografia\" é requerido para todos os coautores"
 
+msgid "plugins.generic.toggleRequiredMetadata.contributor.error.orcidAuthorizationData"
+msgstr "Este dado só é definido pela autorização do ORCID e não pode ser alterado no contribuidor."
+
 msgid "plugins.generic.toggleRequiredMetadata.notification.workflow.notRequested"
 msgstr "A autorização ORCID ainda não foi solicitada a: {$pendingAuthors}. Para solicitá-la, acesse a aba Publicação, edite o contribuidor e marque \"Enviar e-mail para solicitar autorização ORCID do contribuidor\"."
 
