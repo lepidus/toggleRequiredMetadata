@@ -48,13 +48,15 @@ The selected metadata is marked as required where the author fills it in:
 
 Every requirement is checked again before the submission moves on, and what is missing is listed right below the contributors, so the author can tell what is left to fill in. OMP takes that place for the chapters, so on a press the list comes at the end of the metadata, just above the button that saves the step.
 
+The same check runs once more when the submission is finished on the confirmation step, so a contributor changed after the third step was saved cannot slip through: the submission is not sent, and the confirmation step lists what is missing and points back to the third step.
+
 ### What the check does not cover
 
-The requirements are about what comes in through the submission form, and that is where they are enforced: they are checked on the third step of a submission, and nowhere else. A contributor edited later in the workflow, a submission created through the REST API, and anything brought in by an import or by QuickSubmit never go through the check, and neither does publication. What the plugin holds is the door: no submission is *received* without the metadata, which is not the same as no submission in the journal ever lacking it.
+The requirements are about what comes in through the submission form, and that is where they are enforced: they are checked on the third and on the last step of a submission, and nowhere else. A contributor edited later in the workflow, a submission created through the REST API, and anything brought in by an import or by QuickSubmit never go through the check, and neither does publication. What the plugin holds is the door: no submission is *received* without the metadata, which is not the same as no submission in the journal ever lacking it.
 
 ## While the submission is in the workflow
 
-Once the submission is in, the ORCID requirement can still be unmet. While it is, and the publication is not published, the workflow says who is holding it up, telling apart the contributors nobody asked for the authorisation yet from the ones who were sent the e-mail and have not opened it, with the advice that fits the reader — an editor can request the authorisation or send it again, an author can mostly only chase the contributor. The warning is not shown on a published publication, which includes everything published before the plugin was enabled, nor once one contributor has authenticated their iD and the authorisation was requested from all the others.
+Once the submission is in, the ORCID requirement can still be unmet. While it is, and the submission is still in progress, the workflow says who is holding it up, telling apart the contributors nobody asked for the authorisation yet from the ones who were sent the e-mail and have not opened it, with the advice that fits the reader — an editor can request the authorisation or send it again, an author can mostly only chase the contributor. The warning is not shown on a submission that is no longer in progress — declined, scheduled or published, which includes the new versions of a published one and everything published before the plugin was enabled — nor once one contributor has authenticated their iD and the authorisation was requested from all the others.
 
 # License
 __This plugin is licensed under the GNU General Public License v3.0__

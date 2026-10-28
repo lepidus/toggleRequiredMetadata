@@ -35,6 +35,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
                 HookRegistry::register('authorform::Constructor', array($this, 'validateBiography'));
             }
             HookRegistry::register('submissionsubmitstep3form::validate', array($this, 'addValidationToStep3'));
+            HookRegistry::register('submissionsubmitstep4form::validate', array($this, 'addValidationToStep4'));
             HookRegistry::register('TemplateManager::display', array($this, 'addOrcidWarning'));
         }
 
@@ -148,7 +149,49 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
     public function addValidationToStep3($hookName, $params)
     {
         $form = &$params[0];
-        $publication = $form->submission->getCurrentPublication();
+        $missingMetadata = $this->describeMissingMetadata($form->submission);
+
+        if (empty($missingMetadata)) {
+            return false;
+        }
+
+        // A single summary, so the form's notification does not repeat the whole list
+        $form->addErrorField('requiredContributorMetadata');
+        $form->addError('requiredContributorMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors'));
+
+        if ($this->isContributorsSlotFree()) {
+            // step3.tpl leaves this slot right below the contributors list
+            $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
+        } else {
+            $this->missingMetadataAfterMetadataFields = $missingMetadata;
+            HookRegistry::register('Templates::Submission::SubmissionMetadataForm::AdditionalMetadata', array($this, 'listMissingMetadataAfterMetadataFields'));
+        }
+
+        return false;
+    }
+
+    public function addValidationToStep4($hookName, $params)
+    {
+        $form = &$params[0];
+        $missingMetadata = $this->describeMissingMetadata($form->submission);
+
+        if (empty($missingMetadata)) {
+            return false;
+        }
+
+        $form->addErrorField('requiredContributorMetadata');
+        $form->addError('requiredContributorMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsChanged'));
+
+        foreach ($missingMetadata as $index => $message) {
+            $form->addError("requiredContributorMetadata{$index}", $message);
+        }
+
+        return false;
+    }
+
+    private function describeMissingMetadata($submission)
+    {
+        $publication = $submission->getCurrentPublication();
         $authors = $publication->getData('authors');
         $metadataChecker = new MetadataChecker();
 
@@ -182,23 +225,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             $missingMetadata[] = __('plugins.generic.toggleRequiredMetadata.stepValidation.error.biography');
         }
 
-        if (empty($missingMetadata)) {
-            return false;
-        }
-
-        // A single summary, so the form's notification does not repeat the whole list
-        $form->addErrorField('requiredContributorMetadata');
-        $form->addError('requiredContributorMetadata', __('plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors'));
-
-        if ($this->isContributorsSlotFree()) {
-            // step3.tpl leaves this slot right below the contributors list
-            $form->setData('additionalContributorsFields', $this->renderMissingMetadata($missingMetadata));
-        } else {
-            $this->missingMetadataAfterMetadataFields = $missingMetadata;
-            HookRegistry::register('Templates::Submission::SubmissionMetadataForm::AdditionalMetadata', array($this, 'listMissingMetadataAfterMetadataFields'));
-        }
-
-        return false;
+        return $missingMetadata;
     }
 
     protected function isContributorsSlotFree()
@@ -243,12 +270,7 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
             return false;
         }
 
-        $publication = $submission->getCurrentPublication();
-        if (is_null($publication)) {
-            return false;
-        }
-
-        $orcidWarning = $this->describeOrcidWarning($publication);
+        $orcidWarning = $this->describeOrcidWarning($submission);
         if (empty($orcidWarning)) {
             return false;
         }
@@ -266,9 +288,10 @@ class ToggleRequiredMetadataPlugin extends GenericPlugin
         $templateMgr->registerFilter('output', [$this, 'orcidWarningFilter']);
     }
 
-    public function describeOrcidWarning($publication)
+    public function describeOrcidWarning($submission)
     {
-        if ($publication->getData('status') == STATUS_PUBLISHED) {
+        $publication = $submission->getCurrentPublication();
+        if ($submission->getData('status') != STATUS_QUEUED || is_null($publication)) {
             return [];
         }
 

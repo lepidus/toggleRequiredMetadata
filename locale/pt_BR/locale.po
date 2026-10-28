@@ -47,6 +47,9 @@ msgstr "Por favor, insira o Resumo da Biografia do seu autor."
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributors"
 msgstr "Faltam dados obrigatórios dos contribuidores. Os detalhes estão listados mais abaixo."
 
+msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.contributorsChanged"
+msgstr "Os contribuidores não têm mais todos os dados obrigatórios, então a submissão ainda não pode ser concluída. Volte à etapa 3 e complete-os:"
+
 msgid "plugins.generic.toggleRequiredMetadata.stepValidation.error.orcid"
 msgstr "O campo \"ORCID\" é requerido para todos os coautores. "
 

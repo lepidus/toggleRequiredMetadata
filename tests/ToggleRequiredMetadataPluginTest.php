@@ -115,14 +115,18 @@ class ToggleRequiredMetadataPluginTest extends TestCase
         return $author;
     }
 
-    private function createPublication(array $authors, int $status = STATUS_QUEUED): Publication
+    private function createSubmissionWithAuthors(array $authors, int $status = STATUS_QUEUED): Submission
     {
         $publication = new Publication();
         $publication->setId(1);
-        $publication->setData('status', $status);
         $publication->setData('authors', $authors);
 
-        return $publication;
+        $submission = new Submission();
+        $submission->setData('status', $status);
+        $submission->setData('currentPublicationId', 1);
+        $submission->setData('publications', [$publication]);
+
+        return $submission;
     }
 
     private function namesIn(array $authors): array
@@ -134,7 +138,7 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
     public function testWarnsAboutTheContributorsNobodyAskedForTheOrcidAuthorization(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([
             $this->createAuthor('Ana', false, true),
             $this->createAuthor('Bruno'),
         ]));
@@ -145,7 +149,7 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
     public function testLeavesOutOfTheWarningAStateNobodyIsIn(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([
             $this->createAuthor('Ana', false, true),
         ]));
 
@@ -154,7 +158,7 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
     public function testDoesNotWarnOnceTheRequirementIsMet(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([
             $this->createAuthor('Ana', true),
             $this->createAuthor('Bruno', false, true),
         ]));
@@ -162,10 +166,28 @@ class ToggleRequiredMetadataPluginTest extends TestCase
         $this->assertSame([], $warning);
     }
 
-    public function testDoesNotWarnOnAPublishedPublication(): void
+    public function testDoesNotWarnOnAPublishedSubmission(): void
     {
         $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning(
-            $this->createPublication([$this->createAuthor('Ana')], STATUS_PUBLISHED)
+            $this->createSubmissionWithAuthors([$this->createAuthor('Ana')], STATUS_PUBLISHED)
+        );
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnOnADeclinedSubmission(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning(
+            $this->createSubmissionWithAuthors([$this->createAuthor('Ana')], STATUS_DECLINED)
+        );
+
+        $this->assertSame([], $warning);
+    }
+
+    public function testDoesNotWarnOnAScheduledSubmission(): void
+    {
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning(
+            $this->createSubmissionWithAuthors([$this->createAuthor('Ana')], STATUS_SCHEDULED)
         );
 
         $this->assertSame([], $warning);
@@ -173,7 +195,7 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
     public function testDoesNotWarnWithoutContributors(): void
     {
-        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createPublication([]));
+        $warning = (new ToggleRequiredMetadataPlugin())->describeOrcidWarning($this->createSubmissionWithAuthors([]));
 
         $this->assertSame([], $warning);
     }
@@ -197,14 +219,10 @@ class ToggleRequiredMetadataPluginTest extends TestCase
 
     private function validateStep3With($plugin)
     {
-        $submission = new Submission();
-        $submission->setData('currentPublicationId', 1);
-        $submission->setData('publications', [$this->createPublication([$this->createAuthor('Ana')])]);
-
         $form = new class () extends Form {
             public $submission;
         };
-        $form->submission = $submission;
+        $form->submission = $this->createSubmissionWithAuthors([$this->createAuthor('Ana')]);
 
         $plugin->addValidationToStep3('submissionsubmitstep3form::validate', [&$form]);
 
@@ -244,5 +262,38 @@ class ToggleRequiredMetadataPluginTest extends TestCase
         $form = $this->validateStep3With($this->createPluginRequiringOnlyAffiliation(false));
 
         $this->assertFalse($form->isValid());
+    }
+
+    private function validateStep4With($plugin, array $authors)
+    {
+        $form = new class () extends Form {
+            public $submission;
+        };
+        $form->submission = $this->createSubmissionWithAuthors($authors);
+
+        $plugin->addValidationToStep4('submissionsubmitstep4form::validate', [&$form]);
+
+        return $form;
+    }
+
+    public function testBlocksTheLastStepOnceAContributorLostTheRequiredMetadata(): void
+    {
+        $form = $this->validateStep4With($this->createPluginRequiringOnlyAffiliation(true), [$this->createAuthor('Ana')]);
+
+        $this->assertFalse($form->isValid());
+        $this->assertContains(
+            __('plugins.generic.toggleRequiredMetadata.stepValidation.error.affiliation'),
+            $form->getErrorsArray()
+        );
+    }
+
+    public function testLetsTheLastStepThroughWhileTheContributorsAreComplete(): void
+    {
+        $author = $this->createAuthor('Ana');
+        $author->setData('affiliation', ['en_US' => 'UERJ']);
+
+        $form = $this->validateStep4With($this->createPluginRequiringOnlyAffiliation(true), [$author]);
+
+        $this->assertTrue($form->isValid());
     }
 }

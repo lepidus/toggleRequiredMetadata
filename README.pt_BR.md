@@ -48,13 +48,15 @@ O metadado selecionado é marcado como obrigatório onde o autor o preenche:
 
 Toda exigência é verificada de novo antes de a submissão seguir adiante, e o que falta é listado logo abaixo dos contribuidores, para o autor saber o que ainda precisa preencher. O OMP ocupa esse lugar com os capítulos, então numa editora a lista aparece no fim dos metadados, logo acima do botão que salva a etapa.
 
+A mesma verificação roda mais uma vez quando a submissão é concluída na etapa de confirmação, então um contribuidor alterado depois de a terceira etapa ter sido salva não passa: a submissão não é enviada, e a etapa de confirmação lista o que falta e indica a volta à terceira etapa.
+
 ### O que a verificação não cobre
 
-As exigências são sobre o que chega pelo formulário de submissão, e é aí que valem: são verificadas na terceira etapa da submissão, e em nenhum outro lugar. Contribuidor editado depois no fluxo de trabalho, submissão criada pela API REST e tudo que entra por importação ou pelo QuickSubmit não passam pela verificação, nem a publicação passa. O que o plugin guarda é a porta: nenhuma submissão é *recebida* sem os metadados, o que não é o mesmo que nenhuma submissão da revista ficar sem eles.
+As exigências são sobre o que chega pelo formulário de submissão, e é aí que valem: são verificadas na terceira e na última etapa da submissão, e em nenhum outro lugar. Contribuidor editado depois no fluxo de trabalho, submissão criada pela API REST e tudo que entra por importação ou pelo QuickSubmit não passam pela verificação, nem a publicação passa. O que o plugin guarda é a porta: nenhuma submissão é *recebida* sem os metadados, o que não é o mesmo que nenhuma submissão da revista ficar sem eles.
 
 ## Com a submissão já no fluxo de trabalho
 
-Depois que a submissão entra, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a publicação não estiver publicada, o fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou a autorização ainda dos que receberam o e-mail e não o abriram, com a orientação que cabe a quem lê — um editor pode solicitar a autorização ou enviá-la de novo, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa publicação publicada, o que inclui tudo o que foi publicado antes de o plugin ser habilitado, nem depois que um contribuidor autenticou o seu iD e a autorização foi solicitada a todos os outros.
+Depois que a submissão entra, a exigência de ORCID ainda pode não estar cumprida. Enquanto for assim, e a submissão ainda estiver em andamento, o fluxo de trabalho diz quem a está segurando, separando os contribuidores a quem ninguém solicitou a autorização ainda dos que receberam o e-mail e não o abriram, com a orientação que cabe a quem lê — um editor pode solicitar a autorização ou enviá-la de novo, um autor quase só pode cobrar o contribuidor. O aviso não aparece numa submissão que não está mais em andamento — rejeitada, agendada ou publicada, o que inclui as novas versões de uma publicada e tudo o que foi publicado antes de o plugin ser habilitado — nem depois que um contribuidor autenticou o seu iD e a autorização foi solicitada a todos os outros.
 
 # Licença
 __Este plugin está licenciado sob a GNU General Public License v3.0__
